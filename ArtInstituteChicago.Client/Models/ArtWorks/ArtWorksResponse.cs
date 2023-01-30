@@ -1,8 +1,8 @@
-﻿namespace ArtInstituteChicago.Client.Models
+﻿namespace ArtInstituteChicago.Client.Models.ArtWorks
 {
-    // https://api.artic.edu/docs/#conventions
     /// <summary>
     /// Art Works End Point Response
+    // https://api.artic.edu/api/v1/artworks
     /// </summary>
     public class ArtWorksResponse
     {

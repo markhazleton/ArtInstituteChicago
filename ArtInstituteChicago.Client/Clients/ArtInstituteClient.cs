@@ -1,4 +1,4 @@
-﻿using ArtInstituteChicago.Client.Models;
+﻿using ArtInstituteChicago.Client.Models.ArtWorks;
 using System.Text.Json;
 
 namespace ArtInstituteChicago.Console.Clients;

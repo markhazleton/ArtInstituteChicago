@@ -1,4 +1,4 @@
-﻿namespace ArtInstituteChicago.Client.Models
+﻿namespace ArtInstituteChicago.Client.Models.ArtWorks
 {
     public class Contexts
     {
