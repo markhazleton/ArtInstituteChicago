@@ -5,7 +5,9 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArtInstituteChicago.Console", "ArtInstituteChicago.Console\ArtInstituteChicago.Console.csproj", "{47AFC8A1-81A1-443C-9B04-A2BCFF0D216A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtInstituteChicago.Client", "ArtInstituteChicago.Client\ArtInstituteChicago.Client.csproj", "{3B9AA3DB-AF2F-490E-99B3-818112944116}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArtInstituteChicago.Client", "ArtInstituteChicago.Client\ArtInstituteChicago.Client.csproj", "{3B9AA3DB-AF2F-490E-99B3-818112944116}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpClientDecorator", "..\HttpClientDecoratorPattern\HttpClientDecorator\HttpClientDecorator.csproj", "{FEEC5332-B7B7-4E2F-9E64-9F73CF5960CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{3B9AA3DB-AF2F-490E-99B3-818112944116}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B9AA3DB-AF2F-490E-99B3-818112944116}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B9AA3DB-AF2F-490E-99B3-818112944116}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEEC5332-B7B7-4E2F-9E64-9F73CF5960CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEEC5332-B7B7-4E2F-9E64-9F73CF5960CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEEC5332-B7B7-4E2F-9E64-9F73CF5960CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEEC5332-B7B7-4E2F-9E64-9F73CF5960CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

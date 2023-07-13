@@ -6,9 +6,9 @@
     /// </summary>
     public class ArtWorksResponse
     {
-        public Pagination pagination { get; set; }
-        public Datum[] data { get; set; }
-        public Info info { get; set; }
-        public Config config { get; set; }
+        public Pagination? pagination { get; set; }
+        public Datum[]? data { get; set; }
+        public Info? info { get; set; }
+        public Config? config { get; set; }
     }
 }

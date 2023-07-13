@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\HttpClientDecoratorPattern\HttpClientDecorator\HttpClientDecorator.csproj" />
     <ProjectReference Include="..\ArtInstituteChicago.Client\ArtInstituteChicago.Client.csproj" />
   </ItemGroup>
 
