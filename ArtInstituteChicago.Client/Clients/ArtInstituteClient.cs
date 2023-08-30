@@ -6,7 +6,7 @@ public class ArtInstituteClient
 {
     public async Task<ArtWorksResponse> GetArtWorks(HttpClient client)
     {
-        ArtWorksResponse myart = new ArtWorksResponse();
+        ArtWorksResponse myart = new();
         try
         {
             var response = await client.GetAsync("https://api.artic.edu/api/v1/artworks");
