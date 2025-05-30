@@ -1,0 +1,121 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                        <h1 class="card-title h3 mb-0">Oops! Something went wrong</h1>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-emoji-frown display-1 text-danger mb-3"></i>
+                        <h2 class="text-body-emphasis mb-3">An error occurred while processing your request</h2>
+                        <p class="text-body-secondary">We apologize for the inconvenience. Please try again later.</p>
+                    </div>
+                    @if (Model != null)
+                    {
+                        if (Model.ShowRequestId)
+                        {
+                            <div class="alert alert-light border" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-info-circle me-3 text-primary"></i>
+                                    <div>
+                                        <strong class="text-body-emphasis">Request ID:</strong>
+                                        <code class="text-danger">@Model.RequestId</code>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    }
+
+
+                    <div class="row g-4 mt-3">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-arrow-clockwise fs-4 text-primary me-3 mt-1"></i>
+                                <div>
+                                    <h5 class="text-body-emphasis">Try Again</h5>
+                                    <p class="text-body-secondary mb-0">
+                                        Refresh the page or try your action again. The
+                                        issue might be temporary.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-house fs-4 text-primary me-3 mt-1"></i>
+                                <div>
+                                    <h5 class="text-body-emphasis">Go Home</h5>
+                                    <p class="text-body-secondary mb-0">
+                                        Return to the homepage and explore our artwork
+                                        collection.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="collapse" id="developmentInfo">
+                        <div class="card bg-body-secondary mt-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-code-slash me-2"></i>Development Mode
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-body-secondary">
+                                    Swapping to <strong>Development</strong> environment will display more detailed
+                                    information about the error that occurred.
+                                </p>
+                                <div class="alert alert-warning" role="alert">
+                                    <div class="d-flex">
+                                        <i class="bi bi-exclamation-triangle-fill me-3 mt-1"></i>
+                                        <div>
+                                            <strong>Warning:</strong> The Development environment shouldn't be enabled
+                                            for deployed applications.
+                                            It can result in displaying sensitive information from exceptions to end
+                                            users.
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-body-secondary small mb-0">
+                                    For local debugging, enable the <strong>Development</strong> environment by setting
+                                    the
+                                    <code>ASPNETCORE_ENVIRONMENT</code> environment variable to <code>Development</code>
+                                    and restarting the app.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-body-tertiary">
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+                            <i class="bi bi-house me-2"></i>Return to Home
+                        </a>
+                        <button type="button" class="btn btn-outline-secondary" onclick="history.back()">
+                            <i class="bi bi-arrow-left me-2"></i>Go Back
+                        </button>
+                        <button type="button" class="btn btn-outline-info" data-bs-toggle="collapse"
+                                data-bs-target="#developmentInfo">
+                            <i class="bi bi-info-circle me-2"></i>Development Info
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+temporary.</p>
+
+               applications.
+    app.

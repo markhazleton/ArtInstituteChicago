@@ -1,0 +1,84 @@
+/* Bootstrap 5 Compatible Site Styles */
+/* Only minimal utilities that Bootstrap doesn't provide */
+
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/* Focus styles for accessibility - maintaining Bootstrap's approach */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* Sticky footer support */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* Form floating label improvements */
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+/* Custom utilities not available in Bootstrap 5 */
+.aspect-ratio-4-3 {
+  aspect-ratio: 4/3;
+}
+
+.card-image-height {
+  height: 280px;
+}
+
+.details-image-height {
+  max-height: 70vh;
+  object-fit: contain;
+}
+
+.details-placeholder-height {
+  min-height: 400px;
+}
+
+.sticky-offset {
+  top: 2rem;
+}
+
+/* Smooth card hover animations */
+.card-hover {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(var(--bs-dark-rgb), 0.15) !important;
+}
+
+/* Dark mode compatible shadow variables */
+:root {
+  --card-hover-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+[data-bs-theme="dark"] {
+  --card-hover-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.1);
+}

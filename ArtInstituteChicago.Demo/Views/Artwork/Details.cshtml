@@ -1,0 +1,82 @@
+@model ArtInstituteChicago.Client.Models.Collections.ArtWork
+
+<div class="container py-5">
+    @if (Model != null)
+    {
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="position-relative">
+                    @if (!string.IsNullOrEmpty(Model.ImageId))
+                    {
+                        <img src="https://www.artic.edu/iiif/2/@Model.ImageId/full/843,/0/default.jpg"
+                             class="img-fluid rounded shadow-lg w-100 mb-3" alt="@Model.Title" />
+                    }
+                    else
+                    {
+                        <div class="bg-body-secondary rounded d-flex align-items-center justify-content-center shadow-lg" style="min-height:400px;">
+                            <div class="text-center text-body-tertiary">
+                                <i class="bi bi-image display-1 mb-3"></i>
+                                <h4>No Image Available</h4>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-lg h-100">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h1 class="h3 fw-bold text-body-emphasis mb-3">@Model.Title</h1>
+                        @if (!string.IsNullOrEmpty(Model.ArtistDisplay))
+                        {
+                            <p class="h5 text-body-secondary mb-2">
+                                <i class="bi bi-person-circle me-2"></i>@Model.ArtistDisplay
+                            </p>
+                        }
+                        <dl class="row small mb-4">
+                            @if (!string.IsNullOrEmpty(Model.DateDisplay))
+                            {
+                                <dt class="col-5 text-body-secondary"><i class="bi bi-calendar3 me-1"></i>Date:</dt>
+                                <dd class="col-7">@Model.DateDisplay</dd>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.MediumDisplay))
+                            {
+                                <dt class="col-5 text-body-secondary"><i class="bi bi-brush me-1"></i>Medium:</dt>
+                                <dd class="col-7">@Model.MediumDisplay</dd>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.Dimensions))
+                            {
+                                <dt class="col-5 text-body-secondary"><i class="bi bi-rulers me-1"></i>Dimensions:</dt>
+                                <dd class="col-7">@Model.Dimensions</dd>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.DepartmentTitle))
+                            {
+                                <dt class="col-5 text-body-secondary"><i class="bi bi-building me-1"></i>Department:</dt>
+                                <dd class="col-7">@Model.DepartmentTitle</dd>
+                            }
+                        </dl>
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            <div class="mb-3">
+                                <h5 class="fw-bold mb-2">Description</h5>
+                                <div class="lead">@Html.Raw(Model.Description)</div>
+                            </div>
+                        }
+                        <div class="mt-auto">
+                            <a href="@Url.Action("Index")" class="btn btn-outline-primary">
+                                <i class="bi bi-arrow-left me-2"></i>Back to Artworks
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger mt-5">
+            <h4>Artwork Not Found</h4>
+            <p>The requested artwork could not be found.</p>
+            <a href="@Url.Action("Index")" class="btn btn-secondary">← Back to Artworks</a>
+        </div>
+    }
+</div>

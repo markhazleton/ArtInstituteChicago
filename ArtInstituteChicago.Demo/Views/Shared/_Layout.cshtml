@@ -1,0 +1,110 @@
+﻿@using WebSpark.Bootswatch.Services
+@using WebSpark.Bootswatch.Helpers
+@inject StyleCache StyleCache
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="@(BootswatchThemeHelper.GetCurrentColorMode(Context))">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - WebSpark.ArtSpark</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="~/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="~/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="~/apple-touch-icon.png">
+    <link rel="manifest" href="~/site.webmanifest">
+    <script type="importmap"></script> @{
+        var themeName = BootswatchThemeHelper.GetCurrentThemeName(Context);
+    var themeUrl = BootswatchThemeHelper.GetThemeUrl(StyleCache, themeName);
+        }
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+    <link id="bootswatch-theme-stylesheet" rel="stylesheet" href="@themeUrl" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ArtInstituteChicago.Demo.styles.css" asp-append-version="true" />
+    <script src="/_content/WebSpark.Bootswatch/js/bootswatch-theme-switcher.js"></script>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom shadow-sm mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/img/WebSparkArtSpark.png" alt="WebSpark.ArtSpark Logo" style="height:2.5rem;width:auto;" class="me-2" />
+                    WebSpark.ArtSpark
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house me-1"></i>Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Artwork" asp-action="Index">
+                                <i class="bi bi-collection me-1"></i>Artworks
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Artwork" asp-action="Featured">
+                                <i class="bi bi-star me-1"></i>Featured
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
+                                <i class="bi bi-shield-check me-1"></i>Privacy
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center gap-2">
+                        <bootswatch-theme-switcher />
+                        <form class="d-flex" asp-controller="Artwork" asp-action="Search" method="get" role="search">
+                            <div class="input-group">
+                                <input class="form-control" type="search" name="q" placeholder="Search artworks..."
+                                    aria-label="Search artworks">
+                                <button class="btn btn-outline-primary" type="submit">
+                                    <i class="bi bi-search"></i>
+                                    <span class="d-none d-md-inline ms-1">Search</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid px-3 px-lg-4">
+        <main role="main" class="pb-4">
+            @RenderBody()
+        </main>
+    </div>
+    <footer class="bg-body-tertiary border-top mt-auto py-4">
+        <div class="container-fluid px-3 px-lg-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0 text-body-secondary">
+                        <i class="bi bi-c-circle me-1"></i>2025 - WebSpark.ArtSpark
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a asp-area="" asp-controller="Home" asp-action="Privacy"
+                        class="text-decoration-none text-body-secondary">
+                        <i class="bi bi-shield-check me-1"></i>Privacy Policy
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>
+
+
+
+
