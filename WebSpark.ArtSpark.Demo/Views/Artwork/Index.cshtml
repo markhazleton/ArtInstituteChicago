@@ -1,0 +1,173 @@
+@model ApiResponse<ArtWork>
+@{
+    ViewData["Title"] = "Artworks";
+}
+
+<div class="container-fluid">
+    <div class="row align-items-center mb-4">
+        <div class="col-12 col-md-8">
+            <h1 class="h2 fw-bold text-body-emphasis mb-2">
+                <i class="bi bi-collection me-2"></i>Artworks Collection
+            </h1>
+            <p class="text-body-secondary mb-0">Explore our extensive WebSpark.ArtSpark collection of masterpieces</p>
+        </div>
+        <div class="col-12 col-md-4 mt-3 mt-md-0">
+            <div class="d-grid d-md-flex justify-content-md-end gap-2">
+                <a href="@Url.Action("Featured")" class="btn btn-outline-primary">
+                    <i class="bi bi-star me-1"></i>Featured
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model?.Data != null && Model.Data.Any())
+{
+    <div class="row g-4">
+        @foreach (var artwork in Model.Data)
+        {
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <div class="card h-100 shadow-sm border-0">
+                    @if (!string.IsNullOrEmpty(artwork.ImageId))
+                    {
+                        <div class="position-relative overflow-hidden">                            <img src="https://www.artic.edu/iiif/2/@artwork.ImageId/full/400,/0/default.jpg" 
+                                 class="card-img-top object-fit-cover aspect-ratio-4-3" 
+                                 alt="@artwork.Title">
+                        </div>
+                    }
+                    else
+                    {                        <div class="card-img-top bg-body-secondary d-flex align-items-center justify-content-center text-body-tertiary aspect-ratio-4-3">
+                            <div class="text-center">
+                                <i class="bi bi-image display-6 mb-2"></i>
+                                <p class="mb-0 small">No Image</p>
+                            </div>
+                        </div>
+                    }
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="card-title text-truncate" title="@artwork.Title">
+                            @(artwork.Title?.Length > 50 ? artwork.Title.Substring(0, 50) + "..." : artwork.Title)
+                        </h6>
+                        @if (!string.IsNullOrEmpty(artwork.ArtistDisplay))
+                        {
+                            <p class="card-text text-body-secondary small mb-2" title="@artwork.ArtistDisplay">
+                                @(artwork.ArtistDisplay.Length > 40 ? artwork.ArtistDisplay.Substring(0, 40) + "..." : artwork.ArtistDisplay)
+                            </p>
+                        }
+                        @if (!string.IsNullOrEmpty(artwork.DateDisplay))
+                        {
+                            <p class="card-text mb-3">
+                                <small class="text-body-tertiary">@artwork.DateDisplay</small>
+                            </p>
+                        }
+                        <div class="mt-auto">
+                            <a href="@Url.Action("Details", new { id = artwork.Id })" 
+                               class="btn btn-outline-primary btn-sm w-100">
+                                <i class="bi bi-eye me-1"></i>View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>    @if (Model.Pagination != null)
+    {
+        <div class="d-flex flex-column align-items-center mt-5">
+            <nav aria-label="Artwork pagination" class="mb-3">
+                <ul class="pagination">
+                    @if (Model.Pagination.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage - 1 })">
+                                <i class="bi bi-chevron-left me-1"></i>Previous
+                            </a>
+                        </li>
+                    }
+
+                    @{
+                        int startPage = Math.Max(1, Model.Pagination.CurrentPage - 2);
+                        int endPage = Math.Min(Model.Pagination.TotalPages, Model.Pagination.CurrentPage + 2);
+                    }
+
+                    @if (startPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = 1 })">1</a>
+                        </li>
+                        @if (startPage > 2)
+                        {
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        }
+                    }
+
+                    @for (int i = startPage; i <= endPage; i++)
+                    {
+                        <li class="page-item @(i == Model.Pagination.CurrentPage ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                        </li>
+                    }
+
+                    @if (endPage < Model.Pagination.TotalPages)
+                    {
+                        @if (endPage < Model.Pagination.TotalPages - 1)
+                        {
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        }
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = Model.Pagination.TotalPages })">@Model.Pagination.TotalPages</a>
+                        </li>
+                    }
+
+                    @if (Model.Pagination.CurrentPage < Model.Pagination.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage + 1 })">
+                                Next<i class="bi bi-chevron-right ms-1"></i>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+
+            <div class="text-body-secondary">
+                <small>
+                    <i class="bi bi-info-circle me-1"></i>
+                    Showing @((Model.Pagination.CurrentPage - 1) * Model.Pagination.Limit + 1) to 
+                    @(Math.Min(Model.Pagination.CurrentPage * Model.Pagination.Limit, Model.Pagination.Total)) 
+                    of @Model.Pagination.Total artworks
+                </small>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+                        </div>
+                        <h4 class="card-title text-body-emphasis mb-3">No Artworks Found</h4>
+                        <p class="card-text text-body-secondary mb-4">
+                            We couldn't find any artworks at the moment. Please try again later or check your connection.
+                        </p>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                            <button onclick="location.reload()" class="btn btn-primary">
+                                <i class="bi bi-arrow-clockwise me-2"></i>Try Again
+                            </button>
+                            <a href="@Url.Action("Featured")" class="btn btn-outline-primary">
+                                <i class="bi bi-star me-2"></i>Browse Featured
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

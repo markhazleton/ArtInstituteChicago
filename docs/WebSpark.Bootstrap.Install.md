@@ -198,8 +198,8 @@ Ensure development environment has the same configuration:
 Add the required using statements at the top of `Program.cs`:
 
 ```csharp
-using ArtInstituteChicago.Client.Clients;
-using ArtInstituteChicago.Client.Interfaces;
+using WebSpark.ArtSpark.Client.Clients;
+using WebSpark.ArtSpark.Client.Interfaces;
 using WebSpark.Bootswatch;
 using WebSpark.HttpClientUtility.ClientService;
 using WebSpark.HttpClientUtility.RequestResult;
@@ -295,8 +295,8 @@ The order of service registration is important:
 Add the WebSpark.Bootswatch tag helpers:
 
 ```razor
-@using ArtInstituteChicago.Demo
-@using ArtInstituteChicago.Demo.Models
+@using WebSpark.ArtSpark.Demo
+@using WebSpark.ArtSpark.Demo.Models
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, WebSpark.Bootswatch
 ```
@@ -325,7 +325,7 @@ Here's the complete layout file with WebSpark.Bootswatch integration:
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ArtInstituteChicago Demo</title>
+    <title>@ViewData["Title"] - WebSpark.ArtSpark Demo</title>
     
     <!-- Dynamic Bootswatch Theme CSS -->
     <link rel="stylesheet" href="@await BootswatchThemeHelper.GetThemeBootstrapUrlAsync()" />
@@ -337,7 +337,7 @@ Here's the complete layout file with WebSpark.Bootswatch integration:
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ArtInstituteChicago Demo</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebSpark.ArtSpark Demo</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -376,7 +376,7 @@ Here's the complete layout file with WebSpark.Bootswatch integration:
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; @DateTime.Now.Year - ArtInstituteChicago Demo - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; @DateTime.Now.Year - WebSpark.ArtSpark Demo - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 
@@ -1003,7 +1003,7 @@ public async Task ThemeSwitcher_RendersCorrectly()
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0.0 | 2025-05-30 | Initial comprehensive installation guide |
-| | | Complete implementation with ArtInstituteChicago.Demo |
+| | | Complete implementation with WebSpark.ArtSpark.Demo |
 | | | Detailed troubleshooting and best practices |
 | | | Performance optimization guidelines |
 

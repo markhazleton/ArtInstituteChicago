@@ -1,0 +1,202 @@
+@using WebSpark.ArtSpark.Client.Models.Collections
+@using WebSpark.ArtSpark.Client.Models.Common
+@{
+    ViewData["Title"] = "Art Style Comparison";
+    var comparisonResults = ViewBag.ComparisonResults as Dictionary<ArtStyle, IEnumerable<ArtWork>>;
+}
+
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row align-items-center mb-4">
+        <div class="col-12 col-md-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" asp-action="Index" class="text-decoration-none">
+                            <i class="bi bi-house me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-controller="ArtworkFilter" asp-action="Index" class="text-decoration-none">
+                            <i class="bi bi-funnel me-1"></i>Filters
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Style Comparison</li>
+                </ol>
+            </nav>
+            <h1 class="h2 fw-bold text-body-emphasis mb-2">
+                <i class="bi bi-bar-chart me-2"></i>Art Style Comparison
+            </h1>
+            <p class="text-body-secondary mb-0">Compare artworks across different artistic movements and styles</p>
+        </div>
+        <div class="col-12 col-md-4 mt-3 mt-md-0">
+            <div class="d-grid d-md-flex justify-content-md-end gap-2">
+                <a asp-controller="ArtworkFilter" asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Back to Filters
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage as string))
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            @ViewBag.ErrorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (comparisonResults != null && comparisonResults.Any())
+    {
+        <!-- Style Comparison Grid -->
+        <div class="row g-4">
+            @{
+                var colorClasses = new[] { "primary", "success", "info", "warning" };
+                var iconClasses = new[] { "bi-palette", "bi-brush", "bi-easel", "bi-paint-bucket" };
+                var index = 0;
+            }
+            @foreach (var styleResult in comparisonResults)
+            {
+                var colorClass = colorClasses[index % colorClasses.Length];
+                var iconClass = iconClasses[index % iconClasses.Length];
+                
+                <div class="col-12 col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-@colorClass text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi @iconClass me-2"></i>@styleResult.Key.GetDescription()
+                                </h5>
+                                <span class="badge bg-light text-@colorClass">
+                                    @styleResult.Value.Count() artworks
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            @if (styleResult.Value.Any())
+                            {
+                                <div class="row g-0">
+                                    @foreach (var artwork in styleResult.Value.Take(6))
+                                    {
+                                        <div class="col-6 col-md-4">
+                                            <div class="position-relative artwork-thumbnail">
+                                                @if (!string.IsNullOrEmpty(artwork.ImageId))
+                                                {                                                    <img src="https://www.artic.edu/iiif/2/@artwork.ImageId/full/300,/0/default.jpg" 
+                                                         class="w-100 object-fit-cover style-comparison-image" 
+                                                         alt="@artwork.Title"
+                                                         loading="lazy">
+                                                }
+                                                else
+                                                {                                                    <div class="w-100 bg-body-secondary d-flex align-items-center justify-content-center text-body-tertiary style-comparison-image image-error">
+                                                        <i class="bi bi-image"></i>
+                                                    </div>
+                                                }
+                                                <div class="position-absolute bottom-0 start-0 end-0 bg-dark bg-opacity-75 text-white p-2">
+                                                    <h6 class="mb-0 small" title="@artwork.Title">
+                                                        @(artwork.Title?.Length > 30 ? artwork.Title.Substring(0, 30) + "..." : artwork.Title)
+                                                    </h6>
+                                                    @if (!string.IsNullOrEmpty(artwork.ArtistDisplay))
+                                                    {                                                        <p class="mb-0 text-white-50 small-text">
+                                                            @(artwork.ArtistDisplay.Length > 25 ? artwork.ArtistDisplay.Substring(0, 25) + "..." : artwork.ArtistDisplay)
+                                                        </p>
+                                                    }
+                                                </div>
+                                                <a asp-controller="Artwork" asp-action="Details" asp-route-id="@artwork.Id" 
+                                                   class="stretched-link" aria-label="View details for @artwork.Title"></a>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="p-3 bg-body-tertiary">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-body-secondary">
+                                            Showing @Math.Min(6, styleResult.Value.Count()) of @styleResult.Value.Count() artworks
+                                        </small>
+                                        <a asp-controller="ArtworkFilter" asp-action="ByStyle" asp-route-style="@styleResult.Key" 
+                                           class="btn btn-outline-@colorClass btn-sm">
+                                            <i class="bi bi-eye me-1"></i>View All
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {                                <div class="p-4 text-center text-body-secondary">
+                                    <i class="bi bi-search mb-2"></i>
+                                    <p class="mb-0">No artworks found for this style</p>
+                                </div>
+                            }                        </div>
+                    </div>
+                </div>
+                index++;
+            }
+        </div>
+
+        <!-- Summary Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-graph-up me-2"></i>Comparison Summary
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <h6 class="fw-semibold mb-3">Style Statistics</h6>
+                                <div class="list-group list-group-flush">
+                                    @foreach (var styleResult in comparisonResults.OrderByDescending(x => x.Value.Count()))
+                                    {
+                                        var percentage = comparisonResults.Sum(x => x.Value.Count()) > 0 
+                                            ? (styleResult.Value.Count() * 100.0 / comparisonResults.Sum(x => x.Value.Count()))
+                                            : 0;
+                                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                            <span>@styleResult.Key.GetDescription()</span>
+                                            <div class="d-flex align-items-center gap-2">                                                <div class="progress style-progress">
+                                                    <div class="progress-bar" role="progressbar" style="width: @percentage%" 
+                                                         aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                                <span class="badge bg-secondary">@styleResult.Value.Count()</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <h6 class="fw-semibold mb-3">Quick Actions</h6>
+                                <div class="d-grid gap-2">
+                                    @foreach (var styleResult in comparisonResults.Take(3))
+                                    {
+                                        <a asp-controller="ArtworkFilter" asp-action="ByStyle" asp-route-style="@styleResult.Key" 
+                                           class="btn btn-outline-primary btn-sm text-start">
+                                            <i class="bi bi-arrow-right me-2"></i>Explore all @styleResult.Key.GetDescription() artworks
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- No Results -->
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="bi bi-bar-chart display-1 text-body-secondary"></i>
+            </div>
+            <h3 class="h4 text-body-emphasis mb-3">No Comparison Data</h3>
+            <p class="text-body-secondary mb-4">
+                Please select at least one art style to compare from the filters page.
+            </p>
+            <a asp-controller="ArtworkFilter" asp-action="Index" class="btn btn-primary">
+                <i class="bi bi-funnel me-1"></i>Go to Filters
+            </a>
+        </div>
+    }
+</div>
+
+

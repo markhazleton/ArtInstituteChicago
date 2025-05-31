@@ -1,4 +1,4 @@
-# Art Institute of Chicago API Client
+# WebSpark.ArtSpark
 
 **A comprehensive .NET client library for the Art Institute of Chicago's public API, providing access to all available endpoints across Collections, Shop, Mobile, Digital Scholarly Catalogs, Static Archive, and Website resources.**
 
@@ -41,8 +41,8 @@ This solution provides a complete .NET client library and console application fo
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/MarkHazleton/ArtInstituteChicago.git
-cd ArtInstituteChicago
+git clone https://github.com/MarkHazleton/WebSpark.ArtSpark.git
+cd WebSpark.ArtSpark
 ```
 
 1. Build the solution:
@@ -54,14 +54,14 @@ dotnet build
 1. Run the console demo:
 
 ```bash
-dotnet run --project ArtInstituteChicago.Console
+dotnet run --project WebSpark.ArtSpark.Console
 ```
 
 ### Basic Usage
 
 ```csharp
-using ArtInstituteChicago.Client.Clients;
-using ArtInstituteChicago.Client.Models.Common;
+using WebSpark.ArtSpark.Client.Clients;
+using WebSpark.ArtSpark.Client.Models.Common;
 
 // Create HTTP client and API client
 var httpClient = new HttpClient();
@@ -143,7 +143,7 @@ The client provides complete coverage of the Art Institute of Chicago API:
 ### Search for Artworks
 
 ```csharp
-using ArtInstituteChicago.Client.Models.Common;
+using WebSpark.ArtSpark.Client.Models.Common;
 
 // Full-text search
 var searchQuery = new SearchQuery 
@@ -263,8 +263,8 @@ var products = await client.GetProductsAsync(new ApiQuery { Limit = 20 });
 ## Project Structure
 
 ```text
-ArtInstituteChicago/
-├── ArtInstituteChicago.Client/          # Main client library
+WebSpark.ArtSpark/
+├── WebSpark.ArtSpark.Client/            # Main client library
 │   ├── Clients/
 │   │   └── ArtInstituteClient.cs        # Complete API client implementation
 │   ├── Interfaces/
@@ -277,7 +277,8 @@ ArtInstituteChicago/
 │       ├── StaticArchive/               # Archive resource models
 │       ├── Website/                     # Website resource models
 │       └── Common/                      # Shared models and utilities
-├── ArtInstituteChicago.Console/         # Demo console application
+├── WebSpark.ArtSpark.Console/           # Console application
+├── WebSpark.ArtSpark.Demo/              # Demo web application
 └── README.md                           # This file
 ```
 
@@ -362,7 +363,7 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 If you encounter any issues or have questions:
 
 1. Check the [API documentation](https://api.artic.edu/docs/)
-2. Search existing [GitHub issues](https://github.com/MarkHazleton/ArtInstituteChicago/issues)
+2. Search existing [GitHub issues](https://github.com/MarkHazleton/WebSpark.ArtSpark/issues)
 3. Create a new issue if needed
 
 ## License
