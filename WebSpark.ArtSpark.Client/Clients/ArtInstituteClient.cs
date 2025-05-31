@@ -216,6 +216,7 @@ public class ArtInstituteClient : IArtInstituteClient
             Q = style.GetDescription(),
             Size = limit ?? 25,
             From = page.HasValue && page > 1 ? (page.Value - 1) * (limit ?? 25) : 0,
+            Fields = "id,title,artist_display,date_display,medium_display,dimensions,image_id,thumbnail,style_title,style_titles,classification_title,place_of_origin",
             Query = new
             {
                 bool_ = new
@@ -247,6 +248,7 @@ public class ArtInstituteClient : IArtInstituteClient
             Q = medium.GetDescription(),
             Size = limit ?? 25,
             From = page.HasValue && page > 1 ? (page.Value - 1) * (limit ?? 25) : 0,
+            Fields = "id,title,artist_display,date_display,medium_display,dimensions,image_id,thumbnail,style_title,style_titles,classification_title,place_of_origin",
             Query = new
             {
                 bool_ = new
@@ -278,6 +280,7 @@ public class ArtInstituteClient : IArtInstituteClient
             Q = classification.GetDescription(),
             Size = limit ?? 25,
             From = page.HasValue && page > 1 ? (page.Value - 1) * (limit ?? 25) : 0,
+            Fields = "id,title,artist_display,date_display,medium_display,dimensions,image_id,thumbnail,style_title,style_titles,classification_title,place_of_origin",
             Query = new
             {
                 bool_ = new
@@ -311,6 +314,7 @@ public class ArtInstituteClient : IArtInstituteClient
             Q = $"{style.GetDescription()} {medium.GetDescription()}",
             Size = limit ?? 25,
             From = page.HasValue && page > 1 ? (page.Value - 1) * (limit ?? 25) : 0,
+            Fields = "id,title,artist_display,date_display,medium_display,dimensions,image_id,thumbnail,style_title,style_titles,classification_title,place_of_origin",
             Query = new
             {
                 bool_ = new

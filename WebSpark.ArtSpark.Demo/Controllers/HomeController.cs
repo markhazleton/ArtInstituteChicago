@@ -19,6 +19,8 @@ public class HomeController : Controller
     }
     public async Task<IActionResult> Index()
     {
+        _logger.LogInformation("Home page requested at {RequestTime}", DateTime.Now);
+
         try
         {
             // Get featured artworks for the home page

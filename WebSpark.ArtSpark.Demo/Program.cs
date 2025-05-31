@@ -5,6 +5,7 @@ using WebSpark.ArtSpark.Demo.Data;
 using WebSpark.ArtSpark.Demo.HttpClientUtility.MemoryCache;
 using WebSpark.ArtSpark.Demo.Models;
 using WebSpark.ArtSpark.Demo.Services;
+using WebSpark.ArtSpark.Demo.Utilities;
 using WebSpark.Bootswatch;
 using WebSpark.HttpClientUtility.ClientService;
 using WebSpark.HttpClientUtility.RequestResult;
@@ -14,6 +15,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog logging
+builder.ConfigureLogging();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

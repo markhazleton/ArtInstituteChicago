@@ -25,10 +25,9 @@
 
 <body class="d-flex flex-column min-vh-100">
     <header>
-        <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom shadow-sm mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" asp-area=""
-                    asp-controller="Home" asp-action="Index">
+        <nav class="navbar navbar-expand-lg bg-primary navbar-dark border-bottom shadow-sm mb-3">
+            <div class="container-fluid"> <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2"
+                    asp-area="" asp-controller="Home" asp-action="Index">
                     <img src="~/img/WebSparkArtSpark.png" alt="WebSpark.ArtSpark Logo" style="height:2.5rem;width:auto;"
                         class="me-2" />
                     WebSpark.ArtSpark
@@ -44,10 +43,47 @@
                                 <i class="bi bi-house me-1"></i>Home
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Artwork" asp-action="Index">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
                                 <i class="bi bi-collection me-1"></i>Artworks
                             </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Artwork" asp-action="Index">
+                                        <i class="bi bi-collection me-2"></i>All Artworks
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Artwork" asp-action="Featured">
+                                        <i class="bi bi-star me-2"></i>Featured
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <h6 class="dropdown-header">Browse by Category</h6>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="ByStyle"
+                                        asp-route-style="Impressionism">
+                                        <i class="bi bi-palette me-2"></i>Impressionism
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="ByMedium"
+                                        asp-route-medium="OilOnCanvas">
+                                        <i class="bi bi-brush me-2"></i>Oil Paintings
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="ArtworkFilter"
+                                        asp-action="ByClassification" asp-route-classification="Sculpture">
+                                        <i class="bi bi-box me-2"></i>Sculptures
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -95,26 +131,94 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Artwork" asp-action="Featured">
-                                <i class="bi bi-star me-1"></i>Featured
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
-                                <i class="bi bi-shield-check me-1"></i>Privacy
-                            </a>
-                        </li>
-                    </ul>
+                    </ul> <!-- Mobile-first responsive navigation -->
                     <div class="d-flex align-items-center gap-2">
-                        @if (User.Identity!.IsAuthenticated)
-                        {
-                            <div class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                    <i class="bi bi-person-circle me-1"></i>@User.Identity.Name
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end">
+                        <!-- Search Form - Visible on desktop, hidden on mobile -->
+                        <form class="d-none d-lg-flex" asp-controller="Artwork" asp-action="Search" method="get"
+                            role="search">
+                            <div class="input-group">
+                                <input class="form-control" type="search" name="q" placeholder="Search artworks..."
+                                    aria-label="Search artworks">
+                                <button class="btn btn-outline-primary" type="submit">
+                                    <i class="bi bi-search"></i>
+                                    <span class="ms-1">Search</span>
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Theme Switcher - Desktop -->
+                        <div class="d-none d-lg-block">
+                            <bootswatch-theme-switcher dropdown-toggle-text="Theme"
+                                dropdown-toggle-class="btn btn-outline-secondary dropdown-toggle"
+                                dropdown-menu-class="dropdown-menu dropdown-menu-end"
+                                dropdown-item-class="dropdown-item" />
+                        </div>
+
+                        <!-- Light/Dark Mode Toggle - Desktop -->
+                        <button class="btn btn-outline-secondary d-none d-lg-flex align-items-center" type="button"
+                            onclick="toggleColorMode()" id="color-mode-toggle-desktop" aria-label="Toggle color mode">
+                            <i class="bi bi-moon" id="color-mode-icon-desktop"></i>
+                            <span class="ms-1" id="color-mode-text-desktop">Dark</span>
+                        </button> <!-- Consolidated Navigation Dropdown -->
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false" aria-label="Navigation menu">
+                                @if (User.Identity!.IsAuthenticated)
+                                {
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    <span class="d-none d-sm-inline">@User.Identity.Name</span>
+                                    <span class="d-sm-none">Menu</span>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-three-dots-vertical me-1"></i>
+                                    <span class="d-none d-sm-inline">Menu</span>
+                                }
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="min-width: 250px;">
+                                <!-- Search - Mobile only -->
+                                <li class="d-lg-none">
+                                    <form asp-controller="Artwork" asp-action="Search" method="get" class="px-3 py-2">
+                                        <div class="input-group input-group-sm">
+                                            <input class="form-control" type="search" name="q"
+                                                placeholder="Search artworks..." aria-label="Search artworks">
+                                            <button class="btn btn-outline-primary" type="submit">
+                                                <i class="bi bi-search"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+                                <!-- Theme Controls - Mobile only -->
+                                <li class="d-lg-none">
+                                    <h6 class="dropdown-header"><i class="bi bi-palette me-2"></i>Appearance</h6>
+                                </li>
+                                <li class="d-lg-none">
+                                    <div class="px-3 py-1">
+                                        <bootswatch-theme-switcher dropdown-toggle-text="Choose Theme"
+                                            dropdown-toggle-class="btn btn-sm btn-outline-secondary dropdown-toggle w-100"
+                                            dropdown-menu-class="dropdown-menu dropdown-menu-end"
+                                            dropdown-item-class="dropdown-item" />
+                                    </div>
+                                </li>
+                                <li class="d-lg-none">
+                                    <button class="dropdown-item" type="button" onclick="toggleColorMode()"
+                                        id="color-mode-toggle-mobile">
+                                        <i class="bi bi-moon me-2" id="color-mode-icon-mobile"></i>
+                                        <span id="color-mode-text-mobile">Dark Mode</span>
+                                    </button>
+                                </li>
+                                <li class="d-lg-none">
+                                    <hr class="dropdown-divider">
+                                </li>
+
+                                @if (User.Identity!.IsAuthenticated)
+                                {
+                                    <!-- Authenticated User Options -->
+                                    <li>
+                                        <h6 class="dropdown-header"><i class="bi bi-person me-2"></i>Account</h6>
+                                    </li>
                                     <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
                                     <li><a class="dropdown-item" href="#"><i class="bi bi-heart me-2"></i>My Favorites</a>
                                     </li>
@@ -124,35 +228,33 @@
                                         <hr class="dropdown-divider">
                                     </li>
                                     <li>
-                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                            <button type="submit" class="dropdown-item">
+                                        <form asp-controller="Account" asp-action="Logout" method="post"
+                                            class="d-inline w-100">
+                                            <button type="submit" class="dropdown-item text-danger">
                                                 <i class="bi bi-box-arrow-right me-2"></i>Sign Out
                                             </button>
                                         </form>
                                     </li>
-                                </ul>
-                            </div>
-                        }
-                        else
-                        {
-                            <a class="btn btn-outline-primary btn-sm" asp-controller="Account" asp-action="Login">
-                                <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
-                            </a>
-                            <a class="btn btn-primary btn-sm" asp-controller="Account" asp-action="Register">
-                                <i class="bi bi-person-plus me-1"></i>Register
-                            </a>
-                        }
-                        <bootswatch-theme-switcher />
-                        <form class="d-flex" asp-controller="Artwork" asp-action="Search" method="get" role="search">
-                            <div class="input-group">
-                                <input class="form-control" type="search" name="q" placeholder="Search artworks..."
-                                    aria-label="Search artworks">
-                                <button class="btn btn-outline-primary" type="submit">
-                                    <i class="bi bi-search"></i>
-                                    <span class="d-none d-md-inline ms-1">Search</span>
-                                </button>
-                            </div>
-                        </form>
+                                }
+                                else
+                                {
+                                    <!-- Authentication Options -->
+                                    <li>
+                                        <h6 class="dropdown-header"><i class="bi bi-key me-2"></i>Account</h6>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="Login">
+                                            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="Register">
+                                            <i class="bi bi-person-plus me-2"></i>Register
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -163,7 +265,7 @@
             @RenderBody()
         </main>
     </div>
-    <footer class="bg-body-tertiary border-top mt-auto py-4">
+    <footer class="bg-dark text-light border-top mt-auto py-4">
         <div class="container-fluid px-3 px-lg-4">
             <div class="row align-items-center">
                 <div class="col-md-6">
@@ -184,12 +286,180 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/reviews.js" asp-append-version="true"></script>
+    <!-- Enhanced Navigation and Color Mode Scripts -->
+    <script>
+        (function ()
+        {
+            'use strict';
+
+            // Get the current color mode from the HTML data attribute
+            function getCurrentColorMode()
+            {
+                return document.documentElement.getAttribute('data-bs-theme') || 'light';
+            }
+
+            // Set the color mode
+            function setColorMode(mode)
+            {
+                document.documentElement.setAttribute('data-bs-theme', mode);
+                localStorage.setItem('color-mode', mode);
+                updateColorModeUI(mode);
+
+                // Dispatch custom event for other components to listen to
+                window.dispatchEvent(new CustomEvent('colorModeChanged', {
+                    detail: { mode: mode }
+                }));
+            }
+
+            // Update the UI elements for both desktop and mobile
+            function updateColorModeUI(mode)
+            {
+                // Desktop version
+                const desktopIcon = document.getElementById('color-mode-icon-desktop');
+                const desktopText = document.getElementById('color-mode-text-desktop');
+
+                // Mobile version
+                const mobileIcon = document.getElementById('color-mode-icon-mobile');
+                const mobileText = document.getElementById('color-mode-text-mobile');
+
+                if (mode === 'dark')
+                {
+                    // Update desktop elements
+                    if (desktopIcon) desktopIcon.className = 'bi bi-sun';
+                    if (desktopText) desktopText.textContent = 'Light';
+
+                    // Update mobile elements
+                    if (mobileIcon) mobileIcon.className = 'bi bi-sun me-2';
+                    if (mobileText) mobileText.textContent = 'Light Mode';
+                } else
+                {
+                    // Update desktop elements
+                    if (desktopIcon) desktopIcon.className = 'bi bi-moon';
+                    if (desktopText) desktopText.textContent = 'Dark';
+
+                    // Update mobile elements
+                    if (mobileIcon) mobileIcon.className = 'bi bi-moon me-2';
+                    if (mobileText) mobileText.textContent = 'Dark Mode';
+                }
+            }
+
+            // Toggle color mode (accessible from both desktop and mobile)
+            window.toggleColorMode = function ()
+            {
+                const currentMode = getCurrentColorMode();
+                const newMode = currentMode === 'dark' ? 'light' : 'dark';
+                setColorMode(newMode);
+            };
+
+            // Close dropdown on outside click (mobile enhancement)
+            function closeDropdownOnOutsideClick()
+            {
+                document.addEventListener('click', function (event)
+                {
+                    const dropdowns = document.querySelectorAll('.dropdown-menu.show');
+                    dropdowns.forEach(function (dropdown)
+                    {
+                        const toggle = dropdown.previousElementSibling;
+                        if (toggle && !toggle.contains(event.target) && !dropdown.contains(event.target))
+                        {
+                            const bsDropdown = bootstrap.Dropdown.getInstance(toggle);
+                            if (bsDropdown)
+                            {
+                                bsDropdown.hide();
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Keyboard navigation enhancement
+            function enhanceKeyboardNavigation()
+            {
+                document.addEventListener('keydown', function (event)
+                {
+                    // Close dropdown on Escape key
+                    if (event.key === 'Escape')
+                    {
+                        const openDropdowns = document.querySelectorAll('.dropdown-menu.show');
+                        openDropdowns.forEach(function (dropdown)
+                        {
+                            const toggle = dropdown.previousElementSibling;
+                            const bsDropdown = bootstrap.Dropdown.getInstance(toggle);
+                            if (bsDropdown)
+                            {
+                                bsDropdown.hide();
+                                toggle.focus(); // Return focus to toggle
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Initialize on page load
+            document.addEventListener('DOMContentLoaded', function ()
+            {
+                const savedMode = localStorage.getItem('color-mode');
+                const currentMode = getCurrentColorMode();
+
+                // Use saved mode if available, otherwise use current mode
+                const modeToUse = savedMode || currentMode;
+                if (modeToUse !== currentMode)
+                {
+                    setColorMode(modeToUse);
+                } else
+                {
+                    updateColorModeUI(currentMode);
+                }
+
+                // Initialize mobile enhancements
+                closeDropdownOnOutsideClick();
+                enhanceKeyboardNavigation();
+
+                // Add loading state to theme switcher when themes change
+                const themeButtons = document.querySelectorAll('[data-bs-theme-value]');
+                themeButtons.forEach(function (button)
+                {
+                    button.addEventListener('click', function ()
+                    {
+                        const switcher = button.closest('.dropdown');
+                        if (switcher)
+                        {
+                            switcher.classList.add('theme-loading');
+                            setTimeout(function ()
+                            {
+                                switcher.classList.remove('theme-loading');
+                            }, 500);
+                        }
+                    });
+                });
+            });
+
+            // Handle window resize for responsive adjustments
+            let resizeTimer;
+            window.addEventListener('resize', function ()
+            {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function ()
+                {
+                    // Close any open dropdowns on significant resize
+                    if (window.innerWidth >= 992)
+                    { // Large screens
+                        const openDropdowns = document.querySelectorAll('.dropdown-menu.show');
+                        openDropdowns.forEach(function (dropdown)
+                        {
+                            const toggle = dropdown.previousElementSibling;
+                            const bsDropdown = bootstrap.Dropdown.getInstance(toggle);
+                            if (bsDropdown)
+                            {
+                                bsDropdown.hide();
+                            }
+                        });
+                    }
+                }, 150);
+            });
+        })();
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 
 </html>
-
-
-
-
-

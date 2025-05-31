@@ -32,9 +32,9 @@
                 <div class="card h-100 border-0 shadow-lg">
                     @if (!string.IsNullOrEmpty(artwork.ImageId))
                     {
-                        <div class="position-relative overflow-hidden">                            <img src="https://www.artic.edu/iiif/2/@artwork.ImageId/full/600,/0/default.jpg" 
-                                 class="card-img-top object-fit-cover aspect-ratio-4-3" 
-                                 alt="@artwork.Title">
+                        <div class="position-relative overflow-hidden"> <img
+                                src="https://www.artic.edu/iiif/2/@artwork.ImageId/full/600,/0/default.jpg"
+                                class="card-img-top object-fit-cover aspect-ratio-4-3" alt="@artwork.Title">
                             <div class="position-absolute top-0 end-0 m-3">
                                 <span class="badge bg-warning text-dark">
                                     <i class="bi bi-star-fill me-1"></i>Featured
@@ -43,7 +43,10 @@
                         </div>
                     }
                     else
-                    {                        <div class="card-img-top bg-body-secondary d-flex align-items-center justify-content-center text-body-tertiary aspect-ratio-4-3">
+                    {
+
+                        <div
+                            class="card-img-top bg-body-secondary d-flex align-items-center justify-content-center text-body-tertiary aspect-ratio-4-3">
                             <div class="text-center">
                                 <i class="bi bi-image display-5 mb-2"></i>
                                 <p class="mb-0">No Image Available</p>
@@ -74,9 +77,9 @@
                                 </small>
                             </p>
                         }
-                        <div class="mt-auto">
-                            <a href="@Url.Action("Details", new { id = artwork.Id })" 
-                               class="btn btn-primary w-100">
+         <div class="mt-auto">
+                            <a href="@Url.Action("Details", new { id = artwork.Id, returnUrl = Context.Request.Path + Context.Request.QueryString })"
+                                class="btn btn-primary w-100">
                                 <i class="bi bi-eye me-2"></i>View Details
                             </a>
                         </div>
@@ -114,7 +117,8 @@ else
                         </div>
                         <h4 class="card-title text-body-emphasis mb-3">No Featured Artworks Available</h4>
                         <p class="card-text text-body-secondary mb-4">
-                            We're currently updating our featured collection. Please check back later or explore our full collection.
+                            We're currently updating our featured collection. Please check back later or explore our full
+                            collection.
                         </p>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                             <a href="@Url.Action("Index")" class="btn btn-primary">

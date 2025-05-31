@@ -101,8 +101,8 @@
                                                             @(artwork.ArtistDisplay.Length > 25 ? artwork.ArtistDisplay.Substring(0, 25) + "..." : artwork.ArtistDisplay)
                                                         </p>
                                                     }
-                                                </div>
-                                                <a asp-controller="Artwork" asp-action="Details" asp-route-id="@artwork.Id" 
+                                                </div>                                                <a asp-controller="Artwork" asp-action="Details" asp-route-id="@artwork.Id" 
+                                                   asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"
                                                    class="stretched-link" aria-label="View details for @artwork.Title"></a>
                                             </div>
                                         </div>

@@ -30,13 +30,16 @@
                 <div class="card h-100 shadow-sm border-0">
                     @if (!string.IsNullOrEmpty(artwork.ImageId))
                     {
-                        <div class="position-relative overflow-hidden">                            <img src="https://www.artic.edu/iiif/2/@artwork.ImageId/full/400,/0/default.jpg" 
-                                 class="card-img-top object-fit-cover aspect-ratio-4-3" 
-                                 alt="@artwork.Title">
+                        <div class="position-relative overflow-hidden"> <img
+                                src="https://www.artic.edu/iiif/2/@artwork.ImageId/full/400,/0/default.jpg"
+                                class="card-img-top object-fit-cover aspect-ratio-4-3" alt="@artwork.Title">
                         </div>
                     }
                     else
-                    {                        <div class="card-img-top bg-body-secondary d-flex align-items-center justify-content-center text-body-tertiary aspect-ratio-4-3">
+                    {
+
+                        <div
+                            class="card-img-top bg-body-secondary d-flex align-items-center justify-content-center text-body-tertiary aspect-ratio-4-3">
                             <div class="text-center">
                                 <i class="bi bi-image display-6 mb-2"></i>
                                 <p class="mb-0 small">No Image</p>
@@ -50,18 +53,19 @@
                         @if (!string.IsNullOrEmpty(artwork.ArtistDisplay))
                         {
                             <p class="card-text text-body-secondary small mb-2" title="@artwork.ArtistDisplay">
-                                @(artwork.ArtistDisplay.Length > 40 ? artwork.ArtistDisplay.Substring(0, 40) + "..." : artwork.ArtistDisplay)
-                            </p>
-                        }
+                                @(artwork.ArtistDisplay.Length > 40 ? artwork.ArtistDisplay.Substring(0, 40) + "..." :
+                                                    artwork.ArtistDisplay)
+                </p>
+                                }
                         @if (!string.IsNullOrEmpty(artwork.DateDisplay))
                         {
                             <p class="card-text mb-3">
                                 <small class="text-body-tertiary">@artwork.DateDisplay</small>
                             </p>
                         }
-                        <div class="mt-auto">
-                            <a href="@Url.Action("Details", new { id = artwork.Id })" 
-                               class="btn btn-outline-primary btn-sm w-100">
+         <div class="mt-auto">
+                            <a href="@Url.Action("Details", new { id = artwork.Id, returnUrl = Context.Request.Path + Context.Request.QueryString })"
+                                class="btn btn-outline-primary btn-sm w-100">
                                 <i class="bi bi-eye me-1"></i>View Details
                             </a>
                         </div>
@@ -69,7 +73,7 @@
                 </div>
             </div>
         }
-    </div>    @if (Model.Pagination != null)
+    </div> @if (Model.Pagination != null)
     {
         <div class="d-flex flex-column align-items-center mt-5">
             <nav aria-label="Artwork pagination" class="mb-3">
@@ -117,7 +121,8 @@
                             </li>
                         }
                         <li class="page-item">
-                            <a class="page-link" href="@Url.Action("Index", new { page = Model.Pagination.TotalPages })">@Model.Pagination.TotalPages</a>
+                            <a class="page-link"
+                                href="@Url.Action("Index", new { page = Model.Pagination.TotalPages })">@Model.Pagination.TotalPages</a>
                         </li>
                     }
 
@@ -135,8 +140,8 @@
             <div class="text-body-secondary">
                 <small>
                     <i class="bi bi-info-circle me-1"></i>
-                    Showing @((Model.Pagination.CurrentPage - 1) * Model.Pagination.Limit + 1) to 
-                    @(Math.Min(Model.Pagination.CurrentPage * Model.Pagination.Limit, Model.Pagination.Total)) 
+                    Showing @((Model.Pagination.CurrentPage - 1) * Model.Pagination.Limit + 1) to
+                    @(Math.Min(Model.Pagination.CurrentPage * Model.Pagination.Limit, Model.Pagination.Total))
                     of @Model.Pagination.Total artworks
                 </small>
             </div>

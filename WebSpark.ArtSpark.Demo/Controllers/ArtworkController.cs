@@ -58,12 +58,10 @@ public class ArtworkController : Controller
             _logger.LogError(ex, "Error fetching artworks");
             return View("Error");
         }
-    }
-
-    /// <summary>
-    /// Display details for a specific artwork
-    /// </summary>
-    public async Task<IActionResult> Details(int id)
+    }    /// <summary>
+         /// Display details for a specific artwork
+         /// </summary>
+    public async Task<IActionResult> Details(int id, string? returnUrl = null)
     {
         try
         {
@@ -74,6 +72,9 @@ public class ArtworkController : Controller
                 _logger.LogWarning("Artwork with ID {ArtworkId} not found", id);
                 return NotFound();
             }
+
+            // Store the return URL in ViewBag for the view to use
+            ViewBag.ReturnUrl = returnUrl ?? Url.Action("Index");
 
             return View(artwork);
         }
@@ -156,15 +157,13 @@ public class ArtworkController : Controller
             _logger.LogError(ex, "Error fetching featured artworks");
             return View("Error");
         }
-    }
-
-    /// <summary>
-    /// Submit or update a review for an artwork
-    /// </summary>
+    }    /// <summary>
+         /// Submit or update a review for an artwork
+         /// </summary>
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SubmitReview(int artworkId, int rating, string? reviewText)
+    public async Task<IActionResult> SubmitReview(int artworkId, int rating, string? reviewText, string? returnUrl = null)
     {
         try
         {
@@ -177,13 +176,13 @@ public class ArtworkController : Controller
             await _reviewService.CreateOrUpdateReviewAsync(artworkId, userId, rating, reviewText);
 
             TempData["SuccessMessage"] = "Your review has been submitted successfully!";
-            return RedirectToAction("Details", new { id = artworkId });
+            return RedirectToAction("Details", new { id = artworkId, returnUrl });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error submitting review for artwork {ArtworkId}", artworkId);
             TempData["ErrorMessage"] = "There was an error submitting your review. Please try again.";
-            return RedirectToAction("Details", new { id = artworkId });
+            return RedirectToAction("Details", new { id = artworkId, returnUrl });
         }
     }
 

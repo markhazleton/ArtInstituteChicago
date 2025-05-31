@@ -8,11 +8,13 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <h1 class="display-4 fw-bold text-primary mb-3 d-flex align-items-center justify-content-center gap-2">
-                    <img src="~/img/WebSparkArtSpark.png" alt="WebSpark.ArtSpark Logo" style="height:3rem;width:auto;" class="me-2" />
+                    <img src="~/img/WebSparkArtSpark.png" alt="WebSpark.ArtSpark Logo" style="height:3rem;width:auto;"
+                        class="me-2" />
                     WebSpark.ArtSpark
                 </h1>
                 <p class="lead text-body-secondary mb-4">
-                    Where Open Art Meets .NET Excellence. Explore masterpieces and modern .NET development, powered by the Art Institute of Chicago API.
+                    Where Open Art Meets .NET Excellence. Explore masterpieces and modern .NET development, powered by
+                    the Art Institute of Chicago API.
                 </p>
                 <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                     <a href="@Url.Action("Index", "Artwork")" class="btn btn-primary btn-lg px-4 me-md-2">
@@ -86,7 +88,7 @@
                             </div>
                             <div class="card-footer bg-transparent border-0 pt-0">
                                 <div class="d-grid">
-                                    <a href="@Url.Action("Details", "Artwork", new { id = artwork.Id })"
+                                    <a href="@Url.Action("Details", "Artwork", new { id = artwork.Id, returnUrl = Context.Request.Path + Context.Request.QueryString })"
                                         class="btn btn-outline-primary">
                                         <i class="bi bi-eye me-1"></i>View Details
                                     </a>
@@ -117,7 +119,8 @@ else
                             </div>
                             <h4 class="card-title text-body-emphasis mb-3">Welcome to WebSpark.ArtSpark</h4>
                             <p class="card-text text-body-secondary mb-4">
-                                This application showcases public domain artworks and .NET best practices, merging creative culture and clean code.
+                                This application showcases public domain artworks and .NET best practices, merging creative
+                                culture and clean code.
                             </p>
                             <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                                 <a href="@Url.Action("Index", "Artwork")" class="btn btn-primary btn-lg">

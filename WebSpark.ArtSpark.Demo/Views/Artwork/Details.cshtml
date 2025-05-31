@@ -84,6 +84,8 @@
                                         </h6>
                                         <form id="review-form" asp-action="SubmitReview" asp-controller="Artwork" method="post">
                                             <input type="hidden" name="artworkId" value="@Model.Id" />
+                                            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+                                            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
                                             <div class="mb-3">
                                                 <label class="form-label">Rating</label>
                                                 <div class="rating-input">
@@ -141,7 +143,7 @@
                                     </button>
                                 </div>
                             }
-                            <a href="@Url.Action("Index")" class="btn btn-outline-primary">
+     <a href="@ViewBag.ReturnUrl" class="btn btn-outline-primary">
                                 <i class="bi bi-arrow-left me-2"></i>Back to Artworks
                             </a>
                         </div>
@@ -155,7 +157,7 @@
         <div class="alert alert-danger mt-5">
             <h4>Artwork Not Found</h4>
             <p>The requested artwork could not be found.</p>
-            <a href="@Url.Action("Index")" class="btn btn-secondary">← Back to Artworks</a>
+            <a href="@ViewBag.ReturnUrl" class="btn btn-secondary">← Back to Artworks</a>
         </div>
     }
 </div>
