@@ -1,0 +1,88 @@
+@model WebSpark.ArtSpark.Demo.Models.ProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container-fluid px-3 px-lg-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="bi bi-person-circle me-2"></i>My Profile
+                    </h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Profile" method="post" class="needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DisplayName" class="form-label">
+                                    <i class="bi bi-person me-1"></i>Display Name
+                                </label>
+                                <input asp-for="DisplayName" class="form-control" placeholder="Enter your display name" required />
+                                <span asp-validation-for="DisplayName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="form-label">
+                                    <i class="bi bi-envelope me-1"></i>Email Address
+                                </label>
+                                <input asp-for="Email" class="form-control" readonly />
+                                <div class="form-text">Email cannot be changed from this page.</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Bio" class="form-label">
+                                <i class="bi bi-chat-text me-1"></i>Bio
+                            </label>
+                            <textarea asp-for="Bio" class="form-control" rows="4" placeholder="Tell us a little about yourself..."></textarea>
+                            <span asp-validation-for="Bio" class="text-danger"></span>
+                            <div class="form-text">Optional. Maximum 500 characters.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ProfileImageUrl" class="form-label">
+                                <i class="bi bi-image me-1"></i>Profile Image URL
+                            </label>
+                            <input asp-for="ProfileImageUrl" class="form-control" placeholder="https://example.com/your-image.jpg" />
+                            <span asp-validation-for="ProfileImageUrl" class="text-danger"></span>
+                            <div class="form-text">Optional. Enter a URL to your profile image.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="bi bi-calendar me-1"></i>Member Since
+                            </label>
+                            <div class="form-control-plaintext">
+                                @Model.CreatedAt.ToString("MMMM dd, yyyy")
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary me-md-2">
+                                <i class="bi bi-arrow-left me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i>Update Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

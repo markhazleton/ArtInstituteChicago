@@ -102,9 +102,53 @@ public class RegisterViewModel
     [DataType(DataType.Password)]
     [Display(Name = "Confirm password")]
     [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-    public string ConfirmPassword { get; set; } = string.Empty;
-
-    [Required]
+    public string ConfirmPassword { get; set; } = string.Empty; [Required]
     [Display(Name = "Display Name")]
     public string DisplayName { get; set; } = string.Empty;
+}
+
+// View Models for User Profile and Collections
+public class ProfileViewModel
+{
+    [Required]
+    [Display(Name = "Display Name")]
+    [StringLength(100, ErrorMessage = "Display name must be at most {1} characters long.")]
+    public string DisplayName { get; set; } = string.Empty;
+
+    [Required]
+    [EmailAddress]
+    [Display(Name = "Email")]
+    public string Email { get; set; } = string.Empty;
+
+    [Display(Name = "Bio")]
+    [StringLength(500, ErrorMessage = "Bio must be at most {1} characters long.")]
+    public string? Bio { get; set; }
+
+    [Display(Name = "Profile Image URL")]
+    [Url(ErrorMessage = "Please enter a valid URL")]
+    public string? ProfileImageUrl { get; set; }
+
+    [Display(Name = "Member Since")]
+    public DateTime CreatedAt { get; set; }
+}
+
+public class CreateCollectionViewModel
+{
+    [Required]
+    [Display(Name = "Collection Name")]
+    [StringLength(100, ErrorMessage = "Collection name must be at most {1} characters long.")]
+    public string Name { get; set; } = string.Empty;
+
+    [Display(Name = "Description")]
+    [StringLength(500, ErrorMessage = "Description must be at most {1} characters long.")]
+    public string? Description { get; set; }
+
+    [Display(Name = "Public Collection")]
+    public bool IsPublic { get; set; } = true;
+}
+
+public class CollectionDetailsViewModel
+{
+    public UserCollection Collection { get; set; } = null!;
+    public IEnumerable<CollectionArtwork> Artworks { get; set; } = new List<CollectionArtwork>();
 }

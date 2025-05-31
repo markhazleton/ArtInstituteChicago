@@ -1,15 +1,16 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using WebSpark.ArtSpark.Demo.Models;
 
 namespace WebSpark.ArtSpark.Demo.Data;
 
-public class ArtSparkDbContext : DbContext
+public class ArtSparkDbContext : IdentityDbContext<ApplicationUser>
 {
     public ArtSparkDbContext(DbContextOptions<ArtSparkDbContext> options) : base(options)
     {
     }
 
-    public DbSet<ApplicationUser> Users { get; set; }
+    public override DbSet<ApplicationUser> Users { get; set; }
     public DbSet<ArtworkReview> Reviews { get; set; }
     public DbSet<UserFavorite> Favorites { get; set; }
     public DbSet<UserCollection> Collections { get; set; }

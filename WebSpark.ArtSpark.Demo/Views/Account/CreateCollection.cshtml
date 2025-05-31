@@ -1,0 +1,80 @@
+@model WebSpark.ArtSpark.Demo.Models.CreateCollectionViewModel
+@{
+    ViewData["Title"] = "Create Collection";
+}
+
+<div class="container-fluid px-3 px-lg-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="bi bi-plus-circle me-2"></i>Create New Collection
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateCollection" method="post" class="needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">
+                                <i class="bi bi-collection me-1"></i>Collection Name
+                            </label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter collection name" required autofocus />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">
+                                <i class="bi bi-chat-text me-1"></i>Description
+                            </label>
+                            <textarea asp-for="Description" class="form-control" rows="4" 
+                                      placeholder="Describe your collection (optional)..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                            <div class="form-text">Optional. Help others understand what makes this collection special.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                <input asp-for="IsPublic" class="form-check-input" type="checkbox" role="switch" />
+                                <label asp-for="IsPublic" class="form-check-label">
+                                    <i class="bi bi-globe me-1"></i>Make this collection public
+                                </label>
+                            </div>
+                            <div class="form-text">
+                                Public collections can be viewed by other users. Private collections are only visible to you.
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Collections" class="btn btn-outline-secondary me-md-2">
+                                <i class="bi bi-arrow-left me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i>Create Collection
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <div class="alert alert-info">
+                    <h6 class="alert-heading">
+                        <i class="bi bi-lightbulb me-1"></i>Tips for Creating Collections
+                    </h6>
+                    <ul class="mb-0">
+                        <li>Choose a descriptive name that reflects the theme or purpose</li>
+                        <li>Consider organizing by style, period, artist, or personal preference</li>
+                        <li>Public collections help other art enthusiasts discover new works</li>
+                        <li>You can add artworks to your collections when viewing them</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

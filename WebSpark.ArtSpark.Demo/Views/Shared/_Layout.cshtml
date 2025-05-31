@@ -219,10 +219,13 @@
                                     <li>
                                         <h6 class="dropdown-header"><i class="bi bi-person me-2"></i>Account</h6>
                                     </li>
-                                    <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
-                                    <li><a class="dropdown-item" href="#"><i class="bi bi-heart me-2"></i>My Favorites</a>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile"><i
+                                                class="bi bi-person me-2"></i>Profile</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Favorites"><i
+                                                class="bi bi-heart me-2"></i>My Favorites</a>
                                     </li>
-                                    <li><a class="dropdown-item" href="#"><i class="bi bi-collection me-2"></i>My
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Collections"><i
+                                                class="bi bi-collection me-2"></i>My
                                             Collections</a></li>
                                     <li>
                                         <hr class="dropdown-divider">

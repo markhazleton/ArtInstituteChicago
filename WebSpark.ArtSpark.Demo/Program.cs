@@ -56,6 +56,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 // Add Review Services
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IFavoriteService, FavoriteService>();
+builder.Services.AddScoped<ICollectionService, CollectionService>();
 
 // Add HttpClient factory (required for WebSpark.HttpClientUtility)
 builder.Services.AddHttpClient();

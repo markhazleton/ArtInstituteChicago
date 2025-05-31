@@ -1,0 +1,99 @@
+@model IEnumerable<WebSpark.ArtSpark.Demo.Models.UserFavorite>
+@{
+    ViewData["Title"] = "My Favorites";
+}
+
+<div class="container-fluid px-3 px-lg-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="bi bi-heart-fill text-danger me-2"></i>My Favorites
+                </h2>
+                <a asp-controller="Artwork" asp-action="Index" class="btn btn-outline-primary">
+                    <i class="bi bi-plus-circle me-1"></i>Browse Artworks
+                </a>
+            </div>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-heart display-1 text-muted"></i>
+                    </div>
+                    <h4 class="text-muted">No favorites yet</h4>
+                    <p class="text-muted mb-4">
+                        Start exploring artworks and add them to your favorites by clicking the heart icon.
+                    </p>
+                    <a asp-controller="Artwork" asp-action="Index" class="btn btn-primary">
+                        <i class="bi bi-collection me-1"></i>Browse Artworks
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    @foreach (var favorite in Model)
+                    {
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <h6 class="card-title">Artwork #@favorite.ArtworkId</h6>
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar me-1"></i>
+                                            @favorite.CreatedAt.ToString("MMM dd, yyyy")
+                                        </small>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <a asp-controller="Artwork" asp-action="Details" asp-route-id="@favorite.ArtworkId" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-eye me-1"></i>View Artwork
+                                        </a>
+                                        <form asp-controller="Artwork" asp-action="ToggleFavorite" method="post" class="d-inline">
+                                            <input type="hidden" name="artworkId" value="@favorite.ArtworkId" />
+                                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                                <i class="bi bi-heart-fill me-1"></i>Remove from Favorites
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="bg-light p-3 rounded">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">
+                                        <i class="bi bi-info-circle me-1"></i>Total Favorites: @Model.Count()
+                                    </h6>
+                                    <small class="text-muted">
+                                        Your favorite artworks are saved here for easy access.
+                                    </small>
+                                </div>
+                                <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                                    <a asp-controller="Artwork" asp-action="Index" class="btn btn-primary">
+                                        <i class="bi bi-plus-circle me-1"></i>Add More Favorites
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

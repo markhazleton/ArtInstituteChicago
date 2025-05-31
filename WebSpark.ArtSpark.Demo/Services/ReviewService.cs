@@ -147,12 +147,152 @@ public class FavoriteService : IFavoriteService
         return await _context.Favorites
             .AnyAsync(f => f.ArtworkId == artworkId && f.UserId == userId);
     }
-
     public async Task<IEnumerable<UserFavorite>> GetUserFavoritesAsync(string userId)
     {
         return await _context.Favorites
             .Where(f => f.UserId == userId)
             .OrderByDescending(f => f.CreatedAt)
             .ToListAsync();
+    }
+}
+
+public interface ICollectionService
+{
+    Task<IEnumerable<UserCollection>> GetUserCollectionsAsync(string userId);
+    Task<UserCollection?> GetCollectionByIdAsync(int collectionId, string userId);
+    Task<UserCollection> CreateCollectionAsync(string userId, string name, string? description, bool isPublic);
+    Task<bool> UpdateCollectionAsync(int collectionId, string userId, string name, string? description, bool isPublic);
+    Task<bool> DeleteCollectionAsync(int collectionId, string userId);
+    Task<bool> AddArtworkToCollectionAsync(int collectionId, int artworkId, string userId);
+    Task<bool> RemoveArtworkFromCollectionAsync(int collectionId, int artworkId, string userId);
+    Task<IEnumerable<CollectionArtwork>> GetCollectionArtworksAsync(int collectionId, string userId);
+    Task<bool> IsArtworkInCollectionAsync(int collectionId, int artworkId);
+}
+
+public class CollectionService : ICollectionService
+{
+    private readonly ArtSparkDbContext _context;
+    private readonly ILogger<CollectionService> _logger;
+
+    public CollectionService(ArtSparkDbContext context, ILogger<CollectionService> logger)
+    {
+        _context = context;
+        _logger = logger;
+    }
+
+    public async Task<IEnumerable<UserCollection>> GetUserCollectionsAsync(string userId)
+    {
+        return await _context.Collections
+            .Where(c => c.UserId == userId)
+            .OrderByDescending(c => c.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<UserCollection?> GetCollectionByIdAsync(int collectionId, string userId)
+    {
+        return await _context.Collections
+            .Include(c => c.Artworks)
+            .FirstOrDefaultAsync(c => c.Id == collectionId && c.UserId == userId);
+    }
+
+    public async Task<UserCollection> CreateCollectionAsync(string userId, string name, string? description, bool isPublic)
+    {
+        var collection = new UserCollection
+        {
+            UserId = userId,
+            Name = name,
+            Description = description,
+            IsPublic = isPublic
+        };
+
+        _context.Collections.Add(collection);
+        await _context.SaveChangesAsync();
+        return collection;
+    }
+
+    public async Task<bool> UpdateCollectionAsync(int collectionId, string userId, string name, string? description, bool isPublic)
+    {
+        var collection = await _context.Collections
+            .FirstOrDefaultAsync(c => c.Id == collectionId && c.UserId == userId);
+
+        if (collection == null) return false;
+
+        collection.Name = name;
+        collection.Description = description;
+        collection.IsPublic = isPublic;
+
+        _context.Collections.Update(collection);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> DeleteCollectionAsync(int collectionId, string userId)
+    {
+        var collection = await _context.Collections
+            .FirstOrDefaultAsync(c => c.Id == collectionId && c.UserId == userId);
+
+        if (collection == null) return false;
+
+        _context.Collections.Remove(collection);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> AddArtworkToCollectionAsync(int collectionId, int artworkId, string userId)
+    {
+        var collection = await _context.Collections
+            .FirstOrDefaultAsync(c => c.Id == collectionId && c.UserId == userId);
+
+        if (collection == null) return false;
+
+        var existing = await _context.CollectionArtworks
+            .FirstOrDefaultAsync(ca => ca.CollectionId == collectionId && ca.ArtworkId == artworkId);
+
+        if (existing != null) return false;
+
+        _context.CollectionArtworks.Add(new CollectionArtwork
+        {
+            CollectionId = collectionId,
+            ArtworkId = artworkId
+        });
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> RemoveArtworkFromCollectionAsync(int collectionId, int artworkId, string userId)
+    {
+        var collection = await _context.Collections
+            .FirstOrDefaultAsync(c => c.Id == collectionId && c.UserId == userId);
+
+        if (collection == null) return false;
+
+        var collectionArtwork = await _context.CollectionArtworks
+            .FirstOrDefaultAsync(ca => ca.CollectionId == collectionId && ca.ArtworkId == artworkId);
+
+        if (collectionArtwork == null) return false;
+
+        _context.CollectionArtworks.Remove(collectionArtwork);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<IEnumerable<CollectionArtwork>> GetCollectionArtworksAsync(int collectionId, string userId)
+    {
+        var collection = await _context.Collections
+            .FirstOrDefaultAsync(c => c.Id == collectionId && c.UserId == userId);
+
+        if (collection == null) return new List<CollectionArtwork>();
+
+        return await _context.CollectionArtworks
+            .Where(ca => ca.CollectionId == collectionId)
+            .OrderByDescending(ca => ca.AddedAt)
+            .ToListAsync();
+    }
+
+    public async Task<bool> IsArtworkInCollectionAsync(int collectionId, int artworkId)
+    {
+        return await _context.CollectionArtworks
+            .AnyAsync(ca => ca.CollectionId == collectionId && ca.ArtworkId == artworkId);
     }
 }
