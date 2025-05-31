@@ -1,13 +1,11 @@
 ﻿using ArtInstituteChicago.Client.Clients;
 using ArtInstituteChicago.Client.Models.Common;
-using System.Net.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using WebSpark.HttpClientUtility.ClientService;
 using WebSpark.HttpClientUtility.RequestResult;
 using WebSpark.HttpClientUtility.StringConverter;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json; // Add this namespace
 
 // Setup DI
 var services = new ServiceCollection();
@@ -55,7 +53,7 @@ var httpClient = httpClientFactory.CreateClient();
 var httpRequestResultService = serviceProvider.GetRequiredService<IHttpRequestResultService>();
 
 // Pass IHttpRequestResultService to ArtInstituteClient
-var client = new ArtInstituteClient(httpClient, httpRequestResultService);
+var client = new ArtInstituteClient(httpRequestResultService);
 
 // Get first 10 artworks
 var query = new ApiQuery { Limit = 10 };

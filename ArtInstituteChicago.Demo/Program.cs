@@ -1,9 +1,17 @@
 using ArtInstituteChicago.Client.Clients;
 using ArtInstituteChicago.Client.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 using WebSpark.Bootswatch;
 using WebSpark.HttpClientUtility.ClientService;
 using WebSpark.HttpClientUtility.RequestResult;
 using WebSpark.HttpClientUtility.StringConverter;
+using WebSpark.HttpClientUtility.MemoryCache;
+using ArtInstituteChicago.Demo.HttpClientUtility.MemoryCache;
+using ArtInstituteChicago.Demo.Data;
+using ArtInstituteChicago.Demo.Models;
+using ArtInstituteChicago.Demo.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,13 +21,47 @@ builder.Services.AddControllersWithViews();
 // Add HttpContextAccessor for Tag Helper support
 builder.Services.AddHttpContextAccessor();
 
+// Add Database Context
+builder.Services.AddDbContext<ArtSparkDbContext>(options =>
+{
+    if (builder.Environment.IsDevelopment())
+    {
+        // Use SQLite for development
+        options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    }
+    else
+    {
+        // Use SQLite for production as well
+        options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    }
+});
+
+// Add Identity Services
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+})
+.AddEntityFrameworkStores<ArtSparkDbContext>()
+.AddDefaultTokenProviders();
+
+// Add Review Services
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IFavoriteService, FavoriteService>();
+
 // Add HttpClient factory (required for WebSpark.HttpClientUtility)
 builder.Services.AddHttpClient();
 
-// Register WebSpark.HttpClientUtility services
+RegisterHttpClientUtilities(builder);
+
 builder.Services.AddSingleton<IStringConverter, SystemJsonStringConverter>();
 builder.Services.AddScoped<IHttpClientService, HttpClientService>();
 builder.Services.AddScoped<HttpRequestResultService>();
+builder.Services.AddScoped<IArtInstituteClient, ArtInstituteClient>();
 
 // Register IHttpRequestResultService with telemetry decorator
 builder.Services.AddScoped<IHttpRequestResultService>(provider =>
@@ -38,9 +80,6 @@ builder.Services.AddScoped<IHttpRequestResultService>(provider =>
 // Add WebSpark.Bootswatch theme switcher
 builder.Services.AddBootswatchThemeSwitcher();
 
-// Configure HttpClient for the Art Institute API
-builder.Services.AddHttpClient<IArtInstituteClient, ArtInstituteClient>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -57,6 +96,7 @@ app.UseRouting();
 // Configure WebSpark.Bootswatch (includes static files and style cache)
 app.UseBootswatchAll();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -68,3 +108,47 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+
+static void RegisterHttpClientUtilities(WebApplicationBuilder builder)
+{
+    builder.Services.AddHttpClient("HttpClientService", client =>
+    {
+        client.Timeout = TimeSpan.FromMilliseconds(90000);
+        client.DefaultRequestHeaders.Add("Accept", "application/json");
+        client.DefaultRequestHeaders.Add("User-Agent", "HttpClientService");
+        client.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
+        client.DefaultRequestHeaders.Add("X-Request-Source", "HttpClientService");
+    });
+
+    // Register IHttpClientMemoryCache implementation
+    builder.Services.AddSingleton<IHttpClientMemoryCache, HttpClientMemoryCache>();
+
+    // HTTP Send Service with Decorator Pattern
+    builder.Services.AddSingleton(serviceProvider =>
+    {
+        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+        var retryOptions = configuration.GetSection("HttpRequestResultPollyOptions").Get<HttpRequestResultPollyOptions>();
+
+        IHttpRequestResultService baseService = new HttpRequestResultService(
+            serviceProvider.GetRequiredService<ILogger<HttpRequestResultService>>(),
+            configuration,
+            serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient("HttpClientDecorator"));
+
+        IHttpRequestResultService pollyService = new HttpRequestResultServicePolly(
+            serviceProvider.GetRequiredService<ILogger<HttpRequestResultServicePolly>>(),
+            baseService,
+            retryOptions);
+
+        IHttpRequestResultService telemetryService = new HttpRequestResultServiceTelemetry(
+            serviceProvider.GetRequiredService<ILogger<HttpRequestResultServiceTelemetry>>(),
+            pollyService);
+
+        IHttpRequestResultService cacheService = new HttpRequestResultServiceCache(
+            telemetryService,
+            serviceProvider.GetRequiredService<ILogger<HttpRequestResultServiceCache>>(),
+            serviceProvider.GetRequiredService<IMemoryCache>());
+
+        return cacheService;
+    });
+}

@@ -51,34 +51,210 @@ body {
   height: 280px;
 }
 
-.details-image-height {
-  max-height: 70vh;
-  object-fit: contain;
+/* Rating and Review Styles */
+.rating-input {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
 }
 
-.details-placeholder-height {
-  min-height: 400px;
+.rating-star {
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #6c757d;
+  transition: color 0.2s ease-in-out;
+  text-decoration: none;
 }
 
-.sticky-offset {
-  top: 2rem;
+.rating-star:hover {
+  color: #ffc107;
+  text-decoration: none;
 }
 
-/* Smooth card hover animations */
+.rating-star i {
+  pointer-events: none;
+}
+
+.rating-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.review-card {
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.review-card:hover {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.favorite-btn-active {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: white;
+}
+
+/* Card hover effects */
 .card-hover {
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced pagination styles */
+.page-link {
+  border-radius: 6px;
+  margin: 0 2px;
+  border: 1px solid var(--bs-border-color);
+  transition: all 0.2s ease-in-out;
+}
+
+.page-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.page-item.active .page-link {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+/* Image loading and error handling */
+.artwork-image {
+  background-color: var(--bs-gray-100);
+  position: relative;
+}
+
+.artwork-image::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 60%
+  );
+  animation: shimmer 1.5s infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.artwork-image.loading::before {
+  opacity: 1;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.image-error {
+  background-color: var(--bs-gray-200);
+  color: var(--bs-gray-600);
+}
+
+[data-bs-theme="dark"] .image-error {
+  background-color: var(--bs-gray-800);
+  color: var(--bs-gray-400);
+}
+
+/* Style comparison specific styles */
+.style-comparison-image {
+  height: 150px;
+}
+
+.small-text {
+  font-size: 0.75rem;
+}
+
+.style-progress {
+  width: 100px;
+  height: 8px;
+  background-color: var(--bs-gray-200);
+}
+
+/* Enhanced list group styles for comparison summary */
+.list-group-item {
+  border: none !important;
+  border-bottom: 1px solid var(--bs-border-color) !important;
+}
+
+.list-group-item:last-child {
+  border-bottom: none !important;
+}
+
+/* Enhanced artwork thumbnail styles */
+.artwork-thumbnail {
+  transition: transform 0.2s ease-in-out;
+  overflow: hidden;
+}
+
+.artwork-thumbnail:hover {
+  transform: scale(1.05);
+}
+
+/* Ensure consistent image heights */
+.artwork-thumbnail,
+.image-error {
+  height: 250px;
+}
+
+/* Enhanced loading states */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* User profile styles */
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Collection styles */
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.collection-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.collection-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0.5rem 1rem rgba(var(--bs-dark-rgb), 0.15) !important;
-}
-
-/* Dark mode compatible shadow variables */
-:root {
-  --card-hover-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-}
-
-[data-bs-theme="dark"] {
-  --card-hover-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }

@@ -1,0 +1,128 @@
+using ArtInstituteChicago.Client.Models.Common;
+using Xunit;
+
+namespace ArtInstituteChicago.Client.Tests;
+
+/// <summary>
+/// Tests for the new artwork filtering enums and extension methods
+/// </summary>
+public class ArtworkEnumsTests
+{
+    [Fact]
+    public void ArtStyle_GetDescription_ReturnsCorrectDescription()
+    {
+        // Arrange & Act
+        var impressionismDescription = ArtStyle.Impressionism.GetDescription();
+        var abstractDescription = ArtStyle.Abstract.GetDescription();
+        var popArtDescription = ArtStyle.PopArt.GetDescription();
+
+        // Assert
+        Assert.Equal("Impressionism", impressionismDescription);
+        Assert.Equal("Abstract", abstractDescription);
+        Assert.Equal("Pop Art", popArtDescription);
+    }
+
+    [Fact]
+    public void ArtMedium_GetDescription_ReturnsCorrectDescription()
+    {
+        // Arrange & Act
+        var oilDescription = ArtMedium.OilOnCanvas.GetDescription();
+        var watercolorDescription = ArtMedium.Watercolor.GetDescription();
+        var mixedMediaDescription = ArtMedium.MixedMedia.GetDescription();
+
+        // Assert
+        Assert.Equal("Oil on canvas", oilDescription);
+        Assert.Equal("Watercolor", watercolorDescription);
+        Assert.Equal("Mixed media", mixedMediaDescription);
+    }
+
+    [Fact]
+    public void ArtworkClassification_GetDescription_ReturnsCorrectDescription()
+    {
+        // Arrange & Act
+        var paintingDescription = ArtworkClassification.Painting.GetDescription();
+        var sculptureDescription = ArtworkClassification.Sculpture.GetDescription();
+        var decorativeArtsDescription = ArtworkClassification.DecorativeArts.GetDescription();
+
+        // Assert
+        Assert.Equal("Painting", paintingDescription);
+        Assert.Equal("Sculpture", sculptureDescription);
+        Assert.Equal("Decorative Arts", decorativeArtsDescription);
+    }
+
+    [Fact]
+    public void EnumExtensions_GetDescription_WithoutDescriptionAttribute_ReturnsEnumName()
+    {
+        // This tests the fallback behavior when no Description attribute is present
+        // Since all our enums have descriptions, we'll create a test enum
+        var testEnum = TestEnum.TestValue;
+        var description = testEnum.GetDescription();
+
+        Assert.Equal("TestValue", description);
+    }
+
+    [Theory]
+    [InlineData(ArtStyle.Abstract)]
+    [InlineData(ArtStyle.Impressionism)]
+    [InlineData(ArtStyle.Cubism)]
+    [InlineData(ArtStyle.Surrealism)]
+    public void ArtStyle_AllValues_HaveDescriptions(ArtStyle style)
+    {
+        // Arrange & Act
+        var description = style.GetDescription();
+
+        // Assert
+        Assert.NotNull(description);
+        Assert.NotEmpty(description);
+    }
+
+    [Theory]
+    [InlineData(ArtMedium.OilOnCanvas)]
+    [InlineData(ArtMedium.Watercolor)]
+    [InlineData(ArtMedium.Bronze)]
+    [InlineData(ArtMedium.Photography)]
+    public void ArtMedium_AllValues_HaveDescriptions(ArtMedium medium)
+    {
+        // Arrange & Act
+        var description = medium.GetDescription();
+
+        // Assert
+        Assert.NotNull(description);
+        Assert.NotEmpty(description);
+    }
+
+    [Theory]
+    [InlineData(ArtworkClassification.Painting)]
+    [InlineData(ArtworkClassification.Sculpture)]
+    [InlineData(ArtworkClassification.Drawing)]
+    [InlineData(ArtworkClassification.Print)]
+    public void ArtworkClassification_AllValues_HaveDescriptions(ArtworkClassification classification)
+    {
+        // Arrange & Act
+        var description = classification.GetDescription();
+
+        // Assert
+        Assert.NotNull(description);
+        Assert.NotEmpty(description);
+    }
+
+    [Fact]
+    public void AllEnums_HaveAtLeast10Values()
+    {
+        // Arrange & Act
+        var styleCount = Enum.GetValues<ArtStyle>().Length;
+        var mediumCount = Enum.GetValues<ArtMedium>().Length;
+        var classificationCount = Enum.GetValues<ArtworkClassification>().Length;
+
+        // Assert
+        Assert.True(styleCount >= 10, $"ArtStyle should have at least 10 values, but has {styleCount}");
+        Assert.True(mediumCount >= 10, $"ArtMedium should have at least 10 values, but has {mediumCount}");
+        Assert.True(classificationCount >= 10, $"ArtworkClassification should have at least 10 values, but has {classificationCount}");
+    }
+
+    // Test enum for fallback behavior testing
+    private enum TestEnum
+    {
+        TestValue
+    }
+}

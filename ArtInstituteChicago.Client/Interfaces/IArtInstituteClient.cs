@@ -5,6 +5,9 @@ using ArtInstituteChicago.Client.Models.Mobile;
 using ArtInstituteChicago.Client.Models.Shop;
 using ArtInstituteChicago.Client.Models.StaticArchive;
 using ArtInstituteChicago.Client.Models.Website;
+using static ArtInstituteChicago.Client.Models.Common.ArtStyle;
+using static ArtInstituteChicago.Client.Models.Common.ArtMedium;
+using static ArtInstituteChicago.Client.Models.Common.ArtworkClassification;
 
 namespace ArtInstituteChicago.Client.Interfaces;
 
@@ -21,6 +24,12 @@ public interface IArtInstituteClient
     Task<ArtWork?> GetArtworkAsync(int id, string[]? fields = null, string[]? include = null, CancellationToken cancellationToken = default);
     Task<SearchResponse<ArtWork>> SearchArtworksAsync(SearchQuery query, CancellationToken cancellationToken = default);
     Task<string> GetArtworkManifestAsync(int id, CancellationToken cancellationToken = default);
+
+    // Artwork filtering by style, medium, and classification
+    Task<SearchResponse<ArtWork>> GetArtworksByStyleAsync(ArtStyle style, int? limit = null, int? page = null, CancellationToken cancellationToken = default);
+    Task<SearchResponse<ArtWork>> GetArtworksByMediumAsync(ArtMedium medium, int? limit = null, int? page = null, CancellationToken cancellationToken = default);
+    Task<SearchResponse<ArtWork>> GetArtworksByClassificationAsync(ArtworkClassification classification, int? limit = null, int? page = null, CancellationToken cancellationToken = default);
+    Task<SearchResponse<ArtWork>> GetArtworksByStyleAndMediumAsync(ArtStyle style, ArtMedium medium, int? limit = null, int? page = null, CancellationToken cancellationToken = default);
 
     // Agents (Artists, People, Organizations)
     Task<ApiResponse<Agent>> GetAgentsAsync(ApiQuery? query = null, CancellationToken cancellationToken = default);

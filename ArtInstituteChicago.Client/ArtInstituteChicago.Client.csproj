@@ -9,4 +9,7 @@
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
     <PackageReference Include="WebSpark.HttpClientUtility" Version="1.0.10" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Examples\**" />
+  </ItemGroup>
 </Project>

@@ -8,6 +8,7 @@ using ArtInstituteChicago.Client.Models.StaticArchive;
 using ArtInstituteChicago.Client.Models.Website;
 using System.Text.Json;
 using WebSpark.HttpClientUtility.RequestResult;
+using static ArtInstituteChicago.Client.Models.Common.EnumExtensions;
 
 namespace ArtInstituteChicago.Client.Clients;
 
@@ -17,17 +18,14 @@ namespace ArtInstituteChicago.Client.Clients;
 /// </summary>
 public class ArtInstituteClient : IArtInstituteClient
 {
-    private readonly HttpClient _httpClient;
     private readonly IHttpRequestResultService _service;
     private readonly JsonSerializerOptions _jsonOptions;
     private const string BaseUrl = "https://api.artic.edu/api/v1";
     private const string IiifBaseUrl = "https://www.artic.edu/iiif/2";
 
-    public ArtInstituteClient(HttpClient httpClient, IHttpRequestResultService service)
+    public ArtInstituteClient(IHttpRequestResultService service)
     {
-        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _service = service ?? throw new ArgumentNullException(nameof(service));
-
         _jsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
@@ -35,15 +33,12 @@ public class ArtInstituteClient : IArtInstituteClient
             PropertyNameCaseInsensitive = true
         };
 
-        // Set default headers
-        if (!_httpClient.DefaultRequestHeaders.Contains("User-Agent"))
-        {
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", "ArtInstituteChicago.Client/1.0");
-        }
     }
 
     #region Private Helper Methods
 
+    // Generic methods to handle API requests and responses IHttpRequestResultService service instance
+    // These methods handle the common logic for making requests and parsing responses for different resource types
     private async Task<ApiResponse<T>> GetResourcesAsync<T>(
         string endpoint,
         ApiQuery? query = null,
@@ -52,20 +47,25 @@ public class ArtInstituteClient : IArtInstituteClient
         try
         {
             var url = BuildUrl(endpoint, query);
-
-            var response = await _httpClient.GetAsync(url, cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            var jsonString = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonSerializer.Deserialize<ApiResponse<T>>(jsonString, _jsonOptions);
-
-            return result ?? new ApiResponse<T> { Data = new List<T>() };
+            var artDetailsRequest = new HttpRequestResult<ApiResponse<T>> { RequestPath = url, CacheDurationMinutes = 60, Retries = 1 };
+            artDetailsRequest = await _service.HttpSendRequestResultAsync(artDetailsRequest, ct: cancellationToken).ConfigureAwait(false);
+            return artDetailsRequest.ResponseResults ?? new ApiResponse<T> { Data = [] };
+        }
+        catch (HttpRequestException httpEx)
+        {
+            throw new HttpRequestException("Request error occurred", httpEx);
+        }
+        catch (JsonException jsonEx)
+        {
+            throw new JsonException("JSON parsing error occurred", jsonEx);
         }
         catch (Exception)
         {
             throw;
         }
     }
+
+
     private async Task<T?> GetResourceAsync<T>(
         string endpoint,
         object id,
@@ -77,15 +77,20 @@ public class ArtInstituteClient : IArtInstituteClient
         {
             var query = new ApiQuery();
             if (fields?.Length > 0) query.Fields = string.Join(",", fields);
-            if (include?.Length > 0) query.Include = string.Join(",", include); var url = BuildUrl($"{endpoint}/{id}", query);
+            if (include?.Length > 0) query.Include = string.Join(",", include);
+            var url = BuildUrl($"{endpoint}/{id}", query);
 
-            var response = await _httpClient.GetAsync(url, cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            var jsonString = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonSerializer.Deserialize<SingleApiResponse<T>>(jsonString, _jsonOptions);
-
-            return result?.Data;
+            var artDetailsRequest = new HttpRequestResult<SingleApiResponse<T>> { RequestPath = url, CacheDurationMinutes = 60, Retries = 1 };
+            artDetailsRequest = await _service.HttpSendRequestResultAsync(artDetailsRequest, ct: cancellationToken).ConfigureAwait(false);
+            return artDetailsRequest.ResponseResults?.Data;
+        }
+        catch (HttpRequestException httpEx)
+        {
+            throw new HttpRequestException("Request error occurred", httpEx);
+        }
+        catch (JsonException jsonEx)
+        {
+            throw new JsonException("JSON parsing error occurred", jsonEx);
         }
         catch (Exception)
         {
@@ -101,14 +106,17 @@ public class ArtInstituteClient : IArtInstituteClient
         try
         {
             var url = BuildSearchUrl(endpoint, query);
-
-            var response = await _httpClient.GetAsync(url, cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            var jsonString = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonSerializer.Deserialize<SearchResponse<T>>(jsonString, _jsonOptions);
-
-            return result ?? new SearchResponse<T> { Data = new List<T>() };
+            var searchRequest = new HttpRequestResult<SearchResponse<T>> { RequestPath = url, CacheDurationMinutes = 60, Retries = 1 };
+            searchRequest = await _service.HttpSendRequestResultAsync(searchRequest, ct: cancellationToken).ConfigureAwait(false);
+            return searchRequest.ResponseResults ?? new SearchResponse<T> { Data = new List<T>() };
+        }
+        catch (HttpRequestException httpEx)
+        {
+            throw new HttpRequestException("Request error occurred", httpEx);
+        }
+        catch (JsonException jsonEx)
+        {
+            throw new JsonException("JSON parsing error occurred", jsonEx);
         }
         catch (Exception)
         {
@@ -175,11 +183,17 @@ public class ArtInstituteClient : IArtInstituteClient
         try
         {
             var url = $"{BaseUrl}/artworks/{id}/manifest.json";
-
-            var response = await _httpClient.GetAsync(url, cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            return await response.Content.ReadAsStringAsync(cancellationToken);
+            var manifestRequest = new HttpRequestResult<string> { RequestPath = url, CacheDurationMinutes = 60, Retries = 1 };
+            manifestRequest = await _service.HttpSendRequestResultAsync(manifestRequest, ct: cancellationToken).ConfigureAwait(false);
+            return manifestRequest.ResponseResults ?? string.Empty;
+        }
+        catch (HttpRequestException httpEx)
+        {
+            throw new HttpRequestException("Request error occurred", httpEx);
+        }
+        catch (JsonException jsonEx)
+        {
+            throw new JsonException("JSON parsing error occurred", jsonEx);
         }
         catch (Exception)
         {
@@ -187,6 +201,150 @@ public class ArtInstituteClient : IArtInstituteClient
         }
     }
 
+    /// <summary>
+    /// Search for artworks by art style (e.g., Abstract, Impressionism, Cubism)
+    /// </summary>
+    /// <param name="style">The art style to search for</param>
+    /// <param name="limit">Maximum number of results to return (default 25, max 100)</param>
+    /// <param name="page">Page number for pagination</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Search response containing artworks matching the style</returns>
+    public async Task<SearchResponse<ArtWork>> GetArtworksByStyleAsync(ArtStyle style, int? limit = null, int? page = null, CancellationToken cancellationToken = default)
+    {
+        var query = new SearchQuery
+        {
+            Q = style.GetDescription(),
+            Size = limit ?? 25,
+            From = page.HasValue && page > 1 ? (page.Value - 1) * (limit ?? 25) : 0,
+            Query = new
+            {
+                bool_ = new
+                {
+                    should = new object[]
+                    {
+                        new { match = new { style_title = style.GetDescription() } },
+                        new { match = new { style_titles = style.GetDescription() } }
+                    }
+                }
+            }
+        };
+
+        return await SearchArtworksAsync(query, cancellationToken);
+    }
+
+    /// <summary>
+    /// Search for artworks by medium (e.g., Oil on canvas, Watercolor, Bronze)
+    /// </summary>
+    /// <param name="medium">The medium to search for</param>
+    /// <param name="limit">Maximum number of results to return (default 25, max 100)</param>
+    /// <param name="page">Page number for pagination</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Search response containing artworks with the specified medium</returns>
+    public async Task<SearchResponse<ArtWork>> GetArtworksByMediumAsync(ArtMedium medium, int? limit = null, int? page = null, CancellationToken cancellationToken = default)
+    {
+        var query = new SearchQuery
+        {
+            Q = medium.GetDescription(),
+            Size = limit ?? 25,
+            From = page.HasValue && page > 1 ? (page.Value - 1) * (limit ?? 25) : 0,
+            Query = new
+            {
+                bool_ = new
+                {
+                    should = new object[]
+                    {
+                        new { match = new { medium_display = medium.GetDescription() } },
+                        new { match = new { material_titles = medium.GetDescription() } }
+                    }
+                }
+            }
+        };
+
+        return await SearchArtworksAsync(query, cancellationToken);
+    }
+
+    /// <summary>
+    /// Search for artworks by classification (e.g., Painting, Sculpture, Drawing)
+    /// </summary>
+    /// <param name="classification">The artwork classification to search for</param>
+    /// <param name="limit">Maximum number of results to return (default 25, max 100)</param>
+    /// <param name="page">Page number for pagination</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Search response containing artworks with the specified classification</returns>
+    public async Task<SearchResponse<ArtWork>> GetArtworksByClassificationAsync(ArtworkClassification classification, int? limit = null, int? page = null, CancellationToken cancellationToken = default)
+    {
+        var query = new SearchQuery
+        {
+            Q = classification.GetDescription(),
+            Size = limit ?? 25,
+            From = page.HasValue && page > 1 ? (page.Value - 1) * (limit ?? 25) : 0,
+            Query = new
+            {
+                bool_ = new
+                {
+                    should = new object[]
+                {
+                    new { match = new { classification_title = classification.GetDescription() } },
+                    new { match = new { classification_titles = classification.GetDescription() } },
+                    new { match = new { artwork_type_title = classification.GetDescription() } }
+                }
+                }
+            }
+        };
+
+        return await SearchArtworksAsync(query, cancellationToken);
+    }
+
+    /// <summary>
+    /// Search for artworks by both style and medium
+    /// </summary>
+    /// <param name="style">The art style to search for</param>
+    /// <param name="medium">The medium to search for</param>
+    /// <param name="limit">Maximum number of results to return (default 25, max 100)</param>
+    /// <param name="page">Page number for pagination</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Search response containing artworks matching both style and medium</returns>
+    public async Task<SearchResponse<ArtWork>> GetArtworksByStyleAndMediumAsync(ArtStyle style, ArtMedium medium, int? limit = null, int? page = null, CancellationToken cancellationToken = default)
+    {
+        var query = new SearchQuery
+        {
+            Q = $"{style.GetDescription()} {medium.GetDescription()}",
+            Size = limit ?? 25,
+            From = page.HasValue && page > 1 ? (page.Value - 1) * (limit ?? 25) : 0,
+            Query = new
+            {
+                bool_ = new
+                {
+                    must = new[]
+                    {                        new
+                        {
+                            bool_ = new
+                            {
+                                should = new object[]
+                                {
+                                    new { match = new { style_title = style.GetDescription() } },
+                                    new { match = new { style_titles = style.GetDescription() } }
+                                }
+                            }
+                        },
+                        new
+                        {
+                            bool_ = new
+                            {
+                                should = new object[]
+                                {
+                                    new { match = new { medium_display = medium.GetDescription() } },
+                                    new { match = new { material_titles = medium.GetDescription() } }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        return await SearchArtworksAsync(query, cancellationToken);
+    }
     #endregion
 
     #region Collections - Agents
