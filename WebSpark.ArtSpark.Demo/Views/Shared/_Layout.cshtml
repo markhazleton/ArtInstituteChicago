@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ArtInstituteChicago.Demo.styles.css" asp-append-version="true" />
     <script src="/_content/WebSpark.Bootswatch/js/bootswatch-theme-switcher.js"></script>
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -63,34 +64,8 @@
                                     <hr class="dropdown-divider">
                                 </li>
                                 <li>
-                                    <h6 class="dropdown-header">Browse by Category</h6>
+                                    <h6 class="dropdown-header">Filters & Search</h6>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="ByStyle"
-                                        asp-route-style="Impressionism">
-                                        <i class="bi bi-palette me-2"></i>Impressionism
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="ByMedium"
-                                        asp-route-medium="OilOnCanvas">
-                                        <i class="bi bi-brush me-2"></i>Oil Paintings
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-controller="ArtworkFilter"
-                                        asp-action="ByClassification" asp-route-classification="Sculpture">
-                                        <i class="bi bi-box me-2"></i>Sculptures
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                <i class="bi bi-funnel me-1"></i>Filter Artworks
-                            </a>
-                            <ul class="dropdown-menu">
                                 <li>
                                     <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="Index">
                                         <i class="bi bi-sliders me-2"></i>All Filters
@@ -100,7 +75,7 @@
                                     <hr class="dropdown-divider">
                                 </li>
                                 <li>
-                                    <h6 class="dropdown-header">Quick Filters</h6>
+                                    <h6 class="dropdown-header">Browse by Style</h6>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="ByStyle"
@@ -109,10 +84,16 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <h6 class="dropdown-header">Browse by Medium</h6>
+                                </li>
+                                <li>
                                     <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="ByMedium"
                                         asp-route-medium="OilOnCanvas">
                                         <i class="bi bi-brush me-2"></i>Oil Paintings
                                     </a>
+                                </li>
+                                <li>
+                                    <h6 class="dropdown-header">Browse by Type</h6>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" asp-controller="ArtworkFilter"
@@ -124,6 +105,9 @@
                                     <hr class="dropdown-divider">
                                 </li>
                                 <li>
+                                    <h6 class="dropdown-header">Advanced Tools</h6>
+                                </li>
+                                <li>
                                     <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="CompareStyles"
                                         asp-route-styles="Impressionism,Cubism,AbstractExpressionism">
                                         <i class="bi bi-bar-chart me-2"></i>Compare Styles
@@ -131,7 +115,7 @@
                                 </li>
                             </ul>
                         </li>
-                    </ul> <!-- Mobile-first responsive navigation -->
+                    </ul><!-- Mobile-first responsive navigation -->
                     <div class="d-flex align-items-center gap-2">
                         <!-- Search Form - Visible on desktop, hidden on mobile -->
                         <form class="d-none d-lg-flex" asp-controller="Artwork" asp-action="Search" method="get"
@@ -144,22 +128,13 @@
                                     <span class="ms-1">Search</span>
                                 </button>
                             </div>
-                        </form>
-
-                        <!-- Theme Switcher - Desktop -->
+                        </form> <!-- Theme Switcher - Desktop -->
                         <div class="d-none d-lg-block">
                             <bootswatch-theme-switcher dropdown-toggle-text="Theme"
                                 dropdown-toggle-class="btn btn-outline-secondary dropdown-toggle"
                                 dropdown-menu-class="dropdown-menu dropdown-menu-end"
                                 dropdown-item-class="dropdown-item" />
-                        </div>
-
-                        <!-- Light/Dark Mode Toggle - Desktop -->
-                        <button class="btn btn-outline-secondary d-none d-lg-flex align-items-center" type="button"
-                            onclick="toggleColorMode()" id="color-mode-toggle-desktop" aria-label="Toggle color mode">
-                            <i class="bi bi-moon" id="color-mode-icon-desktop"></i>
-                            <span class="ms-1" id="color-mode-text-desktop">Dark</span>
-                        </button> <!-- Consolidated Navigation Dropdown -->
+                        </div><!-- Consolidated Navigation Dropdown -->
                         <div class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false" aria-label="Navigation menu">
@@ -267,24 +242,7 @@
         <main role="main" class="pb-4">
             @RenderBody()
         </main>
-    </div>
-    <footer class="bg-dark text-light border-top mt-auto py-4">
-        <div class="container-fluid px-3 px-lg-4">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p class="mb-0 text-body-secondary">
-                        <i class="bi bi-c-circle me-1"></i>2025 - WebSpark.ArtSpark
-                    </p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <a asp-area="" asp-controller="Home" asp-action="Privacy"
-                        class="text-decoration-none text-body-secondary">
-                        <i class="bi bi-shield-check me-1"></i>Privacy Policy
-                    </a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    </div> @await Component.InvokeAsync("Footer")
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -312,34 +270,20 @@
                 window.dispatchEvent(new CustomEvent('colorModeChanged', {
                     detail: { mode: mode }
                 }));
-            }
-
-            // Update the UI elements for both desktop and mobile
+            }            // Update the UI elements for mobile only (desktop handled by bootswatch component)
             function updateColorModeUI(mode)
             {
-                // Desktop version
-                const desktopIcon = document.getElementById('color-mode-icon-desktop');
-                const desktopText = document.getElementById('color-mode-text-desktop');
-
                 // Mobile version
                 const mobileIcon = document.getElementById('color-mode-icon-mobile');
                 const mobileText = document.getElementById('color-mode-text-mobile');
 
                 if (mode === 'dark')
                 {
-                    // Update desktop elements
-                    if (desktopIcon) desktopIcon.className = 'bi bi-sun';
-                    if (desktopText) desktopText.textContent = 'Light';
-
                     // Update mobile elements
                     if (mobileIcon) mobileIcon.className = 'bi bi-sun me-2';
                     if (mobileText) mobileText.textContent = 'Light Mode';
                 } else
                 {
-                    // Update desktop elements
-                    if (desktopIcon) desktopIcon.className = 'bi bi-moon';
-                    if (desktopText) desktopText.textContent = 'Dark';
-
                     // Update mobile elements
                     if (mobileIcon) mobileIcon.className = 'bi bi-moon me-2';
                     if (mobileText) mobileText.textContent = 'Dark Mode';

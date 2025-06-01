@@ -1,0 +1,86 @@
+@model IEnumerable<WebSpark.ArtSpark.Demo.Controllers.DocumentInfo>
+@{
+    ViewData["Title"] = "Documentation";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">            <h1 class="display-4 mb-4">
+                <i class="bi bi-book"></i> Documentation
+            </h1>
+            <p class="lead">Browse through our comprehensive documentation to learn more about the WebSpark.ArtSpark project.</p>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">Available Documentation</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">                            @foreach (var doc in Model)
+                            {
+                                <a href="@Url.Action("ViewDoc", "Docs", new { id = doc.FileName })" 
+                                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">@doc.Title</div>                                        <small class="text-muted">
+                                            <i class="bi bi-file-text"></i> @(doc.FileName).md
+                                        </small>
+                                    </div>
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock"></i> 
+                                        Last updated: @doc.LastModified.ToString("MMM dd, yyyy")
+                                    </small>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12">                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>No documentation found.</strong> There are currently no markdown files available in the documentation directory.
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">                    <h5 class="card-title">
+                        <i class="bi bi-lightbulb"></i> About This Documentation
+                    </h5>
+                    <p class="card-text">
+                        This documentation is automatically generated from Markdown files located in the project's 
+                        <code>/docs</code> directory. Each document is rendered using Markdig with Bootstrap styling 
+                        for optimal readability.
+                    </p>
+                    <p class="card-text">
+                        <small class="text-muted">
+                            Documentation is part of the WebSpark.ArtSpark project - a demonstration of working with 
+                            the Art Institute of Chicago API.
+                        </small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Add smooth scrolling and tooltips if needed
+        $(document).ready(function() {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}
