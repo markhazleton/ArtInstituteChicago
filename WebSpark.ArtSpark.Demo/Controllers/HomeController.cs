@@ -1,9 +1,9 @@
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using WebSpark.ArtSpark.Client.Interfaces;
 using WebSpark.ArtSpark.Client.Models.Collections;
 using WebSpark.ArtSpark.Client.Models.Common;
 using WebSpark.ArtSpark.Demo.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebSpark.ArtSpark.Demo.Controllers;
 

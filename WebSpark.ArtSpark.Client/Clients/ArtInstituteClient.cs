@@ -1,14 +1,14 @@
 ﻿using System.Text.Json;
 using WebSpark.ArtSpark.Client.Interfaces;
 using WebSpark.ArtSpark.Client.Models.Collections;
-using WebSpark.HttpClientUtility.RequestResult;
-using static WebSpark.ArtSpark.Client.Models.Common.EnumExtensions;
 using WebSpark.ArtSpark.Client.Models.Common;
 using WebSpark.ArtSpark.Client.Models.DigitalScholarlyCalatogs;
 using WebSpark.ArtSpark.Client.Models.Mobile;
 using WebSpark.ArtSpark.Client.Models.Shop;
 using WebSpark.ArtSpark.Client.Models.StaticArchive;
 using WebSpark.ArtSpark.Client.Models.Website;
+using WebSpark.HttpClientUtility.RequestResult;
+using static WebSpark.ArtSpark.Client.Models.Common.EnumExtensions;
 
 namespace WebSpark.ArtSpark.Client.Clients;
 

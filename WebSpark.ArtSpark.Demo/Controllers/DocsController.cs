@@ -1,6 +1,5 @@
-using Microsoft.AspNetCore.Mvc;
 using Markdig;
-using System.Text;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebSpark.ArtSpark.Demo.Controllers
 {

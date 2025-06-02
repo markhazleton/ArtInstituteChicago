@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using WebSpark.ArtSpark.Client.Clients;
 using WebSpark.ArtSpark.Client.Interfaces;
@@ -10,9 +12,6 @@ using WebSpark.Bootswatch;
 using WebSpark.HttpClientUtility.ClientService;
 using WebSpark.HttpClientUtility.RequestResult;
 using WebSpark.HttpClientUtility.StringConverter;
-using WebSpark.HttpClientUtility.MemoryCache;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
