@@ -17,6 +17,7 @@ WebSpark.ArtSpark.Client is a comprehensive, production-grade .NET library for a
 - **Async/Await:** All API calls are asynchronous for scalability.
 - **Pagination, Filtering, and Search:** Built-in support for pagination, field selection, and Elasticsearch-style queries.
 - **IIIF Image URL Construction:** Utilities for building IIIF image URLs and accessing manifests.
+- **AI Integration Ready:** Powers the WebSpark.ArtSpark.Agent AI chat system with multiple personas
 - **Extensible & Testable:** Designed for dependency injection and unit testing.
 - **Robust Error Handling:** Clear exception messages and resilient request logic.
 - **Open Source & Well-Documented:** MIT licensed and fully documented.

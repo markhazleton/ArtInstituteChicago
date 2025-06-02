@@ -36,11 +36,15 @@ WebSpark.ArtSpark is a modern, open-source ASP.NET Core application that beautif
 ## ✨ Features
 
 * 🎨 Explore public domain artworks from AIC
+* 🎭 **AI Chat with Personas** - Revolutionary chat system with 4 AI personas (Artwork, Artist, Curator, Historian)
+* 👁️ **Visual Analysis** - AI-powered image analysis with OpenAI Vision
+* 🧠 **Conversation Memory** - Persistent chat history and contextual conversations
 * 🎭 Live theme switching with Bootswatch themes
 * 🔁 Resilient API integrations via HttpClientFactory
 * 🧠 Developer and educator modes
 * 🖼️ Curated and themed collections
 * 🔍 Deep metadata and IIIF support
+* 🎯 **Cultural Sensitivity** - Respectful handling of cultural artifacts
 
 ---
 
@@ -51,6 +55,52 @@ WebSpark.ArtSpark is a modern, open-source ASP.NET Core application that beautif
 * Polly for .NET resilience
 * Art Institute of Chicago API
 * Custom middleware and component system
+
+---
+
+## 🎭 AI Chat with Personas
+
+Experience artworks like never before with our groundbreaking AI chat system! Each artwork can be explored through four distinct AI personas:
+
+### Available Personas
+
+#### 🖼️ Artwork Persona
+
+- Chat directly with the artwork itself
+* First-person narratives from the art's perspective  
+* Personal stories from creation to museum display
+* AI vision-powered self-descriptions
+
+#### 🎨 Artist Persona  
+
+- Converse with the artist who created the work
+* Learn about creative process and inspiration
+* Understand techniques and cultural context
+* Discover personal motivations behind the art
+
+#### 🏛️ Curator Persona
+
+- Professional museum insights and analysis
+* Art historical context and interpretation
+* Comparative studies with other works
+* Academic research perspectives
+
+#### 📚 Historian Persona
+
+- Deep historical and cultural context
+* Social and political background of the era
+* Cross-cultural influences and connections
+* Impact of historical events on artistic expression
+
+### Chat Features
+
+* **🧠 Contextual Memory**: Conversations maintain history for natural dialogue flow
+* **👁️ AI Vision**: Advanced image analysis describes artwork details
+* **🎯 Cultural Sensitivity**: Respectful handling of cultural artifacts
+* **⚡ Real-time**: Fast, responsive AI-powered conversations
+* **🔧 Configurable**: Adaptable settings for different educational needs
+
+Try it: Navigate to any artwork detail page and start chatting!
 
 ---
 
