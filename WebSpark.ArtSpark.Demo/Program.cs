@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using WebSpark.ArtSpark.Agent.Extensions;
 using WebSpark.ArtSpark.Client.Clients;
 using WebSpark.ArtSpark.Client.Interfaces;
 using WebSpark.ArtSpark.Demo.Data;
@@ -19,7 +20,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.ConfigureLogging();
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.DictionaryKeyPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 
 // Add HttpContextAccessor for Tag Helper support
 builder.Services.AddHttpContextAccessor();
@@ -60,6 +66,15 @@ builder.Services.AddSingleton<IBuildInfoService, BuildInfoService>();
 
 // Add HttpClient factory (required for WebSpark.HttpClientUtility)
 builder.Services.AddHttpClient();
+
+// Add ArtSpark Agent services
+builder.Services.AddArtSparkAgent(builder.Configuration, config =>
+{
+    // Override default settings if needed
+    config.OpenAI.ModelId = "gpt-4o";
+    config.OpenAI.Temperature = 0.7;
+    config.Cache.Enabled = true;
+});
 
 RegisterHttpClientUtilities(builder);
 

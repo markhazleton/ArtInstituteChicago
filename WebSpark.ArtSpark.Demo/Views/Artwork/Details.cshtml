@@ -145,7 +145,69 @@
                             }
      <a href="@ViewBag.ReturnUrl" class="btn btn-outline-primary">
                                 <i class="bi bi-arrow-left me-2"></i>Back to Artworks
-                            </a>
+                            </a>                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-header bg-primary text-white">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h5 class="mb-0">
+                                <i class="bi bi-chat-dots me-2"></i>Chat About This Artwork
+                            </h5>
+                            <div class="d-flex align-items-center gap-3">
+                                <label class="form-label mb-0 text-white-50">Chat as:</label>
+                                <select id="persona-selector" class="form-select form-select-sm" style="width: auto;">
+                                    <option value="Curator">Art Curator</option>
+                                    <option value="Artist">Fellow Artist</option>
+                                    <option value="Historian">Art Historian</option>
+                                    <option value="Artwork">The Artwork Itself</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Conversation Starters -->
+                        <div class="mb-4">
+                            <h6 class="text-body-secondary mb-2">
+                                <i class="bi bi-lightbulb me-1"></i>Conversation Starters
+                            </h6>
+                            <div id="conversation-starters" class="d-flex flex-wrap gap-2">
+                                <div class="text-center">
+                                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                        <span class="visually-hidden">Loading conversation starters...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Messages -->
+                        <div id="chat-messages" class="border rounded p-3 mb-3" style="height: 400px; overflow-y: auto; background-color: #f8f9fa;">
+                            <div class="text-center text-body-secondary">
+                                <i class="bi bi-chat-square-dots display-4 mb-3"></i>
+                                <p class="lead">Start a conversation about this artwork!</p>
+                                <p class="small">Choose a conversation starter above or type your own message below.</p>
+                            </div>
+                        </div>
+
+                        <!-- Chat Input -->
+                        <div class="input-group">
+                            <input type="text" id="chat-input" class="form-control" 
+                                   placeholder="Ask about this artwork..." 
+                                   maxlength="500">
+                            <button class="btn btn-primary" type="button" id="send-btn">
+                                <i class="bi bi-send"></i>
+                                <span class="d-none d-sm-inline ms-1">Send</span>
+                            </button>
+                        </div>
+                        <div class="form-text">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Switch personas above to get different perspectives on this artwork.
                         </div>
                     </div>
                 </div>
@@ -161,3 +223,275 @@
         </div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        // Chat functionality
+        $(document).ready(function() {
+            const artworkId = @Model?.Id ?? 0;
+            const chatMessages = $('#chat-messages');
+            const chatInput = $('#chat-input');
+            const sendBtn = $('#send-btn');
+            const personaSelector = $('#persona-selector');
+            const conversationStarters = $('#conversation-starters');
+
+            // Load conversation starters
+            function loadConversationStarters() {
+                const persona = personaSelector.val();
+                conversationStarters.html('<div class="text-center"><div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                
+                $.get(`/Artwork/ConversationStarters?artworkId=${artworkId}&persona=${persona}`)
+                    .done(function(data) {
+                        if (data.conversationStarters && data.conversationStarters.length > 0) {
+                            let html = '';
+                            data.conversationStarters.forEach(function(starter) {
+                                html += `<button class="btn btn-outline-secondary btn-sm conversation-starter" data-message="${starter.replace(/"/g, '&quot;')}">${starter}</button>`;
+                            });
+                            conversationStarters.html(html);
+                        } else {
+                            conversationStarters.html('<span class="text-body-secondary">No conversation starters available</span>');
+                        }
+                    })
+                    .fail(function() {
+                        conversationStarters.html('<span class="text-danger">Failed to load conversation starters</span>');
+                    });
+            }
+
+            // Add message to chat
+            function addMessage(message, isUser = true, persona = null) {
+                const messageClass = isUser ? 'user-message' : 'ai-message';
+                const bgClass = isUser ? 'bg-primary text-white' : 'bg-light';
+                const alignClass = isUser ? 'ms-auto' : 'me-auto';
+                const icon = isUser ? 'bi-person-fill' : getPersonaIcon(persona || personaSelector.val());
+                const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                const messageHtml = `
+                    <div class="message ${messageClass} mb-3">
+                        <div class="d-flex ${isUser ? 'justify-content-end' : 'justify-content-start'}">
+                            <div class="card border-0 ${bgClass} ${alignClass}" style="max-width: 75%;">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-start gap-2">
+                                        <i class="bi ${icon} ${isUser ? 'text-white-50' : 'text-primary'} mt-1"></i>
+                                        <div class="flex-grow-1">
+                                            <div class="message-content">${message}</div>
+                                            <div class="small ${isUser ? 'text-white-50' : 'text-body-secondary'} mt-1">${time}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                chatMessages.append(messageHtml);
+                chatMessages.scrollTop(chatMessages[0].scrollHeight);
+            }
+
+            // Get persona icon
+            function getPersonaIcon(persona) {
+                switch(persona) {
+                    case 'Curator': return 'bi-mortarboard';
+                    case 'Artist': return 'bi-palette';
+                    case 'Historian': return 'bi-book';
+                    case 'Artwork': return 'bi-image';
+                    default: return 'bi-chat-dots';
+                }
+            }
+
+            // Send message
+            function sendMessage(message) {
+                if (!message.trim()) return;
+                
+                // Add user message to chat
+                addMessage(message, true);
+                
+                // Clear input and disable send button
+                chatInput.val('').prop('disabled', true);
+                sendBtn.prop('disabled', true);
+                
+                // Show typing indicator
+                const typingHtml = `
+                    <div id="typing-indicator" class="message ai-message mb-3">
+                        <div class="d-flex justify-content-start">
+                            <div class="card border-0 bg-light me-auto" style="max-width: 75%;">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-start gap-2">
+                                        <i class="bi ${getPersonaIcon(personaSelector.val())} text-primary mt-1"></i>
+                                        <div class="typing-dots">
+                                            <span></span><span></span><span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                chatMessages.append(typingHtml);
+                chatMessages.scrollTop(chatMessages[0].scrollHeight);
+
+                // Send chat request
+                $.post('/Artwork/Chat', {
+                    message: message,
+                    artworkId: artworkId,
+                    persona: personaSelector.val()
+                })
+                .done(function(response) {
+                    $('#typing-indicator').remove();
+                    if (response.success !== false) {
+                        addMessage(response.response || response, false, personaSelector.val());
+                    } else {
+                        addMessage(response.error || 'Sorry, I encountered an error. Please try again.', false, personaSelector.val());
+                    }
+                })
+                .fail(function() {
+                    $('#typing-indicator').remove();
+                    addMessage('Sorry, I\'m having trouble connecting right now. Please try again later.', false, personaSelector.val());
+                })
+                .always(function() {
+                    chatInput.prop('disabled', false).focus();
+                    sendBtn.prop('disabled', false);
+                });
+            }
+
+            // Event handlers
+            sendBtn.on('click', function() {
+                sendMessage(chatInput.val());
+            });
+
+            chatInput.on('keypress', function(e) {
+                if (e.which === 13 && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage(chatInput.val());
+                }
+            });
+
+            // Conversation starter clicks
+            $(document).on('click', '.conversation-starter', function() {
+                const message = $(this).data('message');
+                chatInput.val(message);
+                sendMessage(message);
+            });
+
+            // Persona change
+            personaSelector.on('change', function() {
+                loadConversationStarters();
+                
+                // Clear chat and show new persona introduction
+                if (chatMessages.find('.message').length > 0) {
+                    const persona = $(this).val();
+                    const introMessage = getPersonaIntroduction(persona);
+                    chatMessages.html(`
+                        <div class="text-center text-body-secondary mb-3">
+                            <i class="bi ${getPersonaIcon(persona)} display-6 mb-2"></i>
+                            <p class="small">${introMessage}</p>
+                        </div>
+                    `);
+                }
+            });
+
+            // Get persona introduction
+            function getPersonaIntroduction(persona) {
+                switch(persona) {
+                    case 'Curator': return 'Speaking as an art curator - I can share professional insights about this artwork\'s significance, exhibition history, and artistic context.';
+                    case 'Artist': return 'Speaking as a fellow artist - I can discuss technique, creative process, and artistic inspiration behind this work.';
+                    case 'Historian': return 'Speaking as an art historian - I can provide historical context, cultural background, and scholarly analysis of this artwork.';
+                    case 'Artwork': return 'Speaking as the artwork itself - I can share my own story, creation, and experiences through the ages.';
+                    default: return 'Let\'s discuss this artwork together!';
+                }
+            }
+
+            // Initialize
+            loadConversationStarters();
+        });
+    </script>
+    
+    <style>
+        /* Typing animation */
+        .typing-dots {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #6c757d;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+        
+        .typing-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }        
+        @@keyframes typing {
+            0%, 80%, 100% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        /* Chat message animations */
+        .message {
+            animation: fadeInUp 0.3s ease-out;
+        }
+        
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Conversation starter buttons */
+        .conversation-starter {
+            margin: 2px;
+            transition: all 0.2s ease;
+        }
+        
+        .conversation-starter:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Chat messages styling */
+        .user-message .card {
+            border-radius: 18px 18px 4px 18px;
+        }
+        
+        .ai-message .card {
+            border-radius: 18px 18px 18px 4px;
+        }
+        
+        /* Scrollbar styling for chat messages */
+        #chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        #chat-messages::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        #chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+    </style>
+}

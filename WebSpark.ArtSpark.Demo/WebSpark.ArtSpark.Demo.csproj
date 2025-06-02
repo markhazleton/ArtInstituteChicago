@@ -6,6 +6,7 @@
     <Version>1.0.0</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
+    <UserSecretsId>160f2a4d-1f6f-4f2b-822b-2b0165703355</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="WebSpark.Bootswatch" Version="1.10.3" />
@@ -26,6 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WebSpark.ArtSpark.Client\WebSpark.ArtSpark.Client.csproj" />
+    <ProjectReference Include="..\WebSpark.ArtSpark.Agent\WebSpark.ArtSpark.Agent.csproj" />
   </ItemGroup>
 
 </Project>
