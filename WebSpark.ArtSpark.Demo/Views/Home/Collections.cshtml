@@ -1,0 +1,292 @@
+@model IEnumerable<WebSpark.ArtSpark.Demo.Models.UserCollection>
+@{
+    ViewData["Title"] = ViewBag.Title ?? "Collections";
+    var currentPage = ViewBag.CurrentPage ?? 1;
+    var search = ViewBag.Search as string;
+    var tag = ViewBag.Tag as string;
+    var metaDescription = ViewBag.MetaDescription as string ?? "Browse our curated art collections";
+}
+
+@section MetaTags {
+    <meta name="description" content="@metaDescription">
+    <meta property="og:title" content="@ViewData["Title"]">
+    <meta property="og:description" content="@metaDescription">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@ViewData["Title"]">
+    <meta name="twitter:description" content="@metaDescription">
+}
+
+<div class="container-fluid py-4">
+    <!-- Hero Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="hero-section bg-primary text-white py-5 rounded-3">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <h1 class="display-4 fw-bold mb-3">@ViewData["Title"]</h1>
+                            <p class="lead mb-0">@metaDescription</p>
+                        </div>
+                        <div class="col-lg-4 text-end">
+                            <i class="bi bi-collection display-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <form method="get" asp-action="Collections" class="row g-3">
+                        <div class="col-md-6">
+                            <label for="search" class="form-label">Search Collections</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" id="search" name="search" 
+                                       value="@search" placeholder="Search by name, description, or tags...">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="tag" class="form-label">Filter by Tag</label>
+                            <input type="text" class="form-control" id="tag" name="tag" 
+                                   value="@tag" placeholder="Enter tag to filter...">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-funnel me-1"></i> Filter
+                            </button>
+                        </div>
+                    </form>
+                    
+                    @if (!string.IsNullOrEmpty(search) || !string.IsNullOrEmpty(tag))
+                    {
+                        <div class="mt-3">
+                            <span class="text-muted">Active filters:</span>
+                            @if (!string.IsNullOrEmpty(search))
+                            {
+                                <span class="badge bg-info me-2">
+                                    Search: @search 
+                                    <a href="@Url.Action("Collections", new { tag = tag })" class="text-white ms-1">
+                                        <i class="bi bi-x"></i>
+                                    </a>
+                                </span>
+                            }
+                            @if (!string.IsNullOrEmpty(tag))
+                            {
+                                <span class="badge bg-success me-2">
+                                    Tag: @tag 
+                                    <a href="@Url.Action("Collections", new { search = search })" class="text-white ms-1">
+                                        <i class="bi bi-x"></i>
+                                    </a>
+                                </span>
+                            }
+                            <a href="@Url.Action("Collections")" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-arrow-clockwise me-1"></i> Clear All
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Collections Grid -->
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var collection in Model)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm collection-card">
+                        @if (collection.IsFeatured)
+                        {
+                            <div class="card-header bg-warning text-dark d-flex align-items-center">
+                                <i class="bi bi-star-fill me-2"></i>
+                                <strong>Featured Collection</strong>
+                            </div>
+                        }
+                        
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="card-title mb-0">
+                                    <a href="@Url.Action("CollectionDetails", "Account", new { slug = collection.Slug })" 
+                                       class="text-decoration-none">
+                                        @collection.Name
+                                    </a>
+                                </h5>
+                                @if (collection.IsPublic)
+                                {
+                                    <span class="badge bg-success ms-2">
+                                        <i class="bi bi-globe"></i> Public
+                                    </span>
+                                }
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(collection.Description))
+                            {
+                                <p class="card-text text-muted mb-3">
+                                    @(collection.Description.Length > 150 
+                                        ? collection.Description.Substring(0, 150) + "..." 
+                                        : collection.Description)
+                                </p>
+                            }
+
+                            <!-- Collection Stats -->
+                            <div class="row text-center mb-3">
+                                <div class="col-4">
+                                    <div class="bg-light rounded p-2">
+                                        <div class="fw-bold text-primary">@collection.Artworks?.Count ?? 0</div>
+                                        <small class="text-muted">Artworks</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="bg-light rounded p-2">
+                                        <div class="fw-bold text-info">@collection.ViewCount</div>
+                                        <small class="text-muted">Views</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="bg-light rounded p-2">
+                                        <div class="fw-bold text-success">@((collection.ContentSections?.Count ?? 0) + (collection.MediaItems?.Count ?? 0))</div>
+                                        <small class="text-muted">Content</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tags -->
+                            @if (!string.IsNullOrEmpty(collection.Tags))
+                            {
+                                <div class="mb-3">
+                                    @foreach (var collectionTag in collection.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Take(3))
+                                    {
+                                        <a href="@Url.Action("Collections", new { tag = collectionTag.Trim() })" 
+                                           class="badge bg-secondary text-decoration-none me-1">
+                                            #@collectionTag.Trim()
+                                        </a>
+                                    }
+                                </div>
+                            }
+
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="bi bi-person-circle me-1"></i>
+                                        @(collection.User?.Email ?? "Anonymous")
+                                    </small>
+                                    <small class="text-muted">
+                                        @collection.CreatedAt.ToString("MMM d, yyyy")
+                                    </small>
+                                </div>
+                                
+                                <div class="d-grid mt-3">
+                                    <a href="@Url.Action("CollectionDetails", "Account", new { slug = collection.Slug })" 
+                                       class="btn btn-primary">
+                                        <i class="bi bi-eye me-1"></i> View Collection
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (currentPage > 1 || Model.Count() >= 12)
+        {
+            <div class="row mt-5">
+                <div class="col-12">
+                    <nav aria-label="Collections pagination">
+                        <ul class="pagination justify-content-center">
+                            @if (currentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Collections", new { page = currentPage - 1, search = search, tag = tag })">
+                                        <i class="bi bi-chevron-left"></i> Previous
+                                    </a>
+                                </li>
+                            }
+                            
+                            @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(currentPage + 2, currentPage + 5); i++)
+                            {
+                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("Collections", new { page = i, search = search, tag = tag })">@i</a>
+                                </li>
+                            }
+                            
+                            @if (Model.Count() >= 12)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Collections", new { page = currentPage + 1, search = search, tag = tag })">
+                                        Next <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <!-- Empty State -->
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="bi bi-collection display-1 text-muted mb-3"></i>
+                    <h3 class="text-muted mb-3">No Collections Found</h3>
+                    
+                    @if (!string.IsNullOrEmpty(search) || !string.IsNullOrEmpty(tag))
+                    {
+                        <p class="text-muted mb-4">
+                            No collections match your current search criteria. Try adjusting your filters or search terms.
+                        </p>
+                        <a href="@Url.Action("Collections")" class="btn btn-primary">
+                            <i class="bi bi-arrow-clockwise me-1"></i> View All Collections
+                        </a>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-4">
+                            There are no public collections available at the moment. Check back later!
+                        </p>
+                        <a href="@Url.Action("Index")" class="btn btn-primary">
+                            <i class="bi bi-house me-1"></i> Back to Home
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%);
+        }
+        
+        .collection-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        
+        .collection-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        }
+        
+        .badge a {
+            text-decoration: none;
+        }
+        
+        .badge a:hover {
+            opacity: 0.8;
+        }
+    </style>
+}

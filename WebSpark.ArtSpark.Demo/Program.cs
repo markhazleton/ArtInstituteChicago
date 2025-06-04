@@ -121,6 +121,32 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+// SEO-friendly collection routes
+app.MapControllerRoute(
+    name: "collectionBySlug",
+    pattern: "collection/{slug}",
+    defaults: new { controller = "Account", action = "CollectionDetails" });
+
+app.MapControllerRoute(
+    name: "collectionItemBySlug",
+    pattern: "collection/{collectionSlug}/item/{itemSlug}",
+    defaults: new { controller = "Account", action = "CollectionItemDetails" });
+
+app.MapControllerRoute(
+    name: "collections",
+    pattern: "collections",
+    defaults: new { controller = "Account", action = "Collections" });
+
+app.MapControllerRoute(
+    name: "publicCollections",
+    pattern: "explore/collections",
+    defaults: new { controller = "Home", action = "Collections" });
+
+app.MapControllerRoute(
+    name: "featuredCollections",
+    pattern: "explore/featured",
+    defaults: new { controller = "Home", action = "FeaturedCollections" });
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")

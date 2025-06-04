@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebSpark.ArtSpark.Demo.Data;
 
@@ -10,9 +11,11 @@ using WebSpark.ArtSpark.Demo.Data;
 namespace WebSpark.ArtSpark.Demo.Migrations
 {
     [DbContext(typeof(ArtSparkDbContext))]
-    partial class ArtSparkDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250604134141_EnhanceCollectionSEOAndContent")]
+    partial class EnhanceCollectionSEOAndContent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.5");
@@ -335,9 +338,6 @@ namespace WebSpark.ArtSpark.Demo.Migrations
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsVisible")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("SectionType")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -376,9 +376,6 @@ namespace WebSpark.ArtSpark.Demo.Migrations
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsVisible")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("LinkType")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -387,9 +384,6 @@ namespace WebSpark.ArtSpark.Demo.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Url")
@@ -439,10 +433,6 @@ namespace WebSpark.ArtSpark.Demo.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("MediaUrl")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("MimeType")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -455,9 +445,6 @@ namespace WebSpark.ArtSpark.Demo.Migrations
 
                     b.Property<string>("Title")
                         .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

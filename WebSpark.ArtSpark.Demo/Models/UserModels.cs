@@ -54,10 +54,27 @@ public class UserCollection
     public string? Description { get; set; }
     public bool IsPublic { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
 
-    // Navigation properties
+    // SEO and metadata fields
+    public string Slug { get; set; } = string.Empty;
+    public string? MetaTitle { get; set; }
+    public string? MetaDescription { get; set; }
+    public string? MetaKeywords { get; set; }
+    public string? SocialImageUrl { get; set; }
+
+    // Content fields
+    public string? LongDescription { get; set; }
+    public string? CuratorNotes { get; set; }
+    public string? Tags { get; set; } // Comma-separated tags
+    public int ViewCount { get; set; } = 0;
+    public bool IsFeatured { get; set; } = false;
+    public DateTime? FeaturedUntil { get; set; }    // Navigation properties
     public virtual ApplicationUser User { get; set; } = null!;
     public virtual ICollection<CollectionArtwork> Artworks { get; set; } = new List<CollectionArtwork>();
+    public virtual ICollection<CollectionContentSection> ContentSections { get; set; } = new List<CollectionContentSection>();
+    public virtual ICollection<CollectionMedia> MediaItems { get; set; } = new List<CollectionMedia>();
+    public virtual ICollection<CollectionLink> Links { get; set; } = new List<CollectionLink>();
 }
 
 public class CollectionArtwork
@@ -66,6 +83,72 @@ public class CollectionArtwork
     public int CollectionId { get; set; }
     public int ArtworkId { get; set; }
     public DateTime AddedAt { get; set; } = DateTime.UtcNow;
+
+    // Enhanced fields for collection items
+    public string? Slug { get; set; }
+    public string? CustomTitle { get; set; }
+    public string? CustomDescription { get; set; }
+    public string? CuratorNotes { get; set; }
+    public int DisplayOrder { get; set; } = 0;
+    public bool IsHighlighted { get; set; } = false;
+    public string? MetaTitle { get; set; }
+    public string? MetaDescription { get; set; }
+
+    // Navigation properties
+    public virtual UserCollection Collection { get; set; } = null!;
+}
+
+// New model for rich content sections within collections
+public class CollectionContentSection
+{
+    public int Id { get; set; }
+    public int CollectionId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty; public string SectionType { get; set; } = "text"; // text, quote, highlight, etc.
+    public int DisplayOrder { get; set; } = 0;
+    public bool IsVisible { get; set; } = true;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
+
+    // Navigation properties
+    public virtual UserCollection Collection { get; set; } = null!;
+}
+
+// New model for media items (images, videos, etc.) in collections
+public class CollectionMedia
+{
+    public int Id { get; set; }
+    public int CollectionId { get; set; }
+    public string MediaUrl { get; set; } = string.Empty; // For external URLs
+    public string FileName { get; set; } = string.Empty;
+    public string OriginalFileName { get; set; } = string.Empty;
+    public string MediaType { get; set; } = string.Empty; // image, video, audio, document
+    public string MimeType { get; set; } = string.Empty;
+    public long FileSize { get; set; }
+    public string? Title { get; set; }
+    public string? Description { get; set; }
+    public string? AltText { get; set; }
+    public int DisplayOrder { get; set; } = 0;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
+
+    // Navigation properties
+    public virtual UserCollection Collection { get; set; } = null!;
+}
+
+// New model for external links in collections
+public class CollectionLink
+{
+    public int Id { get; set; }
+    public int CollectionId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Url { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string LinkType { get; set; } = "external"; // external, social, reference, etc.
+    public int DisplayOrder { get; set; } = 0;
+    public bool IsVisible { get; set; } = true;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
 
     // Navigation properties
     public virtual UserCollection Collection { get; set; } = null!;
@@ -139,16 +222,176 @@ public class CreateCollectionViewModel
     [StringLength(100, ErrorMessage = "Collection name must be at most {1} characters long.")]
     public string Name { get; set; } = string.Empty;
 
-    [Display(Name = "Description")]
+    [Display(Name = "Short Description")]
     [StringLength(500, ErrorMessage = "Description must be at most {1} characters long.")]
     public string? Description { get; set; }
 
+    [Display(Name = "Long Description")]
+    [StringLength(2000, ErrorMessage = "Long description must be at most {1} characters long.")]
+    public string? LongDescription { get; set; }
+
+    [Display(Name = "Curator Notes")]
+    [StringLength(1000, ErrorMessage = "Curator notes must be at most {1} characters long.")]
+    public string? CuratorNotes { get; set; }
+
+    [Display(Name = "Tags (comma-separated)")]
+    [StringLength(500, ErrorMessage = "Tags must be at most {1} characters long.")]
+    public string? Tags { get; set; }
+
     [Display(Name = "Public Collection")]
-    public bool IsPublic { get; set; } = true;
+    public bool IsPublic { get; set; } = true; [Display(Name = "Featured Collection")]
+    public bool IsFeatured { get; set; } = false;
+
+    [Display(Name = "Featured Until")]
+    [DataType(DataType.DateTime)]
+    public DateTime? FeaturedUntil { get; set; }
+
+    // SEO Fields
+    [Display(Name = "SEO Title")]
+    [StringLength(60, ErrorMessage = "SEO title should be at most {1} characters long.")]
+    public string? MetaTitle { get; set; }
+
+    [Display(Name = "SEO Description")]
+    [StringLength(160, ErrorMessage = "SEO description should be at most {1} characters long.")]
+    public string? MetaDescription { get; set; }
+
+    [Display(Name = "SEO Keywords")]
+    [StringLength(255, ErrorMessage = "SEO keywords must be at most {1} characters long.")]
+    public string? MetaKeywords { get; set; }
+
+    [Display(Name = "Social Media Image URL")]
+    [Url(ErrorMessage = "Please enter a valid URL")]
+    public string? SocialImageUrl { get; set; }
+}
+
+public class EditCollectionViewModel : CreateCollectionViewModel
+{
+    public int Id { get; set; }
+    public string Slug { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public int ViewCount { get; set; }
 }
 
 public class CollectionDetailsViewModel
 {
     public UserCollection Collection { get; set; } = null!;
     public IEnumerable<CollectionArtwork> Artworks { get; set; } = new List<CollectionArtwork>();
+    public IEnumerable<CollectionContentSection> ContentSections { get; set; } = new List<CollectionContentSection>();
+    public IEnumerable<CollectionMedia> MediaItems { get; set; } = new List<CollectionMedia>();
+    public IEnumerable<CollectionLink> Links { get; set; } = new List<CollectionLink>();
+    public bool CanEdit { get; set; } = false;
+}
+
+// View model for managing collection content sections
+public class CollectionContentSectionViewModel
+{
+    public int Id { get; set; }
+    public int CollectionId { get; set; }
+
+    [Required]
+    [Display(Name = "Section Title")]
+    [StringLength(200, ErrorMessage = "Title must be at most {1} characters long.")]
+    public string Title { get; set; } = string.Empty;
+
+    [Required]
+    [Display(Name = "Content")]
+    [StringLength(4000, ErrorMessage = "Content must be at most {1} characters long.")]
+    public string Content { get; set; } = string.Empty; [Display(Name = "Section Type")]
+    public string SectionType { get; set; } = "text";
+
+    [Display(Name = "Display Order")]
+    public int DisplayOrder { get; set; } = 0;
+
+    [Display(Name = "Visible")]
+    public bool IsVisible { get; set; } = true;
+}
+
+
+
+// View models for media management
+public class CollectionMediaViewModel
+{
+    public int Id { get; set; }
+    public int CollectionId { get; set; }
+    public string MediaUrl { get; set; } = string.Empty;
+    public string FileName { get; set; } = string.Empty;
+    public string OriginalFileName { get; set; } = string.Empty;
+    public string MediaType { get; set; } = string.Empty; // image, video, audio, document
+    public string MimeType { get; set; } = string.Empty;
+    public long FileSize { get; set; }
+
+    [MaxLength(255)]
+    public string? Title { get; set; }
+
+    [MaxLength(1000)]
+    public string? Description { get; set; }
+
+    [MaxLength(255)]
+    public string? AltText { get; set; }
+
+    public int DisplayOrder { get; set; } = 0;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
+}
+
+// View model for collection links
+public class CollectionLinkViewModel
+{
+    public int Id { get; set; }
+    public int CollectionId { get; set; }
+
+    [Required]
+    [Url]
+    [MaxLength(2000)]
+    public string Url { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(255)]
+    public string Title { get; set; } = string.Empty;
+
+    [MaxLength(1000)]
+    public string? Description { get; set; }
+
+    public string LinkType { get; set; } = "external"; // external, resource, related
+    public int DisplayOrder { get; set; } = 0;
+    public bool IsVisible { get; set; } = true;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
+// New view model for individual collection item display
+public class CollectionItemDetailsViewModel
+{
+    // Basic item info
+    public int Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string? ImageUrl { get; set; }
+    public string? ExternalUrl { get; set; }
+    public string? Artist { get; set; }
+    public int? Year { get; set; }
+    public string? Medium { get; set; }
+    public string? Dimensions { get; set; }
+
+    // Collection item specific info
+    public string Slug { get; set; } = string.Empty;
+    public string? CustomTitle { get; set; }
+    public string? CustomDescription { get; set; }
+    public string? CuratorNotes { get; set; }
+    public int DisplayOrder { get; set; }
+    public bool IsHighlighted { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+
+    // SEO fields for the collection item
+    public string? MetaTitle { get; set; }
+    public string? MetaDescription { get; set; }
+    public string? Keywords { get; set; }
+    public string? SocialImageUrl { get; set; }
+
+    // Collection info
+    public string CollectionSlug { get; set; } = string.Empty;
+    public string CollectionTitle { get; set; } = string.Empty;
+    public string? CollectionDescription { get; set; }
+
+    // Control flags
+    public bool CanEdit { get; set; } = false;
 }
