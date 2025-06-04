@@ -1,5 +1,7 @@
 @model ArtWork
 
+@Html.AntiForgeryToken()
+
 <div class="container py-5">
     @if (Model != null)
     {
@@ -224,6 +226,49 @@
     }
 </div>
 
+<!-- Add to Collection Modal -->
+<div class="modal fade" id="collectionsModal" tabindex="-1" aria-labelledby="collectionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="collectionsModalLabel">
+                    <i class="bi bi-collection me-2"></i>Add to Collection
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="collections-loading" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Loading your collections...</p>
+                </div>
+                <div id="collections-content" style="display: none;">
+                    <p class="text-muted mb-3">Select a collection to add this artwork to:</p>
+                    <div id="collections-list">
+                        <!-- Collections will be loaded here via JavaScript -->
+                    </div>
+                    <div id="no-collections" style="display: none;" class="text-center py-4">
+                        <i class="bi bi-collection display-4 text-muted"></i>
+                        <h6 class="mt-2 text-muted">No collections yet</h6>
+                        <p class="text-muted">Create your first collection to organize artworks.</p>
+                        <a href="@Url.Action("CreateCollection", "Account")" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-1"></i>Create Collection
+                        </a>
+                    </div>
+                </div>
+                <div id="collections-error" style="display: none;" class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Failed to load collections. Please try again.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         // Chat functionality
@@ -398,11 +443,134 @@
                     case 'Artwork': return 'Speaking as the artwork itself - I can share my own story, creation, and experiences through the ages.';
                     default: return 'Let\'s discuss this artwork together!';
                 }
-            }
-
-            // Initialize
+            }            // Initialize
             loadConversationStarters();
+            
+            // Collections functionality
+            initializeCollections();
         });
+        
+        // Collections modal functionality
+        function initializeCollections() {
+            const artworkId = @Model?.Id ?? 0;
+            
+            // Show modal event
+            $('#collectionsModal').on('show.bs.modal', function () {
+                loadUserCollections();
+            });
+            
+            // Function to load user collections
+            function loadUserCollections() {
+                $('#collections-loading').show();
+                $('#collections-content').hide();
+                $('#collections-error').hide();
+                
+                $.ajax({
+                    url: '@Url.Action("GetUserCollections", "Artwork")',
+                    type: 'GET',
+                    success: function(data) {
+                        $('#collections-loading').hide();
+                        if (data.error) {
+                            $('#collections-error').show();
+                            return;
+                        }
+                        
+                        if (data.length === 0) {
+                            $('#no-collections').show();
+                            $('#collections-content').show();
+                        } else {
+                            displayCollections(data);
+                            $('#collections-content').show();
+                        }
+                    },
+                    error: function() {
+                        $('#collections-loading').hide();
+                        $('#collections-error').show();
+                    }
+                });
+            }
+            
+            // Function to display collections
+            function displayCollections(collections) {
+                let html = '';
+                collections.forEach(function(collection) {
+                    html += `
+                        <div class="collection-item mb-2 p-3 border rounded" style="cursor: pointer;" data-collection-id="${collection.id}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">${collection.name}</h6>
+                                    <small class="text-muted">${collection.artworkCount} artwork${collection.artworkCount !== 1 ? 's' : ''}</small>
+                                    ${collection.description ? `<p class="mb-0 mt-1 text-muted small">${collection.description}</p>` : ''}
+                                </div>
+                                <i class="bi bi-plus-circle text-primary"></i>
+                            </div>
+                        </div>
+                    `;
+                });
+                $('#collections-list').html(html);
+                $('#no-collections').hide();
+                
+                // Add click handlers for collection items
+                $('.collection-item').on('click', function() {
+                    const collectionId = $(this).data('collection-id');
+                    const collectionName = $(this).find('h6').text();
+                    addToCollection(collectionId, collectionName);
+                });
+            }
+            
+            // Function to add artwork to collection
+            function addToCollection(collectionId, collectionName) {
+                // Disable all collection items while processing
+                $('.collection-item').css('pointer-events', 'none').addClass('opacity-50');
+                
+                $.ajax({
+                    url: '@Url.Action("AddToCollection", "Artwork")',
+                    type: 'POST',
+                    data: {
+                        artworkId: artworkId,
+                        collectionId: collectionId,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Show success message
+                            showToast(`Artwork added to "${collectionName}" successfully!`, 'success');
+                            // Close modal
+                            $('#collectionsModal').modal('hide');
+                        } else {
+                            showToast('Failed to add artwork to collection. Please try again.', 'error');
+                        }
+                    },
+                    error: function() {
+                        showToast('An error occurred. Please try again.', 'error');
+                    },
+                    complete: function() {
+                        // Re-enable collection items
+                        $('.collection-item').css('pointer-events', 'auto').removeClass('opacity-50');
+                    }
+                });
+            }
+            
+            // Function to show toast notifications
+            function showToast(message, type) {
+                const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+                const icon = type === 'success' ? 'bi-check-circle' : 'bi-exclamation-triangle';
+                
+                const toast = $(`
+                    <div class="alert ${alertClass} alert-dismissible fade show position-fixed top-0 end-0 m-3" style="z-index: 9999; min-width: 300px;">
+                        <i class="bi ${icon} me-2"></i>${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `);
+                
+                $('body').append(toast);
+                
+                // Auto-dismiss after 5 seconds
+                setTimeout(function() {
+                    toast.alert('close');
+                }, 5000);
+            }
+        }
     </script>
     
     <style>

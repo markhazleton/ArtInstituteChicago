@@ -76,12 +76,11 @@ namespace WebSpark.ArtSpark.Agent.Extensions
 
                 logger.LogInformation("Semantic Kernel initialized with model {ModelId}", config.OpenAI.ModelId);
                 return kernel;
-            });
-
-            // Register core services
+            });            // Register core services
             services.AddScoped<IArtworkChatAgent, ArtworkChatAgent>();
             services.AddScoped<IPersonaFactory, PersonaFactory>();
             services.AddSingleton<IChatMemory, InMemoryChatMemory>();
+            services.AddScoped<IChatInputValidator, ChatInputValidator>();
 
             // Register data provider
             services.AddScoped<IArtworkDataProvider, ArtInstituteDataProvider>();

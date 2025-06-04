@@ -6,6 +6,7 @@ using WebSpark.ArtSpark.Agent.Models;
 using WebSpark.ArtSpark.Agent.Personas;
 using WebSpark.ArtSpark.Client.Interfaces;
 using WebSpark.ArtSpark.Client.Models.Common;
+using WebSpark.ArtSpark.Demo.Data;
 using WebSpark.ArtSpark.Demo.Services;
 
 namespace WebSpark.ArtSpark.Demo.Controllers;
@@ -19,6 +20,7 @@ public class ArtworkController : Controller
     private readonly IArtworkChatAgent _chatAgent;
     private readonly ILogger<ArtworkController> _logger;
     private readonly IReviewService _reviewService;
+    private readonly ICollectionService _collectionService;
     private readonly IFavoriteService _favoriteService;
 
     public ArtworkController(
@@ -26,13 +28,15 @@ public class ArtworkController : Controller
         IArtworkChatAgent chatAgent,
         ILogger<ArtworkController> logger,
         IReviewService reviewService,
-        IFavoriteService favoriteService)
+        IFavoriteService favoriteService,
+        ICollectionService collectionService)
     {
         _artInstituteClient = artInstituteClient ?? throw new ArgumentNullException(nameof(artInstituteClient));
         _chatAgent = chatAgent ?? throw new ArgumentNullException(nameof(chatAgent));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _reviewService = reviewService ?? throw new ArgumentNullException(nameof(reviewService));
         _favoriteService = favoriteService ?? throw new ArgumentNullException(nameof(favoriteService));
+        _collectionService = collectionService ?? throw new ArgumentNullException(nameof(collectionService));
     }
 
     /// <summary>
@@ -392,6 +396,92 @@ public class ArtworkController : Controller
         {
             _logger.LogError(ex, "Error generating conversation starters for artwork {ArtworkId}", artworkId);
             return Json(new { success = false, error = "Failed to generate conversation starters" });
+        }
+    }
+
+    /// <summary>
+    /// Get collections for the logged-in user
+    /// </summary>
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> MyCollections()
+    {
+        try
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var collections = await _collectionService.GetUserCollectionsAsync(userId);
+
+            return View(collections);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching collections for user");
+            return View("Error");
+        }
+    }
+
+    /// <summary>
+    /// Add an artwork to a collection
+    /// </summary>
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> AddToCollection(int artworkId, int collectionId)
+    {
+        try
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var success = await _collectionService.AddArtworkToCollectionAsync(collectionId, artworkId, userId);
+
+            return Json(new { success = success });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error adding artwork {ArtworkId} to collection {CollectionId}", artworkId, collectionId);
+            return Json(new { success = false, error = "Failed to add artwork to collection" });
+        }
+    }
+
+    /// <summary>
+    /// Get user collections for Add to Collection modal (AJAX endpoint)
+    /// </summary>
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> GetUserCollections()
+    {
+        try
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var collections = await _collectionService.GetUserCollectionsAsync(userId);
+
+            var result = collections.Select(c => new
+            {
+                id = c.Id,
+                name = c.Name,
+                description = c.Description,
+                artworkCount = c.Artworks?.Count ?? 0
+            });
+
+            return Json(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching user collections");
+            return Json(new { error = "Failed to load collections" });
         }
     }
 }
