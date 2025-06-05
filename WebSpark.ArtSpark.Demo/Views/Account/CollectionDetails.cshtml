@@ -96,7 +96,8 @@
                             <div class="text-muted mb-2">
                                 <small>
                                     <i class="bi bi-calendar me-1"></i>
-                                    Created @Model.Collection.CreatedAt.ToString("MMMM dd, yyyy")                                    @if (Model.Collection.UpdatedAt.HasValue)
+                                    Created @Model.Collection.CreatedAt.ToString("MMMM dd, yyyy")
+                                    @if (Model.Collection.UpdatedAt.HasValue)
                                     {
                                         <span class="mx-2">•</span>
                                         <i class="bi bi-pencil me-1"></i>
@@ -163,7 +164,9 @@
                 @if (!string.IsNullOrWhiteSpace(Model.Collection.Description))
                 {
                     <div class="card-body border-bottom">
-                        <p class="card-text mb-0">@Model.Collection.Description</p>
+                        <div class="card-text mb-0">
+                            @Html.Raw(Html.Encode(Model.Collection.Description).Replace("\n", "<br>"))
+                        </div>
                     </div>
                 }
                 
