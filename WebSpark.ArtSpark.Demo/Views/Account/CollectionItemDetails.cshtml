@@ -1,11 +1,11 @@
-@model CollectionItemDetailsViewModel
+@model WebSpark.ArtSpark.Demo.Models.CollectionItemDetailsViewModel
 @using WebSpark.ArtSpark.Demo.Utilities
 @{
     ViewData["Title"] = Model.MetaTitle ?? Model.Title;
     ViewData["Description"] = Model.MetaDescription ?? Model.Description;
     ViewData["Keywords"] = Model.Keywords;
 
-    var canonicalUrl = $"/collection/{Model.CollectionSlug}/item/{Model.Slug}";
+    var canonicalUrl = $"/my/collection/{Model.CollectionSlug}/item/{Model.Slug}";
     ViewData["CanonicalUrl"] = canonicalUrl;
 
     var socialImageUrl = !string.IsNullOrEmpty(Model.SocialImageUrl) ? Model.SocialImageUrl : Model.ImageUrl;
@@ -43,21 +43,21 @@
 
     <!-- Structured Data -->
     <script type="application/ld+json">
-        {
-            "@@context": "https://schema.org",
-            "@@type": "VisualArtwork",
-            "name": "@Html.Raw(Html.Encode(Model.Title))",
-            "description": "@Html.Raw(Html.Encode(Model.Description ?? ""))"@if (!string.IsNullOrEmpty(Model.ImageUrl)){
-            <text>,
-            "image": "@Model.ImageUrl"</text>
+            {
+                "@@context": "https://schema.org",
+                "@@type": "VisualArtwork",
+                "name": "@Html.Raw(Html.Encode(Model.Title))",
+                "description": "@Html.Raw(Html.Encode(Model.Description ?? ""))"@if (!string.IsNullOrEmpty(Model.ImageUrl)){
+                <text>,
+                "image": "@Model.ImageUrl"</text>
         }
 @if (!string.IsNullOrEmpty(Model.Artist))
 {
-            <text>,
-            "creator": {
-                "@@type": "Person",
-                "name": "@Html.Raw(Html.Encode(Model.Artist))"
-            }</text>
+                <text>,
+                "creator": {
+                    "@@type": "Person",
+                    "name": "@Html.Raw(Html.Encode(Model.Artist))"
+                }</text>
         }
 ,
         "isPartOf": {
@@ -67,7 +67,7 @@
         }@if (Model.UpdatedAt.HasValue){
         <text>,
         "dateModified": "@Model.UpdatedAt?.ToString("yyyy-MM-dd")"</text>
-                }
+                                }
     }
     </script>
 }

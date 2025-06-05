@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using WebSpark.ArtSpark.Client.Interfaces;
 using WebSpark.ArtSpark.Client.Models.Collections;
 using WebSpark.ArtSpark.Demo.Data;
@@ -388,6 +389,7 @@ public class PublicCollectionService : IPublicCollectionService
                     enrichedArtwork.IsHighlighted = collectionArtwork.IsHighlighted;
                     enrichedArtwork.DisplayOrder = collectionArtwork.DisplayOrder;
                     enrichedArtwork.AddedAt = collectionArtwork.AddedAt;
+                    enrichedArtwork.Slug = collectionArtwork.Slug ?? collectionArtwork.ArtworkId.ToString(); // Add slug, fallback to ArtworkId
 
                     enrichedArtworks.Add(enrichedArtwork);
                 }
@@ -404,7 +406,8 @@ public class PublicCollectionService : IPublicCollectionService
                         CuratorNotes = collectionArtwork.CuratorNotes,
                         IsHighlighted = collectionArtwork.IsHighlighted,
                         DisplayOrder = collectionArtwork.DisplayOrder,
-                        AddedAt = collectionArtwork.AddedAt
+                        AddedAt = collectionArtwork.AddedAt,
+                        Slug = collectionArtwork.Slug ?? collectionArtwork.ArtworkId.ToString() // Add slug, fallback to ArtworkId
                     });
                 }
             }
@@ -426,7 +429,6 @@ public class PublicCollectionService : IPublicCollectionService
             ArtworkCount = enrichedArtworks.Count
         };
     }
-
     private async Task<EnrichedArtworkViewModel?> GetEnrichedArtworkAsync(int artworkId)
     {
         try
@@ -436,9 +438,15 @@ public class PublicCollectionService : IPublicCollectionService
             {
                 return null;
             }
-            return new EnrichedArtworkViewModel
+            var enrichedArtwork = new EnrichedArtworkViewModel
             {
-                ArtworkId = Convert.ToInt32(artwork.Id),
+                ArtworkId = artwork.Id switch
+                {
+                    int id => id,
+                    JsonElement jsonElement when jsonElement.TryGetInt32(out var id) => id,
+                    string idStr when int.TryParse(idStr, out var id) => id,
+                    _ => 0
+                },
                 Title = artwork.Title ?? "Untitled",
                 Artist = artwork.ArtistDisplay ?? "Unknown Artist",
                 DateDisplay = artwork.DateDisplay,
@@ -448,11 +456,11 @@ public class PublicCollectionService : IPublicCollectionService
                 Description = artwork.Description,
                 ImageId = artwork.ImageId,
                 ImageUrl = !string.IsNullOrEmpty(artwork.ImageId)
-                    ? $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/843,/0/default.jpg"
-                    : null,
+                  ? $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/843,/0/default.jpg"
+                  : null,
                 ThumbnailUrl = !string.IsNullOrEmpty(artwork.ImageId)
-                    ? $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/400,/0/default.jpg"
-                    : null,
+                  ? $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/400,/0/default.jpg"
+                  : null,
                 StyleTitle = artwork.StyleTitle,
                 ClassificationTitle = artwork.ClassificationTitle,
                 DepartmentTitle = artwork.DepartmentTitle,
@@ -463,6 +471,8 @@ public class PublicCollectionService : IPublicCollectionService
                 ExhibitionHistory = artwork.ExhibitionHistory,
                 ProvenanceText = artwork.ProvenanceText
             };
+
+            return enrichedArtwork;
         }
         catch (Exception ex)
         {

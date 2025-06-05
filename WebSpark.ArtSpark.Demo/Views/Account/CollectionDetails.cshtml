@@ -5,7 +5,7 @@
     ViewData["Description"] = Model.Collection.MetaDescription ?? Model.Collection.Description;
     ViewData["Keywords"] = Model.Collection.MetaKeywords;
     
-    var canonicalUrl = $"/collection/{Model.Collection.Slug}";
+    var canonicalUrl = $"/my/collection/{Model.Collection.Slug}";
     ViewData["CanonicalUrl"] = canonicalUrl;
     
     if (!string.IsNullOrEmpty(Model.Collection.SocialImageUrl))
@@ -341,13 +341,27 @@
                             <i class="bi bi-plus-circle me-1"></i>Add More Artworks
                         </a>
                     }
-                </div>
-
-                <div class="row">
+                </div>                <div class="row">
                     @foreach (var artwork in Model.Artworks.OrderBy(a => a.DisplayOrder).ThenByDescending(a => a.AddedAt))
                     {
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                             <div class="card h-100 shadow-sm">
+                                <!-- Artwork Image -->
+                                <div class="position-relative">
+                                    <div class="artwork-image-container" 
+                                         data-artwork-id="@artwork.ArtworkId" 
+                                         style="height: 200px; background: #f8f9fa;">
+                                        <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                            <div class="text-center">
+                                                <div class="spinner-border spinner-border-sm mb-2" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                                <div class="small">Loading image...</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div>
@@ -358,7 +372,7 @@
                                                 }
                                                 else
                                                 {
-                                                    <span>Artwork #@artwork.ArtworkId</span>
+                                                    <span class="artwork-title" data-artwork-id="@artwork.ArtworkId">Artwork #@artwork.ArtworkId</span>
                                                 }
                                             </h6>
                                             @if (artwork.IsHighlighted)
@@ -432,8 +446,7 @@
     </form>
 }
 
-@section Scripts {
-    <script>
+@section Scripts {    <script>
         function removeFromCollection(artworkId, collectionId) {
             if (confirm('Are you sure you want to remove this artwork from the collection?')) {
                 document.getElementById('collectionId').value = collectionId;
@@ -446,5 +459,63 @@
             // Implement edit collection functionality or redirect to edit page
             window.location.href = '/Account/EditCollection/' + collectionId;
         }
+
+        // Load artwork images and titles
+        document.addEventListener('DOMContentLoaded', function() {
+            const artworkContainers = document.querySelectorAll('.artwork-image-container');
+            const artworkTitles = document.querySelectorAll('.artwork-title');
+            
+            artworkContainers.forEach(async function(container) {
+                const artworkId = container.getAttribute('data-artwork-id');
+                
+                try {
+                    // Fetch artwork data from Art Institute API
+                    const response = await fetch(`https://api.artic.edu/api/v1/artworks/${artworkId}?fields=id,title,image_id,artist_display`);
+                    const data = await response.json();
+                    
+                    if (data && data.data) {
+                        const artwork = data.data;
+                        
+                        // Update image
+                        if (artwork.image_id) {
+                            const imageUrl = `https://www.artic.edu/iiif/2/${artwork.image_id}/full/400,/0/default.jpg`;
+                            container.innerHTML = `
+                                <img src="${imageUrl}" 
+                                     class="card-img-top" 
+                                     alt="${artwork.title || 'Artwork'}"
+                                     style="height: 200px; object-fit: cover;"
+                                     loading="lazy">
+                            `;
+                        } else {
+                            // No image available
+                            container.innerHTML = `
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                     style="height: 200px;">
+                                    <i class="bi bi-image display-4 text-muted"></i>
+                                </div>
+                            `;
+                        }
+                        
+                        // Update title if it's using the default format
+                        const titleElement = document.querySelector(`.artwork-title[data-artwork-id="${artworkId}"]`);
+                        if (titleElement && artwork.title) {
+                            titleElement.textContent = artwork.title;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading artwork:', artworkId, error);
+                    // Show error state
+                    container.innerHTML = `
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                             style="height: 200px;">
+                            <div class="text-center text-muted">
+                                <i class="bi bi-exclamation-triangle display-6 mb-2"></i>
+                                <div class="small">Image unavailable</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        });
     </script>
 }

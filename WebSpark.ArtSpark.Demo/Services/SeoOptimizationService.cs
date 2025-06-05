@@ -175,7 +175,7 @@ Respond only with valid JSON.";
     /// </summary>
     private static string CreateArtworkOptimizationPrompt(ArtworkData artworkData)
     {
-        return $@"You are an expert SEO copywriter and art curator specializing in creating engaging, search-engine-optimized content for individual artworks in collections.
+        return $@"You are an expert SEO copywriter and art curator specializing in creating engaging, search-engine-optimized content for an individual artwork.
 
 Based on the following artwork information, create comprehensive SEO-optimized content:
 
@@ -194,20 +194,22 @@ Please provide a JSON response with the following structure:
 {{
     ""customTitle"": ""enhanced title for collection context (optional, max 200 chars)"",
     ""customDescription"": ""engaging description for this artwork in collection context (max 1000 chars)"",
-    ""curatorNotes"": ""professional insights about significance, technique, or historical context"",
+    ""curatorNotes"": ""professional insights about significance, technique, cultural significance, and its appearance in popular culture"",
     ""metaTitle"": ""SEO-optimized title (max 60 chars)"",
     ""metaDescription"": ""SEO meta description (max 160 chars)""
 }}
 
 Guidelines:
-- Enhance the artwork's appeal within a collection context
-- Create compelling, keyword-rich descriptions
+- Create a fun, compelling, keyword-rich description
 - Provide professional curatorial insights
+- Reference the artwork's historical and cultural significance and appearance in popular culture
 - Ensure meta content is optimized for search engines
 - Use relevant art terminology and historical context
 - Make descriptions accessible to both art experts and general audiences
-- Include information about technique, style, and cultural significance
+- Include information about technique, style, cultural significance, and its appearance in popular culture
 - Ensure all character limits are respected
+- Focus on making the artwork discoverable and appealing
+- Ensure the descriptions are engaging and informative
 
 Respond only with valid JSON.";
     }

@@ -363,6 +363,7 @@ public class EnrichedArtworkViewModel
     public string? PublicationHistory { get; set; }
     public string? ExhibitionHistory { get; set; }
     public string? ProvenanceText { get; set; }
+    public string? Slug { get; set; } // Added for SEO-friendly URLs
 
     // Collection-specific information
     public string? CollectionCustomTitle { get; set; }

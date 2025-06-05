@@ -400,13 +400,15 @@ public class AccountController : Controller
         return RedirectToAction(nameof(CollectionDetails), new { id = collectionId });
     }
 
-    #region SEO-Friendly Collection Routes    /// <summary>
-    /// SEO-friendly collection details view accessible by slug
+    #region SEO-Friendly Collection Routes
+
+    /// <summary>
+    /// SEO-friendly collection details view accessible by slug for user's own collections
     /// </summary>
     /// <param name="slug">Collection slug</param>
     /// <returns>Collection details view</returns>
     [HttpGet]
-    [Route("Collection/{slug}")]
+    [Route("my/collection/{slug}")]
     public async Task<IActionResult> CollectionDetails(string slug)
     {
         if (string.IsNullOrEmpty(slug))
@@ -429,14 +431,14 @@ public class AccountController : Controller
         }
 
         return View("CollectionDetails", model);
-    }
-
-    /// <summary>
-    /// SEO-friendly collection item details view
-    /// </summary>
-    /// <param name="collectionSlug">Collection slug</param>
-    /// <param name="itemSlug">Item slug</param>
-    /// <returns>Collection item details view</returns>    [HttpGet]
+    }    /// <summary>
+         /// SEO-friendly collection item details view for user's own collections
+         /// </summary>
+         /// <param name="collectionSlug">Collection slug</param>
+         /// <param name="itemSlug">Item slug</param>
+         /// <returns>Collection item details view</returns>
+    [HttpGet]
+    [Route("my/collection/{collectionSlug}/item/{itemSlug}")]
     public async Task<IActionResult> CollectionItemDetails(string collectionSlug, string itemSlug)
     {
         if (string.IsNullOrEmpty(collectionSlug) || string.IsNullOrEmpty(itemSlug))
