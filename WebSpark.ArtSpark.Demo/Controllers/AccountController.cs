@@ -342,13 +342,13 @@ public class AccountController : Controller
         {
             return NotFound();
         }
-
         var artworks = await _collectionService.GetCollectionArtworksAsync(id, user.Id);
 
         var model = new CollectionDetailsViewModel
         {
             Collection = collection,
-            Artworks = artworks
+            Artworks = artworks,
+            CanEdit = true  // User is authenticated and is the owner when accessing via Account controller
         };
 
         return View(model);

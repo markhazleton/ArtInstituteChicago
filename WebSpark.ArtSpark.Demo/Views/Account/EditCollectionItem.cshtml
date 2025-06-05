@@ -121,12 +121,14 @@
                     </div>
                 </div>
 
-                <!-- SEO & Metadata -->
-                <div class="card mb-4">
-                    <div class="card-header">
+                <!-- SEO & Metadata -->                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bi bi-search me-2"></i>SEO & Metadata
                         </h5>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="optimizeSeoBtn">
+                            <i class="bi bi-magic me-1"></i>Optimize SEO
+                        </button>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
@@ -150,6 +152,20 @@
                                 characters - Appears in search results
                             </div>
                             <span asp-validation-for="MetaDescription" class="text-danger"></span>
+                        </div>
+
+                        <!-- SEO Tips -->
+                        <div class="alert alert-info">
+                            <h6><i class="bi bi-info-circle me-2"></i>SEO Tips for Collection Items</h6>
+                            <ul class="mb-0 ps-3">
+                                <li>Use unique, descriptive titles under 60 characters</li>
+                                <li>Include relevant keywords in your descriptions</li>
+                                <li>Descriptions should be compelling and under 160 characters</li>
+                                <li>Consider using the artwork's medium, artist, or period in your keywords</li>
+                                <li>Ensure your custom title includes the most important terms first</li>
+                                <li>Make your description actionable and include a call to action when relevant</li>
+                                <li>Use the original artwork's metadata to inform your SEO strategy</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -318,44 +334,127 @@
                     {
                         event.preventDefault();
                         event.stopPropagation();
+                    }                form.classList.add('was-validated');
+                });
+            }
+            
+            // SEO Optimization
+            const optimizeSeoBtn = document.getElementById('optimizeSeoBtn');
+            if (optimizeSeoBtn) {
+                optimizeSeoBtn.addEventListener('click', async function() {
+                    const button = this;
+                    const originalText = button.innerHTML;
+                    
+                    // Get data for optimization
+                    const artworkTitle = '@Model.ArtworkTitle';
+                    const artworkArtist = '@Model.ArtworkArtist';
+                    const customTitle = document.getElementById('CustomTitle').value;
+                    const customDescription = document.getElementById('CustomDescription').value;
+                    
+                    if (!customDescription.trim() && !customTitle.trim()) {
+                        alert('Please enter a custom title or description first to optimize SEO content.');
+                        return;
                     }
-                    form.classList.add('was-validated');
+                    
+                    try {
+                        // Update button to show loading state
+                        button.innerHTML = '<i class="bi bi-arrow-repeat me-1 spin"></i>Optimizing...';
+                        button.disabled = true;
+                        
+                        const response = await fetch('/api/SeoOptimization/optimize-artwork', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': document.querySelector('[name="__RequestVerificationToken"]').value
+                            },
+                            body: JSON.stringify({
+                                collectionId: @Model.CollectionId,
+                                artworkData: {
+                                    id: @Model.ArtworkId,
+                                    title: artworkTitle,
+                                    artist: artworkArtist,
+                                    customTitle: customTitle,
+                                    customDescription: customDescription
+                                }
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            const result = await response.json();
+                            
+                            if (result.success && result.collectionArtwork) {
+                                // Update form fields with optimized content
+                                if (result.collectionArtwork.customTitle) {
+                                    document.getElementById('CustomTitle').value = result.collectionArtwork.customTitle;
+                                }
+                                if (result.collectionArtwork.customDescription) {
+                                    document.getElementById('CustomDescription').value = result.collectionArtwork.customDescription;
+                                }
+                                if (result.collectionArtwork.curatorNotes) {
+                                    document.getElementById('CuratorNotes').value = result.collectionArtwork.curatorNotes;
+                                }
+                                if (result.collectionArtwork.metaTitle) {
+                                    document.getElementById('MetaTitle').value = result.collectionArtwork.metaTitle;
+                                }
+                                if (result.collectionArtwork.metaDescription) {
+                                    document.getElementById('MetaDescription').value = result.collectionArtwork.metaDescription;
+                                }
+                                if (result.collectionArtwork.slug) {
+                                    document.getElementById('Slug').value = result.collectionArtwork.slug;
+                                    document.getElementById('Slug').dataset.autoGenerated = 'false';
+                                }
+                                
+                                // Update character counters
+                                document.querySelectorAll('.character-count').forEach(counter => {
+                                    const targetName = counter.getAttribute('data-target');
+                                    const targetElement = document.querySelector(`[name="${targetName}"]`);
+                                    if (targetElement) {
+                                        counter.textContent = targetElement.value.length;
+                                    }
+                                });
+                                
+                                // Show success message
+                                const alertDiv = document.createElement('div');
+                                alertDiv.className = 'alert alert-success alert-dismissible fade show mt-3';
+                                alertDiv.innerHTML = `
+                                    <i class="bi bi-check-circle me-2"></i>SEO content optimized successfully!
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                `;
+                                button.parentNode.appendChild(alertDiv);
+                                
+                                // Auto-dismiss after 5 seconds
+                                setTimeout(() => {
+                                    if (alertDiv.parentNode) {
+                                        alertDiv.remove();
+                                    }
+                                }, 5000);
+                            } else {
+                                throw new Error(result.errorMessage || 'Failed to optimize SEO content');
+                            }
+                        } else {
+                            throw new Error(`Server error: ${response.status}`);
+                        }
+                    } catch (error) {
+                        console.error('SEO optimization error:', error);
+                        alert('Failed to optimize SEO content. Please try again.');
+                    } finally {
+                        // Restore button
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }
                 });
             }
         });
     </script>
+    
+    <style>
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+        
+        @@keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
 }
-
-                   
-               
-                                   
-                                   
-                                
-                               
-                                   
-                               
-                               
-                                                                       
-                               
-                                                                       
-                               
-                                   
-                               
-                       
-                           
-                                
-       
-           
-                
-                   
-if(percentage>=90)
-
-                       
-                       
-            
-               
-                    
-               
-            
-               
-                   
