@@ -62,7 +62,11 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 builder.Services.AddScoped<ICollectionService, CollectionService>();
+builder.Services.AddScoped<IPublicCollectionService, PublicCollectionService>();
 builder.Services.AddSingleton<IBuildInfoService, BuildInfoService>();
+
+// Add SEO Optimization Service
+builder.Services.AddScoped<ISeoOptimizationService, SeoOptimizationService>();
 
 // Add HttpClient factory (required for WebSpark.HttpClientUtility)
 builder.Services.AddHttpClient();
@@ -125,7 +129,7 @@ app.MapStaticAssets();
 app.MapControllerRoute(
     name: "collectionBySlug",
     pattern: "collection/{slug}",
-    defaults: new { controller = "Account", action = "CollectionDetails" });
+    defaults: new { controller = "PublicCollections", action = "Details" });
 
 app.MapControllerRoute(
     name: "collectionItemBySlug",
@@ -140,12 +144,27 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "publicCollections",
     pattern: "explore/collections",
-    defaults: new { controller = "Home", action = "Collections" });
+    defaults: new { controller = "PublicCollections", action = "Index" });
 
 app.MapControllerRoute(
     name: "featuredCollections",
     pattern: "explore/featured",
-    defaults: new { controller = "Home", action = "FeaturedCollections" });
+    defaults: new { controller = "PublicCollections", action = "Featured" });
+
+app.MapControllerRoute(
+    name: "recentCollections",
+    pattern: "explore/recent",
+    defaults: new { controller = "PublicCollections", action = "Recent" });
+
+app.MapControllerRoute(
+    name: "popularCollections",
+    pattern: "explore/popular",
+    defaults: new { controller = "PublicCollections", action = "Popular" });
+
+app.MapControllerRoute(
+    name: "collectionsByTag",
+    pattern: "explore/collections/tag/{tag}",
+    defaults: new { controller = "PublicCollections", action = "ByTag" });
 
 app.MapControllerRoute(
     name: "default",
@@ -193,8 +212,9 @@ static void RegisterHttpClientUtilities(WebApplicationBuilder builder)
         IHttpRequestResultService cacheService = new HttpRequestResultServiceCache(
             telemetryService,
             serviceProvider.GetRequiredService<ILogger<HttpRequestResultServiceCache>>(),
-            serviceProvider.GetRequiredService<IMemoryCache>());
-
-        return cacheService;
+            serviceProvider.GetRequiredService<IMemoryCache>()); return cacheService;
     });
 }
+
+// Make the Program class accessible for testing
+public partial class Program { }

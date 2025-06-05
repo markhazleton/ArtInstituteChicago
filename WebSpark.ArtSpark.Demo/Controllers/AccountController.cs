@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebSpark.ArtSpark.Demo.Models;
 using WebSpark.ArtSpark.Demo.Services;
 using WebSpark.ArtSpark.Client.Interfaces;
+using WebSpark.ArtSpark.Demo.Utilities;
 
 namespace WebSpark.ArtSpark.Demo.Controllers;
 
@@ -14,13 +15,15 @@ public class AccountController : Controller
     private readonly ILogger<AccountController> _logger;
     private readonly IFavoriteService _favoriteService;
     private readonly ICollectionService _collectionService;
-    private readonly IArtInstituteClient _artInstituteClient; public AccountController(
+    private readonly IArtInstituteClient _artInstituteClient;
+    private readonly ISeoOptimizationService _seoOptimizationService; public AccountController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         ILogger<AccountController> logger,
         IFavoriteService favoriteService,
         ICollectionService collectionService,
-        IArtInstituteClient artInstituteClient)
+        IArtInstituteClient artInstituteClient,
+        ISeoOptimizationService seoOptimizationService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -28,6 +31,7 @@ public class AccountController : Controller
         _favoriteService = favoriteService;
         _collectionService = collectionService;
         _artInstituteClient = artInstituteClient;
+        _seoOptimizationService = seoOptimizationService;
     }
 
     [HttpGet]
@@ -208,18 +212,29 @@ public class AccountController : Controller
     {
         return View(new CreateCollectionViewModel());
     }
-
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateCollection(CreateCollectionViewModel model)
     {
+        // If we have an EditCollectionViewModel, we need to generate a slug
+        if (model is EditCollectionViewModel editModel)
+        {
+            string slug = SlugGenerator.GenerateSlug(model.Name);
+            editModel.Slug = slug;
+
+            // Revalidate with the slug
+            ModelState.Clear();
+            TryValidateModel(model);
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        var user = await _userManager.GetUserAsync(User); if (user == null)
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
         {
             return NotFound();
         }
@@ -228,6 +243,89 @@ public class AccountController : Controller
         TempData["SuccessMessage"] = "Collection created successfully!";
         return RedirectToAction(nameof(Collections));
     }
+
+    [Authorize]
+    [HttpGet]
+    [Route("Account/EditCollection/{id:int}")]
+    public async Task<IActionResult> EditCollection(int id)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var collection = await _collectionService.GetCollectionByIdAsync(id, user.Id);
+        if (collection == null)
+        {
+            return NotFound();
+        }
+
+        var model = new EditCollectionViewModel
+        {
+            Id = collection.Id,
+            Slug = collection.Slug,
+            Name = collection.Name,
+            Description = collection.Description ?? string.Empty,
+            LongDescription = collection.LongDescription ?? string.Empty,
+            CuratorNotes = collection.CuratorNotes ?? string.Empty,
+            Tags = collection.Tags ?? string.Empty,
+            IsPublic = collection.IsPublic,
+            IsFeatured = collection.IsFeatured,
+            FeaturedUntil = collection.FeaturedUntil,
+            MetaTitle = collection.MetaTitle ?? string.Empty,
+            MetaDescription = collection.MetaDescription ?? string.Empty,
+            MetaKeywords = collection.MetaKeywords ?? string.Empty,
+            SocialImageUrl = collection.SocialImageUrl ?? string.Empty,
+            CreatedAt = collection.CreatedAt,
+            ViewCount = collection.ViewCount
+        };
+
+        return View(model);
+    }
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("Account/EditCollection/{id:int}")]
+    public async Task<IActionResult> EditCollection(int id, EditCollectionViewModel model)
+    {
+        if (id != model.Id)
+        {
+            return BadRequest();
+        }
+
+        // Generate slug from the name first before validation
+        string slug = SlugGenerator.GenerateSlug(model.Name);
+        model.Slug = slug;
+
+        // Now validate the model with the generated slug
+        ModelState.Clear();
+        TryValidateModel(model);
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var success = await _collectionService.UpdateCollectionAsync(id, model, user.Id);
+        if (success)
+        {
+            TempData["SuccessMessage"] = "Collection updated successfully!";
+            return RedirectToAction(nameof(CollectionDetails), new { id = id });
+        }
+        else
+        {
+            TempData["ErrorMessage"] = "Unable to update collection. Please try again.";
+            return View(model);
+        }
+    }
+
     [Authorize]
     [HttpGet]
     [Route("Account/Collection/{id:int}")]
@@ -390,21 +488,169 @@ public class AccountController : Controller
             CustomDescription = collectionArtwork.CustomDescription,
             CuratorNotes = collectionArtwork.CuratorNotes,
             DisplayOrder = collectionArtwork.DisplayOrder,
-            IsHighlighted = collectionArtwork.IsHighlighted,
-
-            // SEO fields for the collection item
+            IsHighlighted = collectionArtwork.IsHighlighted,            // SEO fields for the collection item
             MetaTitle = collectionArtwork.MetaTitle,
             MetaDescription = collectionArtwork.MetaDescription,
-            // Collection info
+            Keywords = $"{artwork?.ArtistDisplay}, {artwork?.Title}, {collection.Name}",
+            SocialImageUrl = !string.IsNullOrEmpty(artwork?.ImageId)
+                ? $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/1200,630/0/default.jpg"
+                : null,            // Collection info
+            CollectionId = collection.Id,
             CollectionSlug = collection.Slug,
             CollectionTitle = collection.Name,
             CollectionDescription = collection.Description,
+
+            // Timestamps
+            UpdatedAt = collectionArtwork.AddedAt, // Use AddedAt as fallback for UpdatedAt
 
             // Control flags
             CanEdit = userId != null && collection.UserId == userId
         };
 
         return View(model);
+    }
+
+    [Authorize]
+    [HttpGet]
+    [Route("Account/EditCollectionItem/{collectionId:int}/{artworkId:int}")]
+    public async Task<IActionResult> EditCollectionItem(int collectionId, int artworkId)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var collection = await _collectionService.GetCollectionByIdAsync(collectionId, user.Id);
+        if (collection == null)
+        {
+            return NotFound();
+        }
+
+        var collectionArtwork = collection.Artworks.FirstOrDefault(a => a.ArtworkId == artworkId);
+        if (collectionArtwork == null)
+        {
+            return NotFound();
+        }
+
+        // Fetch artwork details from the API
+        var artwork = await _artInstituteClient.GetArtworkAsync(artworkId);
+
+        var model = new EditCollectionItemViewModel
+        {
+            Id = collectionArtwork.Id,
+            CollectionId = collectionId,
+            ArtworkId = artworkId,
+            AddedAt = collectionArtwork.AddedAt,
+            Slug = collectionArtwork.Slug ?? string.Empty,
+            CustomTitle = collectionArtwork.CustomTitle ?? string.Empty,
+            CustomDescription = collectionArtwork.CustomDescription ?? string.Empty,
+            CuratorNotes = collectionArtwork.CuratorNotes ?? string.Empty,
+            DisplayOrder = collectionArtwork.DisplayOrder,
+            IsHighlighted = collectionArtwork.IsHighlighted,
+            MetaTitle = collectionArtwork.MetaTitle ?? string.Empty,
+            MetaDescription = collectionArtwork.MetaDescription ?? string.Empty,
+
+            // Additional properties for display
+            CollectionName = collection.Name,
+            CollectionSlug = collection.Slug,
+            ArtworkTitle = artwork?.Title ?? "Unknown Title",
+            ArtworkArtist = artwork?.ArtistDisplay ?? "Unknown Artist",
+            ArtworkImageUrl = !string.IsNullOrEmpty(artwork?.ImageId)
+                ? $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/400,/0/default.jpg"
+                : null
+        };
+
+        return View(model);
+    }
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("Account/EditCollectionItem/{collectionId:int}/{artworkId:int}")]
+    public async Task<IActionResult> EditCollectionItem(int collectionId, int artworkId, EditCollectionItemViewModel model)
+    {
+        if (collectionId != model.CollectionId || artworkId != model.ArtworkId)
+        {
+            return BadRequest();
+        }
+
+        var userId = _userManager.GetUserId(User);
+        if (userId == null)
+        {
+            return NotFound();
+        }
+
+        // If there's no slug, generate one from the custom title or artwork title
+        if (string.IsNullOrEmpty(model.Slug))
+        {
+            var slug = SlugGenerator.GenerateSlug(!string.IsNullOrEmpty(model.CustomTitle) ? model.CustomTitle : model.ArtworkTitle);
+            model.Slug = slug;
+            // If we modified the model, we need to revalidate
+            ModelState.Clear();
+            TryValidateModel(model);
+        }
+
+        if (!ModelState.IsValid)
+        {
+            // Re-populate display properties if validation fails
+            var collection = await _collectionService.GetCollectionByIdAsync(collectionId, userId);
+            var artwork = await _artInstituteClient.GetArtworkAsync(artworkId);
+
+            model.CollectionName = collection?.Name ?? string.Empty;
+            model.CollectionSlug = collection?.Slug ?? string.Empty;
+            model.ArtworkTitle = artwork?.Title ?? "Unknown Title";
+            model.ArtworkArtist = artwork?.ArtistDisplay ?? "Unknown Artist";
+            model.ArtworkImageUrl = !string.IsNullOrEmpty(artwork?.ImageId)
+                ? $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/400,/0/default.jpg"
+                : null;
+
+            return View(model);
+        }
+
+        // Create updated artwork object
+        var updatedArtwork = new CollectionArtwork
+        {
+            Slug = model.Slug,
+            CustomTitle = model.CustomTitle,
+            CustomDescription = model.CustomDescription,
+            CuratorNotes = model.CuratorNotes,
+            DisplayOrder = model.DisplayOrder,
+            IsHighlighted = model.IsHighlighted,
+            MetaTitle = model.MetaTitle,
+            MetaDescription = model.MetaDescription
+        };
+
+        // Update the collection artwork with the new values
+        var success = await _collectionService.UpdateCollectionArtworkAsync(
+            collectionId,
+            artworkId,
+            userId,
+            updatedArtwork
+        );
+
+        if (success)
+        {
+            TempData["SuccessMessage"] = "Collection item updated successfully!";
+            return RedirectToAction(nameof(CollectionDetails), new { id = collectionId });
+        }
+        else
+        {
+            TempData["ErrorMessage"] = "Unable to update collection item. Please try again.";
+
+            // Re-populate display properties for error case
+            var collection = await _collectionService.GetCollectionByIdAsync(collectionId, userId);
+            var artwork = await _artInstituteClient.GetArtworkAsync(artworkId);
+
+            model.CollectionName = collection?.Name ?? string.Empty;
+            model.CollectionSlug = collection?.Slug ?? string.Empty;
+            model.ArtworkTitle = artwork?.Title ?? "Unknown Title";
+            model.ArtworkArtist = artwork?.ArtistDisplay ?? "Unknown Artist";
+            model.ArtworkImageUrl = !string.IsNullOrEmpty(artwork?.ImageId)
+                ? $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/400,/0/default.jpg"
+                : null;
+
+            return View(model);
+        }
     }
 
     #endregion

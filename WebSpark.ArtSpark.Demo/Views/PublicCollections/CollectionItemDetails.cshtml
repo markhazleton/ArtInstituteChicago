@@ -4,10 +4,10 @@
     ViewData["Title"] = Model.MetaTitle ?? Model.Title;
     ViewData["Description"] = Model.MetaDescription ?? Model.Description;
     ViewData["Keywords"] = Model.Keywords;
-
+    
     var canonicalUrl = $"/collection/{Model.CollectionSlug}/item/{Model.Slug}";
     ViewData["CanonicalUrl"] = canonicalUrl;
-
+    
     var socialImageUrl = !string.IsNullOrEmpty(Model.SocialImageUrl) ? Model.SocialImageUrl : Model.ImageUrl;
     if (!string.IsNullOrEmpty(socialImageUrl))
     {
@@ -25,7 +25,7 @@
         <meta property="og:image" content="@socialImageUrl" />
         <meta property="og:image:alt" content="@Model.Title" />
     }
-
+    
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="@(Model.MetaTitle ?? Model.Title)" />
     <meta name="twitter:description" content="@(Model.MetaDescription ?? Model.Description)" />
@@ -33,41 +33,32 @@
     {
         <meta name="twitter:image" content="@socialImageUrl" />
     }
-
+    
     @if (!string.IsNullOrEmpty(Model.Keywords))
     {
         <meta name="keywords" content="@Model.Keywords" />
     }
-
+    
     <link rel="canonical" href="@canonicalUrl" />
-
+    
     <!-- Structured Data -->
     <script type="application/ld+json">
-        {
-            "@@context": "https://schema.org",
-            "@@type": "VisualArtwork",
-            "name": "@Html.Raw(Html.Encode(Model.Title))",
-            "description": "@Html.Raw(Html.Encode(Model.Description ?? ""))"@if (!string.IsNullOrEmpty(Model.ImageUrl)){
-            <text>,
-            "image": "@Model.ImageUrl"</text>
-        }
-@if (!string.IsNullOrEmpty(Model.Artist))
-{
-            <text>,
-            "creator": {
-                "@@type": "Person",
-                "name": "@Html.Raw(Html.Encode(Model.Artist))"
-            }</text>
-        }
-,
+    {
+        "@@context": "https://schema.org",
+        "@@type": "VisualArtwork",
+        "name": "@Html.Raw(Html.Encode(Model.Title))",
+        "description": "@Html.Raw(Html.Encode(Model.Description ?? ""))"@if (!string.IsNullOrEmpty(Model.ImageUrl)){<text>,
+        "image": "@Model.ImageUrl"</text>}@if (!string.IsNullOrEmpty(Model.Artist)){<text>,
+        "creator": {
+            "@@type": "Person",
+            "name": "@Html.Raw(Html.Encode(Model.Artist))"
+        }</text>},
         "isPartOf": {
             "@@type": "Collection",
             "name": "@Html.Raw(Html.Encode(Model.CollectionTitle))",
             "url": "/collection/@Model.CollectionSlug"
-        }@if (Model.UpdatedAt.HasValue){
-        <text>,
-        "dateModified": "@Model.UpdatedAt?.ToString("yyyy-MM-dd")"</text>
-                }
+        }@if (Model.UpdatedAt.HasValue){<text>,
+        "dateModified": "@Model.UpdatedAt?.ToString("yyyy-MM-dd")"</text>}
     }
     </script>
 }
@@ -77,9 +68,9 @@
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Home</a></li>
-            <li class="breadcrumb-item"><a href="/collections">Collections</a></li>
+            <li class="breadcrumb-item"><a href="/explore/collections">Explore Collections</a></li>
             <li class="breadcrumb-item">
-                <a href="@UrlHelper.CollectionUrl(Url, Model.CollectionSlug)">@Model.CollectionTitle</a>
+                <a href="/collection/@Model.CollectionSlug">@Model.CollectionTitle</a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
         </ol>
@@ -91,25 +82,25 @@
             <!-- Item Header -->
             <div class="mb-4">
                 <h1 class="display-4 mb-3">@Model.Title</h1>
-
+                
                 @if (!string.IsNullOrEmpty(Model.Artist))
                 {
                     <p class="lead text-muted mb-2">
                         <i class="fas fa-user-circle me-2"></i>by @Model.Artist
                     </p>
                 }
-
+                
                 @if (Model.Year.HasValue)
                 {
                     <p class="text-muted mb-3">
                         <i class="fas fa-calendar me-2"></i>@Model.Year
                     </p>
                 }
-
+                
                 @if (Model.IsHighlighted)
                 {
                     <span class="badge bg-warning text-dark mb-3">
-                        <i class="fas fa-star me-1"></i>Highlighted
+                        <i class="fas fa-star me-1"></i>Featured
                     </span>
                 }
             </div>
@@ -119,14 +110,19 @@
             {
                 <div class="card mb-4">
                     <div class="position-relative">
-                        <img src="@Model.ImageUrl" alt="@Model.Title" class="card-img-top img-fluid"
-                            style="max-height: 600px; object-fit: contain; background: #f8f9fa;">
-
+                        <img src="@Model.ImageUrl" 
+                             alt="@Model.Title" 
+                             class="card-img-top img-fluid"
+                             style="max-height: 600px; object-fit: contain; background: #f8f9fa;">
+                        
                         @if (!string.IsNullOrEmpty(Model.ExternalUrl))
                         {
                             <div class="position-absolute top-0 end-0 m-3">
-                                <a href="@Model.ExternalUrl" target="_blank" rel="noopener noreferrer"
-                                    class="btn btn-outline-light btn-sm" title="View Original">
+                                <a href="@Model.ExternalUrl" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn-outline-light btn-sm"
+                                   title="View Original">
                                     <i class="fas fa-external-link-alt"></i>
                                 </a>
                             </div>
@@ -141,7 +137,7 @@
                 <div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <i class="fas fa-info-circle me-2"></i>Description
+                            <i class="fas fa-info-circle me-2"></i>About This Artwork
                         </h5>
                         <div class="card-text">
                             @Html.Raw(Html.Encode(Model.Description).Replace("\n", "<br>"))
@@ -165,13 +161,13 @@
                 </div>
             }
 
-            <!-- Curator Notes -->
+            <!-- Additional Curator Notes -->
             @if (!string.IsNullOrEmpty(Model.CuratorNotes))
             {
                 <div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <i class="fas fa-sticky-note me-2"></i>Additional Notes
+                            <i class="fas fa-sticky-note me-2"></i>Additional Information
                         </h5>
                         <div class="card-text">
                             @Html.Raw(Html.Encode(Model.CuratorNotes).Replace("\n", "<br>"))
@@ -187,12 +183,13 @@
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-collection me-2"></i>Collection
+                        <i class="fas fa-layer-group me-2"></i>Collection
                     </h5>
                 </div>
                 <div class="card-body">
                     <h6 class="card-title">
-                        <a href="/collection/@Model.CollectionSlug" class="text-decoration-none">
+                        <a href="/collection/@Model.CollectionSlug" 
+                           class="text-decoration-none">
                             @Model.CollectionTitle
                         </a>
                     </h6>
@@ -203,15 +200,14 @@
                         </p>
                     }
                     <div class="d-grid gap-2">
-                        <a href="/collection/@Model.CollectionSlug" class="btn btn-outline-primary btn-sm">
+                        <a href="/collection/@Model.CollectionSlug" 
+                           class="btn btn-outline-primary btn-sm">
                             <i class="fas fa-arrow-left me-2"></i>Back to Collection
-                        </a> @if (Model.CanEdit)
-                        {
-                            <a asp-action="EditCollectionItem" asp-route-collectionId="@Model.CollectionId"
-                                asp-route-artworkId="@Model.Id" class="btn btn-outline-warning btn-sm">
-                                <i class="fas fa-edit me-2"></i>Edit Item
-                            </a>
-                        }
+                        </a>
+                        <a href="/explore/collections" 
+                           class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-search me-2"></i>Explore More Collections
+                        </a>
                     </div>
                 </div>
             </div>
@@ -220,7 +216,7 @@
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-info me-2"></i>Details
+                        <i class="fas fa-info me-2"></i>Artwork Details
                     </h5>
                 </div>
                 <div class="card-body">
@@ -230,25 +226,25 @@
                             <strong>Medium:</strong> @Model.Medium
                         </div>
                     }
-
+                    
                     @if (!string.IsNullOrEmpty(Model.Dimensions))
                     {
                         <div class="mb-2">
                             <strong>Dimensions:</strong> @Model.Dimensions
                         </div>
                     }
-
+                    
                     @if (Model.DisplayOrder > 0)
                     {
                         <div class="mb-2">
                             <strong>Position:</strong> #@Model.DisplayOrder in collection
                         </div>
                     }
-
+                    
                     @if (Model.UpdatedAt.HasValue)
                     {
                         <div class="mb-2">
-                            <strong>Last Updated:</strong>
+                            <strong>Added:</strong> 
                             <time datetime="@Model.UpdatedAt?.ToString("yyyy-MM-dd")">
                                 @Model.UpdatedAt?.ToString("MMMM d, yyyy")
                             </time>
@@ -263,10 +259,16 @@
                 <div class="card mb-4">
                     <div class="card-body text-center">
                         <h6 class="card-title mb-3">
-                            <i class="fas fa-link me-2"></i>External Resource
+                            <i class="fas fa-link me-2"></i>Original Source
                         </h6>
-                        <a href="@Model.ExternalUrl" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
-                            <i class="fas fa-external-link-alt me-2"></i>View Original
+                        <p class="text-muted small mb-3">
+                            View this artwork at its original location
+                        </p>
+                        <a href="@Model.ExternalUrl" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           class="btn btn-primary">
+                            <i class="fas fa-external-link-alt me-2"></i>View at Art Institute
                         </a>
                     </div>
                 </div>
@@ -276,23 +278,27 @@
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-share me-2"></i>Share
+                        <i class="fas fa-share me-2"></i>Share This Artwork
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a href="https://twitter.com/intent/tweet?url=@Uri.EscapeDataString(ViewData["CanonicalUrl"]?.ToString() ?? "")&text=@Uri.EscapeDataString($"Check out \"{Model.Title}\" from the {Model.CollectionTitle} collection")"
-                            target="_blank" rel="noopener noreferrer" class="btn btn-outline-info btn-sm">
-                            <i class="fab fa-twitter me-2"></i>Tweet
+                    <div class="d-grid gap-2">                        <a href="https://twitter.com/intent/tweet?url=@Uri.EscapeDataString(Context.Request.Scheme + "://" + Context.Request.Host + canonicalUrl)&text=@Uri.EscapeDataString($"Check out \"{Model.Title}\" from the {Model.CollectionTitle} collection")" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           class="btn btn-outline-info btn-sm">
+                            <i class="fab fa-twitter me-2"></i>Share on Twitter
                         </a>
-
-                        <a href="https://www.facebook.com/sharer/sharer.php?u=@Uri.EscapeDataString(ViewData["CanonicalUrl"]?.ToString() ?? "")"
-                            target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm">
-                            <i class="fab fa-facebook me-2"></i>Share
+                        
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=@Uri.EscapeDataString(Context.Request.Scheme + "://" + Context.Request.Host + canonicalUrl)" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="fab fa-facebook me-2"></i>Share on Facebook
                         </a>
-
-                        <button type="button" class="btn btn-outline-secondary btn-sm"
-                            onclick="copyToClipboard('@ViewData["CanonicalUrl"]')">
+                        
+                        <button type="button" 
+                                class="btn btn-outline-secondary btn-sm"
+                                onclick="copyToClipboard('@(Context.Request.Scheme + "://" + Context.Request.Host + canonicalUrl)')">>
                             <i class="fas fa-copy me-2"></i>Copy Link
                         </button>
                     </div>
@@ -304,25 +310,21 @@
 
 @section Scripts {
     <script>
-        function copyToClipboard(text)
-        {
-            navigator.clipboard.writeText(text).then(function ()
-            {
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
                 // Show success message
                 const button = event.target.closest('button');
                 const originalText = button.innerHTML;
                 button.innerHTML = '<i class="fas fa-check me-2"></i>Copied!';
                 button.classList.remove('btn-outline-secondary');
                 button.classList.add('btn-success');
-
-                setTimeout(function ()
-                {
+                
+                setTimeout(function() {
                     button.innerHTML = originalText;
                     button.classList.remove('btn-success');
                     button.classList.add('btn-outline-secondary');
                 }, 2000);
-            }).catch(function (err)
-            {
+            }).catch(function(err) {
                 console.error('Failed to copy: ', err);
                 alert('Failed to copy link to clipboard');
             });

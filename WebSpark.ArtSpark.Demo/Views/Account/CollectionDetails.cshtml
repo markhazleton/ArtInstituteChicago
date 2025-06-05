@@ -131,10 +131,9 @@
                                 <div class="dropdown">
                                     <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="bi bi-gear me-1"></i>Manage
-                                    </button>
-                                    <ul class="dropdown-menu">
+                                    </button>                                    <ul class="dropdown-menu">
                                         <li>
-                                            <a class="dropdown-item" href="#" onclick="editCollection(@Model.Collection.Id)">
+                                            <a class="dropdown-item" asp-action="EditCollection" asp-route-id="@Model.Collection.Id">
                                                 <i class="bi bi-pencil me-2"></i>Edit Collection
                                             </a>
                                         </li>
@@ -395,14 +394,19 @@
                                                asp-route-itemSlug="@artwork.Slug"
                                                class="btn btn-outline-primary btn-sm">
                                                 <i class="bi bi-eye me-1"></i>View Item Details
-                                            </a>
-                                        }
+                                            </a>                                        }
                                         <a asp-controller="Artwork" asp-action="Details" asp-route-id="@artwork.ArtworkId" 
                                            class="btn btn-outline-secondary btn-sm">
                                             <i class="bi bi-palette me-1"></i>View Artwork
                                         </a>
                                         @if (Model.CanEdit)
                                         {
+                                            <a asp-action="EditCollectionItem" 
+                                               asp-route-collectionId="@Model.Collection.Id" 
+                                               asp-route-artworkId="@artwork.ArtworkId"
+                                               class="btn btn-outline-warning btn-sm">
+                                                <i class="bi bi-pencil me-1"></i>Edit Item
+                                            </a>
                                             <button type="button" class="btn btn-outline-danger btn-sm" 
                                                     onclick="removeFromCollection(@artwork.ArtworkId, '@Model.Collection.Id')">
                                                 <i class="bi bi-x-circle me-1"></i>Remove

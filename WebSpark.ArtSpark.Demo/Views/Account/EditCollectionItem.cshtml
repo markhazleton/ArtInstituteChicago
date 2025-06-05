@@ -1,0 +1,361 @@
+@model WebSpark.ArtSpark.Demo.Models.EditCollectionItemViewModel
+@{
+    ViewData["Title"] = $"Edit Collection Item - {Model.ArtworkTitle}";
+}
+
+@section Meta {
+    <meta name="robots" content="noindex,nofollow" />
+}
+
+<div class="container-fluid">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/Account/Collections">My Collections</a></li>
+            <li class="breadcrumb-item"><a
+                    href="/Account/CollectionDetails/@Model.CollectionId">@Model.CollectionName</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Item</li>
+        </ol>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Edit Collection Item</h1>
+            <p class="text-muted mb-0">Customize how this artwork appears in your collection</p>
+        </div>
+        <a asp-action="CollectionDetails" asp-route-id="@Model.CollectionId" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to Collection
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Edit Form -->
+        <div class="col-lg-8">
+            <form asp-action="EditCollectionItem" asp-route-collectionId="@Model.CollectionId"
+                asp-route-artworkId="@Model.ArtworkId" method="post" class="needs-validation" novalidate>
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.Id)
+                @Html.HiddenFor(m => m.CollectionId)
+                @Html.HiddenFor(m => m.ArtworkId)
+                @Html.HiddenFor(m => m.AddedAt)
+
+                <!-- Basic Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-pencil-square me-2"></i>Basic Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CustomTitle" class="form-label">Custom Title</label>
+                                <input asp-for="CustomTitle" class="form-control"
+                                    placeholder="Leave blank to use original title" maxlength="200">
+                                <div class="form-text">Override the original artwork title for this collection</div>
+                                <span asp-validation-for="CustomTitle" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Slug" class="form-label">URL Slug</label>
+                                <input asp-for="Slug" class="form-control" placeholder="auto-generated-from-title"
+                                    maxlength="100">
+                                <div class="form-text">Used in the URL for this item (leave blank to auto-generate)
+                                </div>
+                                <span asp-validation-for="Slug" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CustomDescription" class="form-label">Custom Description</label>
+                            <textarea asp-for="CustomDescription" class="form-control" rows="4" maxlength="1000"
+                                placeholder="Add your own description or context for this artwork..."></textarea>
+                            <div class="form-text">
+                                <span class="character-count"
+                                    data-target="CustomDescription">@(Model.CustomDescription?.Length ?? 0)</span>/1000
+                                characters
+                            </div>
+                            <span asp-validation-for="CustomDescription" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CuratorNotes" class="form-label">Curator Notes</label>
+                            <textarea asp-for="CuratorNotes" class="form-control" rows="3" maxlength="2000"
+                                placeholder="Private notes about this artwork (visible to collection viewers)..."></textarea>
+                            <div class="form-text">
+                                <span class="character-count" data-target="CuratorNotes">@(Model.CuratorNotes?.Length ??
+                                                                        0)</span>/2000 characters
+                            </div>
+                            <span asp-validation-for="CuratorNotes" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collection Settings -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-collection me-2"></i>Collection Settings
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DisplayOrder" class="form-label">Display Order</label>
+                                <input asp-for="DisplayOrder" type="number" class="form-control" min="0" max="9999">
+                                <div class="form-text">Position in collection (0 = no specific order)</div>
+                                <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check mt-4">
+                                    <input asp-for="IsHighlighted" class="form-check-input" type="checkbox">
+                                    <label asp-for="IsHighlighted" class="form-check-label">
+                                        <i class="bi bi-star me-1"></i>Highlight this item
+                                    </label>
+                                    <div class="form-text">Featured items appear prominently in the collection</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEO & Metadata -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-search me-2"></i>SEO & Metadata
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="MetaTitle" class="form-label">SEO Title</label>
+                            <input asp-for="MetaTitle" class="form-control" maxlength="60"
+                                placeholder="Search engine title (leave blank to auto-generate)">
+                            <div class="form-text">
+                                <span class="character-count" data-target="MetaTitle">@(Model.MetaTitle?.Length ??
+                                                                        0)</span>/60 characters - Appears in search results
+                            </div>
+                            <span asp-validation-for="MetaTitle" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MetaDescription" class="form-label">SEO Description</label>
+                            <textarea asp-for="MetaDescription" class="form-control" rows="3" maxlength="160"
+                                placeholder="Brief description for search engines..."></textarea>
+                            <div class="form-text">
+                                <span class="character-count"
+                                    data-target="MetaDescription">@(Model.MetaDescription?.Length ?? 0)</span>/160
+                                characters - Appears in search results
+                            </div>
+                            <span asp-validation-for="MetaDescription" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2 mb-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-1"></i>Save Changes
+                    </button>
+                    <a asp-action="CollectionDetails" asp-route-id="@Model.CollectionId" class="btn btn-secondary">
+                        <i class="bi bi-x-lg me-1"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Artwork Preview -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-eye me-2"></i>Artwork Preview
+                    </h5>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.ArtworkImageUrl))
+                {
+                    <img src="@Model.ArtworkImageUrl" alt="@Model.ArtworkTitle" class="card-img-top"
+                        style="max-height: 300px; object-fit: contain; background: #f8f9fa;">
+                }
+                <div class="card-body">
+                    <h6 class="card-title">@Model.ArtworkTitle</h6>
+                    <p class="card-text text-muted mb-2">@Model.ArtworkArtist</p>
+                    <small class="text-muted">Added @Model.AddedAt.ToString("MMMM d, yyyy")</small>
+                </div>
+            </div>
+
+            <!-- Collection Info -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-collection me-2"></i>Collection
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">@Model.CollectionName</h6>
+                    <div class="d-grid gap-2">
+                        <a asp-action="CollectionDetails" asp-route-id="@Model.CollectionId"
+                            class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-eye me-1"></i>View Collection
+                        </a>
+                        @if (!string.IsNullOrEmpty(Model.CollectionSlug))
+                        {
+                            <a href="/collection/@Model.CollectionSlug" class="btn btn-outline-secondary btn-sm"
+                                target="_blank">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Public View
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help & Tips -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightbulb me-2"></i>Tips
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle text-success me-2"></i>
+                            <small>Custom titles help contextualize artworks for your audience</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle text-success me-2"></i>
+                            <small>Display order controls the sequence in your collection</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle text-success me-2"></i>
+                            <small>Highlighted items get special visual treatment</small>
+                        </li>
+                        <li class="mb-0">
+                            <i class="bi bi-check-circle text-success me-2"></i>
+                            <small>SEO fields improve search engine visibility</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Character counter functionality
+        document.addEventListener('DOMContentLoaded', function ()
+        {
+            const characterCounters = document.querySelectorAll('.character-count');
+
+            characterCounters.forEach(counter =>
+            {
+                const targetName = counter.getAttribute('data-target');
+                const targetElement = document.querySelector(`[name="${targetName}"]`);
+
+                if (targetElement)
+                {
+                    targetElement.addEventListener('input', function ()
+                    {
+                        counter.textContent = this.value.length;
+
+                        // Update counter color based on limit
+                        const maxLength = parseInt(this.getAttribute('maxlength')) || 0;
+                        const currentLength = this.value.length;
+                        const percentage = (currentLength / maxLength) * 100;
+
+                        if (percentage >= 90)
+                        {
+                            counter.className = 'character-count text-danger';
+                        } else if (percentage >= 75)
+                        {
+                            counter.className = 'character-count text-warning';
+                        } else
+                        {
+                            counter.className = 'character-count text-muted';
+                        }
+                    });
+                }
+            });
+
+            // Auto-generate slug from custom title
+            const customTitleInput = document.querySelector('[name="CustomTitle"]');
+            const slugInput = document.querySelector('[name="Slug"]');
+
+            if (customTitleInput && slugInput)
+            {
+                customTitleInput.addEventListener('input', function ()
+                {
+                    if (!slugInput.value || slugInput.dataset.autoGenerated === 'true')
+                    {
+                        const slug = this.value
+                            .toLowerCase()
+                            .replace(/[^\w\s-]/g, '')
+                            .replace(/[\s_-]+/g, '-')
+                            .replace(/^-+|-+$/g, '');
+
+                        slugInput.value = slug;
+                        slugInput.dataset.autoGenerated = 'true';
+                    }
+                });
+
+                slugInput.addEventListener('input', function ()
+                {
+                    this.dataset.autoGenerated = 'false';
+                });
+            }
+
+            // Form validation
+            const form = document.querySelector('.needs-validation');
+            if (form)
+            {
+                form.addEventListener('submit', function (event)
+                {
+                    if (!form.checkValidity())
+                    {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                });
+            }
+        });
+    </script>
+}
+
+                   
+               
+                                   
+                                   
+                                
+                               
+                                   
+                               
+                               
+                                                                       
+                               
+                                                                       
+                               
+                                   
+                               
+                       
+                           
+                                
+       
+           
+                
+                   
+if(percentage>=90)
+
+                       
+                       
+            
+               
+                    
+               
+            
+               
+                   

@@ -1,0 +1,448 @@
+@model WebSpark.ArtSpark.Demo.Models.EditCollectionViewModel
+@{
+    ViewData["Title"] = "Edit Collection";
+}
+
+<div class="container-fluid px-3 px-lg-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="card-title mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>Edit Collection: @Model.Name
+                    </h4>
+                    <small class="text-muted">
+                        Created: @Model.CreatedAt.ToString("MMMM dd, yyyy") | Views: @Model.ViewCount
+                    </small>
+                </div>
+                <div class="card-body">
+                    <form asp-action="EditCollection" asp-route-id="@Model.Id" method="post" class="needs-validation"
+                        novalidate>
+                        <input asp-for="Id" type="hidden" />
+                        <input asp-for="Slug" type="hidden" />
+                        <input asp-for="CreatedAt" type="hidden" />
+                        <input asp-for="ViewCount" type="hidden" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <!-- Basic Information Section -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="bi bi-info-circle me-2"></i>Basic Information
+                                </h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Name" class="form-label">
+                                        <i class="bi bi-collection me-1"></i>Collection Name
+                                    </label>
+                                    <input asp-for="Name" class="form-control" placeholder="Enter collection name"
+                                        required autofocus />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Tags" class="form-label">
+                                        <i class="bi bi-tags me-1"></i>Tags
+                                    </label>
+                                    <input asp-for="Tags" class="form-control"
+                                        placeholder="art, modern, sculpture (comma-separated)" />
+                                    <span asp-validation-for="Tags" class="text-danger"></span>
+                                    <div class="form-text">Separate tags with commas to help others find your collection
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">
+                                <i class="bi bi-chat-text me-1"></i>Short Description
+                            </label>
+                            <textarea asp-for="Description" class="form-control" rows="3"
+                                placeholder="Brief description of your collection..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                            <div class="form-text">Brief overview that appears in collection listings</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="LongDescription" class="form-label">
+                                <i class="bi bi-file-text me-1"></i>Detailed Description
+                            </label>
+                            <textarea asp-for="LongDescription" class="form-control" rows="5"
+                                placeholder="Detailed description, background, or story behind your collection..."></textarea>
+                            <span asp-validation-for="LongDescription" class="text-danger"></span>
+                            <div class="form-text">Detailed information that appears on the collection page</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="CuratorNotes" class="form-label">
+                                <i class="bi bi-journal-text me-1"></i>Curator Notes
+                            </label>
+                            <textarea asp-for="CuratorNotes" class="form-control" rows="4"
+                                placeholder="Your personal insights, observations, or research notes..."></textarea>
+                            <span asp-validation-for="CuratorNotes" class="text-danger"></span>
+                            <div class="form-text">Personal notes about the collection's significance or curation
+                                process</div>
+                        </div>
+
+                        <!-- Visibility and Features Section -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="border-bottom pb-2 mb-3 mt-4">
+                                    <i class="bi bi-eye me-2"></i>Visibility & Features
+                                </h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input asp-for="IsPublic" class="form-check-input" type="checkbox"
+                                            role="switch" />
+                                        <label asp-for="IsPublic" class="form-check-label">
+                                            <i class="bi bi-globe me-1"></i>Public Collection
+                                        </label>
+                                    </div>
+                                    <div class="form-text">
+                                        Public collections are visible to all users and can be featured
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input asp-for="IsFeatured" class="form-check-input" type="checkbox"
+                                            role="switch" />
+                                        <label asp-for="IsFeatured" class="form-check-label">
+                                            <i class="bi bi-star me-1"></i>Featured Collection
+                                        </label>
+                                    </div>
+                                    <div class="form-text">
+                                        Featured collections appear prominently on the site
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="FeaturedUntil" class="form-label">
+                                <i class="bi bi-calendar-event me-1"></i>Featured Until
+                            </label>
+                            <input asp-for="FeaturedUntil" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="FeaturedUntil" class="text-danger"></span>
+                            <div class="form-text">Optional end date for featured status</div>
+                        </div> <!-- SEO Section -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="border-bottom pb-2 mb-3 mt-4">
+                                    <i class="bi bi-search me-2"></i>SEO & Social Media
+                                    <button type="button" class="btn btn-outline-primary btn-sm float-end"
+                                        id="optimizeSeoBtn">
+                                        <i class="bi bi-magic me-1"></i>Optimize SEO
+                                    </button>
+                                </h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="MetaTitle" class="form-label">
+                                        <i class="bi bi-card-heading me-1"></i>SEO Title
+                                    </label>
+                                    <input asp-for="MetaTitle" class="form-control"
+                                        placeholder="Custom title for search engines" />
+                                    <span asp-validation-for="MetaTitle" class="text-danger"></span>
+                                    <div class="form-text">Optimized title for search engines (max 60 characters)</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="MetaKeywords" class="form-label">
+                                        <i class="bi bi-key me-1"></i>SEO Keywords
+                                    </label>
+                                    <input asp-for="MetaKeywords" class="form-control"
+                                        placeholder="art, collection, gallery, museum" />
+                                    <span asp-validation-for="MetaKeywords" class="text-danger"></span>
+                                    <div class="form-text">Keywords for search engine optimization</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MetaDescription" class="form-label">
+                                <i class="bi bi-card-text me-1"></i>SEO Description
+                            </label>
+                            <textarea asp-for="MetaDescription" class="form-control" rows="3"
+                                placeholder="Description for search engines and social media..."></textarea>
+                            <span asp-validation-for="MetaDescription" class="text-danger"></span>
+                            <div class="form-text">Description for search engines and social media (max 160 characters)
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="SocialImageUrl" class="form-label">
+                                <i class="bi bi-image me-1"></i>Social Media Image URL
+                            </label>
+                            <input asp-for="SocialImageUrl" class="form-control" type="url"
+                                placeholder="https://example.com/image.jpg" />
+                            <span asp-validation-for="SocialImageUrl" class="text-danger"></span>
+                            <div class="form-text">Image that appears when sharing on social media</div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div
+                            class="d-grid gap-2 d-md-flex justify-content-md-between align-items-center mt-4 pt-3 border-top">
+                            <div>
+                                <a asp-action="CollectionDetails" asp-route-id="@Model.Id"
+                                    class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-1"></i>Back to Collection
+                                </a>
+                            </div>
+                            <div class="d-grid gap-2 d-md-flex">
+                                <a asp-action="Collections" class="btn btn-outline-secondary">
+                                    <i class="bi bi-list me-1"></i>All Collections
+                                </a>
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="bi bi-check-lg me-1"></i>Update Collection
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Collection Statistics -->
+            <div class="mt-4">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">
+                                    <i class="bi bi-calendar-plus me-1"></i>Created
+                                </h6>
+                                <p class="card-text">@Model.CreatedAt.ToString("MMM dd, yyyy")</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">
+                                    <i class="bi bi-eye me-1"></i>Views
+                                </h6>
+                                <p class="card-text">@Model.ViewCount.ToString("N0")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Section -->
+            <div class="mt-4">
+                <div class="alert alert-info">
+                    <h6 class="alert-heading">
+                        <i class="bi bi-lightbulb me-1"></i>Collection Editing Tips
+                    </h6>
+                    <ul class="mb-0">
+                        <li><strong>SEO Fields:</strong> Help your collection be discovered through search engines</li>
+                        <li><strong>Tags:</strong> Use relevant keywords to make your collection easier to find</li>
+                        <li><strong>Descriptions:</strong> The short description appears in listings, while the long
+                            description appears on the collection page</li>
+                        <li><strong>Featured Status:</strong> Only public collections can be featured</li>
+                        <li><strong>Curator Notes:</strong> Share your expertise and insights about the collection</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Auto-populate SEO title if empty when collection name changes
+        document.getElementById('Name').addEventListener('input', function ()
+        {
+            const metaTitleField = document.getElementById('MetaTitle');
+            if (!metaTitleField.value)
+            {
+                metaTitleField.value = this.value;
+            }
+        });
+
+        // Character counter for meta description
+        const metaDescField = document.getElementById('MetaDescription');
+        if (metaDescField)
+        {
+            const counter = document.createElement('small');
+            counter.className = 'form-text text-muted';
+            metaDescField.parentNode.appendChild(counter);
+
+            function updateCounter()
+            {
+                const remaining = 160 - metaDescField.value.length;
+                counter.textContent = `${metaDescField.value.length}/160 characters`;
+                counter.className = remaining < 0 ? 'form-text text-danger' : 'form-text text-muted';
+            }
+
+            metaDescField.addEventListener('input', updateCounter);
+            updateCounter();
+        }
+
+        // Character counter for meta title
+        const metaTitleField = document.getElementById('MetaTitle');
+        if (metaTitleField)
+        {
+            const counter = document.createElement('small');
+            counter.className = 'form-text text-muted mt-1';
+            metaTitleField.parentNode.appendChild(counter);
+
+            function updateTitleCounter()
+            {
+                const remaining = 60 - metaTitleField.value.length;
+                counter.textContent = `${metaTitleField.value.length}/60 characters`;
+                counter.className = remaining < 0 ? 'form-text text-danger mt-1' : 'form-text text-muted mt-1';
+            }
+
+            metaTitleField.addEventListener('input', updateTitleCounter);
+            updateTitleCounter();
+        }
+
+        // SEO Optimization functionality
+        document.getElementById('optimizeSeoBtn').addEventListener('click', async function ()
+        {
+            const button = this;
+            const originalText = button.innerHTML;
+
+            // Get current description for optimization
+            const description = document.getElementById('Description').value ||
+                document.getElementById('LongDescription').value ||
+                document.getElementById('Name').value;
+
+            if (!description.trim())
+            {
+                alert('Please enter a description first to optimize SEO content.');
+                return;
+            }
+
+            try
+            {
+                // Update button to show loading state
+                button.innerHTML = '<i class="bi bi-arrow-repeat me-1 spin"></i>Optimizing...';
+                button.disabled = true;
+
+                const response = await fetch('/api/SeoOptimization/optimize-collection', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({
+                        description: description
+                    })
+                });
+
+                if (response.ok)
+                {
+                    const result = await response.json();
+
+                    if (result.success && result.collection)
+                    {
+                        // Update form fields with optimized content
+                        if (result.collection.name && !document.getElementById('Name').value)
+                        {
+                            document.getElementById('Name').value = result.collection.name;
+                        }
+                        if (result.collection.description)
+                        {
+                            document.getElementById('Description').value = result.collection.description;
+                        }
+                        if (result.collection.longDescription)
+                        {
+                            document.getElementById('LongDescription').value = result.collection.longDescription;
+                        }
+                        if (result.collection.metaTitle)
+                        {
+                            document.getElementById('MetaTitle').value = result.collection.metaTitle;
+                        }
+                        if (result.collection.metaDescription)
+                        {
+                            document.getElementById('MetaDescription').value = result.collection.metaDescription;
+                        }
+                        if (result.collection.metaKeywords)
+                        {
+                            document.getElementById('MetaKeywords').value = result.collection.metaKeywords;
+                        }
+                        if (result.collection.tags)
+                        {
+                            document.getElementById('Tags').value = result.collection.tags;
+                        }
+                        if (result.collection.curatorNotes)
+                        {
+                            document.getElementById('CuratorNotes').value = result.collection.curatorNotes;
+                        }
+
+                        // Update character counters
+                        updateCounter();
+                        updateTitleCounter();
+
+                        // Show success message
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = 'alert alert-success alert-dismissible fade show mt-3';
+                        alertDiv.innerHTML = `
+                                <i class="bi bi-check-circle me-2"></i>SEO content optimized successfully!
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            `;
+                        button.parentNode.appendChild(alertDiv);
+
+                        // Auto-dismiss after 5 seconds
+                        setTimeout(() =>
+                        {
+                            if (alertDiv.parentNode)
+                            {
+                                alertDiv.remove();
+                            }
+                        }, 5000);
+                    } else
+                    {
+                        throw new Error(result.errorMessage || 'Failed to optimize SEO content');
+                    }
+                } else
+                {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+            } catch (error)
+            {
+                console.error('SEO optimization error:', error);
+                alert('Failed to optimize SEO content. Please try again.');
+            } finally
+            {
+                // Restore button
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        });
+    </script>
+    <style>
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        @@keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+}
