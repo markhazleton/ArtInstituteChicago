@@ -345,6 +345,42 @@ public class ArtInstituteClient : IArtInstituteClient
                     }
                 }
             }
+        }; return await SearchArtworksAsync(query, cancellationToken);
+    }
+
+    /// <summary>
+    /// Search for artworks by artist name
+    /// </summary>
+    /// <param name="artistName">The artist name to search for</param>
+    /// <param name="limit">Maximum number of results to return (default 25, max 100)</param>
+    /// <param name="page">Page number for pagination</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Search response containing artworks by the specified artist</returns>
+    public async Task<SearchResponse<ArtWork>> GetArtworksByArtistAsync(string artistName, int? limit = null, int? page = null, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(artistName))
+        {
+            throw new ArgumentException("Artist name cannot be null or empty", nameof(artistName));
+        }
+
+        var query = new SearchQuery
+        {
+            Q = artistName,
+            Size = limit ?? 25,
+            From = page.HasValue && page > 1 ? (page.Value - 1) * (limit ?? 25) : 0,
+            Fields = "id,title,artist_display,date_display,medium_display,dimensions,image_id,thumbnail,style_title,style_titles,classification_title,place_of_origin",
+            Query = new
+            {
+                bool_ = new
+                {
+                    should = new object[]
+                    {
+                        new { match = new { artist_display = new { query = artistName, boost = 2.0 } } },
+                        new { match = new { artist_title = new { query = artistName, boost = 1.5 } } },
+                        new { match = new { artist_titles = new { query = artistName, boost = 1.0 } } }
+                    }
+                }
+            }
         };
 
         return await SearchArtworksAsync(query, cancellationToken);

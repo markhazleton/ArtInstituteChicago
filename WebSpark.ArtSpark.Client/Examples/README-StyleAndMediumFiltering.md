@@ -110,6 +110,18 @@ var abstractOils = await client.GetArtworksByStyleAndMediumAsync(
 );
 ```
 
+### `GetArtworksByArtistAsync`
+
+Search for artworks by artist name.
+
+```csharp
+var vanGoghWorks = await client.GetArtworksByArtistAsync(
+    "Van Gogh", 
+    limit: 20, 
+    page: 1
+);
+```
+
 ## Usage Examples
 
 ### Basic Style Filtering
@@ -161,6 +173,42 @@ foreach (ArtMedium medium in Enum.GetValues<ArtMedium>())
 }
 ```
 
+### Artist Search with Error Handling
+
+```csharp
+try
+{
+    var artistName = "Picasso";
+    var artworks = await client.GetArtworksByArtistAsync(artistName, limit: 15);
+    
+    if (artworks.Data?.Any() == true)
+    {
+        Console.WriteLine($"Found {artworks.Data.Count()} artworks by {artistName}");
+        
+        foreach (var artwork in artworks.Data)
+        {
+            Console.WriteLine($"- {artwork.Title}");
+            Console.WriteLine($"  Artist: {artwork.ArtistDisplay}");
+            Console.WriteLine($"  Date: {artwork.DateDisplay}");
+            Console.WriteLine($"  Medium: {artwork.MediumDisplay}");
+            Console.WriteLine();
+        }
+    }
+    else
+    {
+        Console.WriteLine($"No artworks found for artist: {artistName}");
+    }
+}
+catch (ArgumentException ex)
+{
+    Console.WriteLine($"Invalid artist name: {ex.Message}");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Error searching for artworks: {ex.Message}");
+}
+```
+
 ## Implementation Details
 
 ### Search Strategy
@@ -170,6 +218,7 @@ The methods use Elasticsearch queries to search across multiple relevant fields:
 - **Style searches** look in: `style_title`, `style_titles`
 - **Medium searches** look in: `medium_display`, `material_titles`
 - **Classification searches** look in: `classification_title`, `classification_titles`, `artwork_type_title`
+- **Artist searches** look in: `artist_display`, `artist_title`, `artist_titles` (with boosting for relevance)
 
 ### Pagination
 

@@ -4,12 +4,46 @@
 }
 
 <div class="container-fluid">
-    <div class="row align-items-center mb-5">
+    <div class="row align-items-center mb-4">
         <div class="col-12">
             <h1 class="h2 fw-bold text-body-emphasis mb-2">
                 <i class="bi bi-funnel me-2"></i>Filter Artworks
             </h1>
-            <p class="text-body-secondary mb-0">Discover artworks by style, medium, or classification using our advanced filtering options</p>
+            <p class="text-body-secondary mb-0">Discover artworks by style, medium, or classification using our advanced
+                filtering options</p>
+        </div>
+    </div> <!-- Search Bar -->
+    @await Html.PartialAsync("_SearchBar")
+
+    <!-- Artist Search Section -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-person-badge me-2"></i>Search by Artist
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text text-body-secondary mb-3">
+                        Find artworks by a specific artist name
+                    </p>
+                    <form asp-controller="ArtworkFilter" asp-action="ByArtist" method="get">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-9">
+                                <label for="artistName" class="form-label fw-semibold">Artist Name</label>
+                                <input type="text" class="form-control" id="artistName" name="artistName"
+                                    placeholder="Enter artist name (e.g., 'Van Gogh', 'Picasso', 'Monet')" required>
+                            </div>
+                            <div class="col-12 col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-dark w-100">
+                                    <i class="bi bi-search me-1"></i>Search Artworks
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -94,10 +128,12 @@
                     </p>
                     <form asp-controller="ArtworkFilter" asp-action="ByClassification" method="get">
                         <div class="mb-3">
-                            <label for="classificationSelect" class="form-label fw-semibold">Select Classification</label>
+                            <label for="classificationSelect" class="form-label fw-semibold">Select
+                                Classification</label>
                             <select class="form-select" id="classificationSelect" name="classification" required>
                                 <option value="">Choose a classification...</option>
-                                @foreach (ArtworkClassification classification in Enum.GetValues<ArtworkClassification>())
+                                @foreach (ArtworkClassification classification in
+                                                                Enum.GetValues<ArtworkClassification>())
                                 {
                                     <option value="@classification">@classification.GetDescription()</option>
                                 }
@@ -174,17 +210,18 @@
                                     <div class="row g-2">
                                         @{
                                             var popularStyles = new[] {
-                                                ArtStyle.Impressionism,
-                                                ArtStyle.Cubism,
-                                                ArtStyle.AbstractExpressionism,
-                                                ArtStyle.Surrealism 
-                                            };
+                                                                                ArtStyle.Impressionism,
+                                                                                ArtStyle.Cubism,
+                                                                                ArtStyle.AbstractExpressionism,
+                                                                                ArtStyle.Surrealism
+                                                                                };
                                         }
                                         @foreach (var style in popularStyles)
                                         {
                                             <div class="col-6">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="styles" value="@style" id="style_@style">
+                                                    <input class="form-check-input" type="checkbox" name="styles"
+                                                        value="@style" id="style_@style">
                                                     <label class="form-check-label" for="style_@style">
                                                         @style.GetDescription()
                                                     </label>
@@ -212,26 +249,27 @@
             </h3>
             <div class="row g-3">
                 <div class="col-6 col-md-3">
-                    <a asp-controller="ArtworkFilter" asp-action="ByStyle" asp-route-style="@ArtStyle.Impressionism" 
-                       class="btn btn-outline-primary w-100">
+                    <a asp-controller="ArtworkFilter" asp-action="ByStyle" asp-route-style="@ArtStyle.Impressionism"
+                        class="btn btn-outline-primary w-100">
                         <i class="bi bi-palette me-1"></i>Impressionism
                     </a>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a asp-controller="ArtworkFilter" asp-action="ByMedium" asp-route-medium="@ArtMedium.OilOnCanvas" 
-                       class="btn btn-outline-success w-100">
+                    <a asp-controller="ArtworkFilter" asp-action="ByMedium" asp-route-medium="@ArtMedium.OilOnCanvas"
+                        class="btn btn-outline-success w-100">
                         <i class="bi bi-brush me-1"></i>Oil on Canvas
                     </a>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a asp-controller="ArtworkFilter" asp-action="ByClassification" asp-route-classification="@ArtworkClassification.Painting" 
-                       class="btn btn-outline-info w-100">
+                    <a asp-controller="ArtworkFilter" asp-action="ByClassification"
+                        asp-route-classification="@ArtworkClassification.Painting" class="btn btn-outline-info w-100">
                         <i class="bi bi-image me-1"></i>Paintings
                     </a>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a asp-controller="ArtworkFilter" asp-action="ByClassification" asp-route-classification="@ArtworkClassification.Sculpture" 
-                       class="btn btn-outline-warning w-100">
+                    <a asp-controller="ArtworkFilter" asp-action="ByClassification"
+                        asp-route-classification="@ArtworkClassification.Sculpture"
+                        class="btn btn-outline-warning w-100">
                         <i class="bi bi-gem me-1"></i>Sculptures
                     </a>
                 </div>

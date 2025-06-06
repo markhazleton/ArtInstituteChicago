@@ -98,9 +98,9 @@ Each resource is accessible via methods on [`IArtInstituteClient`](./Interfaces/
 
 ---
 
-## Artwork Filtering by Style and Medium
+## Artwork Filtering by Style, Medium, and Artist
 
-The client now includes convenient enum-based methods for filtering artworks by common criteria:
+The client now includes convenient methods for filtering artworks by common criteria:
 
 ### Available Enums
 
@@ -119,6 +119,9 @@ var watercolors = await client.GetArtworksByMediumAsync(ArtMedium.Watercolor);
 
 // Filter by classification
 var sculptures = await client.GetArtworksByClassificationAsync(ArtworkClassification.Sculpture);
+
+// Filter by artist name
+var vanGoghWorks = await client.GetArtworksByArtistAsync("Van Gogh");
 
 // Combined filtering
 var abstractOils = await client.GetArtworksByStyleAndMediumAsync(

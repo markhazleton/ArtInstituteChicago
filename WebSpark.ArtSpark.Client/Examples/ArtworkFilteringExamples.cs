@@ -169,6 +169,71 @@ public class ArtworkFilteringExamples
     }
 
     /// <summary>
+    /// Example: Search for artworks by artist name
+    /// </summary>
+    public async Task GetArtworksByArtistExample()
+    {
+        var artistNames = new[] { "Van Gogh", "Picasso", "Monet", "Renoir" };
+
+        Console.WriteLine("Artworks by Famous Artists:");
+        Console.WriteLine("===========================");
+
+        foreach (var artistName in artistNames)
+        {
+            var artworks = await _client.GetArtworksByArtistAsync(artistName, limit: 5);
+            var count = artworks.Data?.Count() ?? 0;
+
+            Console.WriteLine($"\n{artistName}: {count} artworks found");
+
+            if (count > 0)
+            {
+                foreach (var artwork in artworks.Data!.Take(3))
+                {
+                    Console.WriteLine($"  - {artwork.Title}");
+                    Console.WriteLine($"    Artist: {artwork.ArtistDisplay}");
+                    Console.WriteLine($"    Date: {artwork.DateDisplay}");
+                    Console.WriteLine($"    Medium: {artwork.MediumDisplay}");
+                    Console.WriteLine();
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Example: Search for artworks by artist with pagination
+    /// </summary>
+    public async Task GetArtworksByArtistWithPaginationExample()
+    {
+        const string artistName = "Picasso";
+        const int pageSize = 10;
+        int currentPage = 1;
+        bool hasMore = true;
+
+        Console.WriteLine($"Artworks by {artistName} (paginated):");
+        Console.WriteLine("=====================================");
+
+        while (hasMore && currentPage <= 3) // Limit to first 3 pages for example
+        {
+            var artworks = await _client.GetArtworksByArtistAsync(
+                artistName,
+                limit: pageSize,
+                page: currentPage
+            );
+
+            Console.WriteLine($"\nPage {currentPage}:");
+            Console.WriteLine($"Found {artworks.Data?.Count() ?? 0} artworks on this page");
+
+            foreach (var artwork in artworks.Data ?? [])
+            {
+                Console.WriteLine($"- {artwork.Title} ({artwork.DateDisplay})");
+            }
+
+            hasMore = (artworks.Data?.Count() ?? 0) == pageSize;
+            currentPage++;
+        }
+    }
+
+    /// <summary>
     /// Example: Browse available enum values
     /// </summary>
     public void ShowAvailableFiltersExample()

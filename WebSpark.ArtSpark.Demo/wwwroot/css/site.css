@@ -458,3 +458,68 @@ body {
   white-space: nowrap !important;
   border: 0 !important;
 }
+
+/* Search Bar Component Styles */
+.search-bar-container {
+  position: relative;
+}
+
+.search-bar-container .card {
+  background: var(--bs-light);
+  border: 1px solid var(--bs-border-color-translucent);
+  transition: all 0.3s ease;
+}
+
+.search-bar-container .card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-2px);
+}
+
+.search-bar-container .input-group-text {
+  border: none;
+  font-size: 1.1rem;
+}
+
+.search-bar-container .form-control {
+  border: none;
+  box-shadow: none;
+  font-size: 1.1rem;
+}
+
+.search-bar-container .form-control:focus {
+  border: none;
+  box-shadow: 0 0 0 0.2rem rgba(37, 140, 251, 0.25);
+}
+
+.search-bar-container .btn {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Mobile responsiveness for search bar */
+@media (max-width: 767.98px) {
+  .search-bar-container .form-control {
+    font-size: 1rem;
+  }
+
+  .search-bar-container .btn {
+    font-size: 0.9rem;
+  }
+
+  .search-bar-container .input-group-text {
+    font-size: 1rem;
+  }
+}
+
+/* Search results badge styling */
+.search-bar-container .badge {
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+}
+
+/* Focus trap for better accessibility */
+.search-bar-container .form-control:focus + .input-group-text {
+  background-color: var(--bs-primary);
+  color: white;
+}

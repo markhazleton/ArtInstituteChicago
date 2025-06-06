@@ -329,11 +329,16 @@ public class PublicCollectionService : IPublicCollectionService
         {
             try
             {
+                // Get the actual artwork count from the database
+                var actualArtworkCount = await _context.CollectionArtworks
+                    .Where(ca => ca.CollectionId == collection.Id)
+                    .CountAsync();
+
                 var enrichedCollection = new PublicCollectionViewModel
                 {
                     Collection = collection,
                     CreatorDisplayName = collection.User?.DisplayName ?? "Unknown",
-                    ArtworkCount = collection.Artworks.Count(),
+                    ArtworkCount = actualArtworkCount,
                     PreviewArtworks = new List<EnrichedArtworkViewModel>(),
                     Tags = ParseTags(collection.Tags)
                 };
@@ -355,12 +360,17 @@ public class PublicCollectionService : IPublicCollectionService
             {
                 _logger.LogWarning(ex, "Error enriching collection {CollectionId}", collection.Id);
 
+                // Get the actual artwork count even in the error case
+                var fallbackArtworkCount = await _context.CollectionArtworks
+                    .Where(ca => ca.CollectionId == collection.Id)
+                    .CountAsync();
+
                 // Add basic collection without enrichment to avoid losing data
                 enrichedCollections.Add(new PublicCollectionViewModel
                 {
                     Collection = collection,
                     CreatorDisplayName = collection.User?.DisplayName ?? "Unknown",
-                    ArtworkCount = collection.Artworks.Count(),
+                    ArtworkCount = fallbackArtworkCount,
                     PreviewArtworks = new List<EnrichedArtworkViewModel>(),
                     Tags = ParseTags(collection.Tags)
                 });

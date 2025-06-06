@@ -216,4 +216,43 @@ public class ArtworkFilterController : Controller
             return View("Error");
         }
     }
+
+    /// <summary>
+    /// Filter artworks by artist name
+    /// </summary>
+    public async Task<IActionResult> ByArtist(string artistName, int page = 1, int limit = 12)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(artistName))
+            {
+                return View("Index");
+            }
+
+            var response = await _artInstituteClient.GetArtworksByArtistAsync(
+                artistName,
+                limit: limit,
+                page: page
+            );
+
+            if (response?.Data == null || !response.Data.Any())
+            {
+                _logger.LogWarning("No artworks returned for artist: {ArtistName}", artistName);
+                ViewBag.ArtistName = artistName;
+                ViewBag.ErrorMessage = "No artworks found for the specified artist.";
+                return View("FilterResults", response);
+            }
+
+            ViewBag.ArtistName = artistName;
+            ViewBag.FilterType = "Artist";
+            ViewBag.FilterValue = artistName;
+            return View("FilterResults", response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error filtering artworks by artist: {ArtistName}", artistName);
+            ViewBag.ErrorMessage = "An error occurred while filtering artworks.";
+            return View("Error");
+        }
+    }
 }

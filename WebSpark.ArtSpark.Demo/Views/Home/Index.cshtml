@@ -23,8 +23,7 @@
                     <a href="/explore/collections" class="btn btn-outline-primary btn-lg px-4">
                         <i class="bi bi-grid-3x3-gap me-2"></i>Discover Collections
                     </a>
-                </div>
-                <div class="mt-3">
+                </div>                <div class="mt-3">
                     <p class="small text-body-tertiary">
                         🎭 <strong>New!</strong> Chat with artworks using AI personas - experience art like never
                         before!
@@ -33,6 +32,11 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Search Bar Section -->
+<div class="container">
+    @await Html.PartialAsync("_SearchBar")
 </div>
 
 @if (Model.Any())

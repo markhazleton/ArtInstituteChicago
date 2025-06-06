@@ -19,6 +19,9 @@
             </div>
         </div>
     </div>
+    
+    <!-- Search Bar -->
+    @await Html.PartialAsync("_SearchBar")
 </div>
 
 @if (Model?.Data != null && Model.Data.Any())

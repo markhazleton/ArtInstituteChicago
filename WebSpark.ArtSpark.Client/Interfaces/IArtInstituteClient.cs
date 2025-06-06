@@ -20,13 +20,12 @@ public interface IArtInstituteClient
     Task<ApiResponse<ArtWork>> GetArtworksAsync(ApiQuery? query = null, CancellationToken cancellationToken = default);
     Task<ArtWork?> GetArtworkAsync(int id, string[]? fields = null, string[]? include = null, CancellationToken cancellationToken = default);
     Task<SearchResponse<ArtWork>> SearchArtworksAsync(SearchQuery query, CancellationToken cancellationToken = default);
-    Task<string> GetArtworkManifestAsync(int id, CancellationToken cancellationToken = default);
-
-    // Artwork filtering by style, medium, and classification
+    Task<string> GetArtworkManifestAsync(int id, CancellationToken cancellationToken = default);    // Artwork filtering by style, medium, classification, and artist
     Task<SearchResponse<ArtWork>> GetArtworksByStyleAsync(ArtStyle style, int? limit = null, int? page = null, CancellationToken cancellationToken = default);
     Task<SearchResponse<ArtWork>> GetArtworksByMediumAsync(ArtMedium medium, int? limit = null, int? page = null, CancellationToken cancellationToken = default);
     Task<SearchResponse<ArtWork>> GetArtworksByClassificationAsync(ArtworkClassification classification, int? limit = null, int? page = null, CancellationToken cancellationToken = default);
     Task<SearchResponse<ArtWork>> GetArtworksByStyleAndMediumAsync(ArtStyle style, ArtMedium medium, int? limit = null, int? page = null, CancellationToken cancellationToken = default);
+    Task<SearchResponse<ArtWork>> GetArtworksByArtistAsync(string artistName, int? limit = null, int? page = null, CancellationToken cancellationToken = default);
 
     // Agents (Artists, People, Organizations)
     Task<ApiResponse<Agent>> GetAgentsAsync(ApiQuery? query = null, CancellationToken cancellationToken = default);

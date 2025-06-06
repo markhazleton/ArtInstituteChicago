@@ -46,8 +46,7 @@ namespace ArtInstituteChicago.Client.Examples
                 // Test 3: Filter by Classification
                 Console.WriteLine("\n3. Testing GetArtworksByClassificationAsync with Painting:");
                 var paintings = await client.GetArtworksByClassificationAsync(ArtworkClassification.Painting, limit: 5);
-                Console.WriteLine($"Found {paintings.Data?.Count ?? 0} paintings");
-                if (paintings.Data?.Count > 0)
+                Console.WriteLine($"Found {paintings.Data?.Count ?? 0} paintings"); if (paintings.Data?.Count > 0)
                 {
                     foreach (var artwork in paintings.Data.Take(3))
                     {
@@ -55,8 +54,20 @@ namespace ArtInstituteChicago.Client.Examples
                     }
                 }
 
-                // Test 4: Filter by Style and Medium combined
-                Console.WriteLine("\n4. Testing GetArtworksByStyleAndMediumAsync with Modern Art + Sculpture:");
+                // Test 4: Filter by Artist
+                Console.WriteLine("\n4. Testing GetArtworksByArtistAsync with 'Van Gogh':");
+                var vanGoghArtworks = await client.GetArtworksByArtistAsync("Van Gogh", limit: 5);
+                Console.WriteLine($"Found {vanGoghArtworks.Data?.Count ?? 0} Van Gogh artworks");
+                if (vanGoghArtworks.Data?.Count > 0)
+                {
+                    foreach (var artwork in vanGoghArtworks.Data.Take(3))
+                    {
+                        Console.WriteLine($"  - {artwork.Title} by {artwork.ArtistDisplay}");
+                    }
+                }
+
+                // Test 5: Filter by Style and Medium combined
+                Console.WriteLine("\n5. Testing GetArtworksByStyleAndMediumAsync with Modern Art + Sculpture:");
                 var modernSculptures = await client.GetArtworksByStyleAndMediumAsync(
                     ArtStyle.ModernArt,
                     ArtMedium.Bronze,

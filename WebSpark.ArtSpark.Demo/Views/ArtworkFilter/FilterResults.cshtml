@@ -148,8 +148,7 @@
             var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
             var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
             var routeValues = new RouteValueDictionary();
-            
-            // Preserve current filter parameters
+              // Preserve current filter parameters
             if (ViewBag.Style != null)
             {
                 routeValues.Add("style", ViewBag.Style);
@@ -161,6 +160,10 @@
             if (ViewBag.Classification != null)
             {
                 routeValues.Add("classification", ViewBag.Classification);
+            }
+            if (ViewBag.ArtistName != null)
+            {
+                routeValues.Add("artistName", ViewBag.ArtistName);
             }
             
             // Add limit if different from default
