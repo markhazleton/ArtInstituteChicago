@@ -1,8 +1,13 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using WebSpark.ArtSpark.Client.Clients;
-using WebSpark.HttpClientUtility.Services;
+using WebSpark.HttpClientUtility.ClientService;
+using WebSpark.HttpClientUtility.RequestResult;
+using WebSpark.HttpClientUtility.StringConverter;
 
 namespace WebSpark.ArtSpark.Console
 {
@@ -13,20 +18,62 @@ namespace WebSpark.ArtSpark.Console
     {
         public static async Task RunArtistSearchTests()
         {
-            Console.WriteLine("Testing Artist Search Functionality");
-            Console.WriteLine("==================================");
+            System.Console.WriteLine("Testing Artist Search Functionality");
+            System.Console.WriteLine("==================================");
+
+            // Setup DI
+            var services = new ServiceCollection();
+
+            // Add HttpClient factory
+            services.AddHttpClient();
+
+            // Register WebSpark.HttpClientUtility services
+            services.AddSingleton<IStringConverter, SystemJsonStringConverter>();
+            services.AddScoped<IHttpClientService, HttpClientService>();
+            services.AddScoped<HttpRequestResultService>();
+
+            // Register IHttpRequestResultService with telemetry decorator
+            services.AddScoped<IHttpRequestResultService>(provider =>
+            {
+                IHttpRequestResultService service = provider.GetRequiredService<HttpRequestResultService>();
+
+                // Add Telemetry (basic decorator for logging and monitoring)
+                service = new HttpRequestResultServiceTelemetry(
+                    provider.GetRequiredService<ILogger<HttpRequestResultServiceTelemetry>>(),
+                    service
+                );
+
+                return service;
+            });
+
+            // Add logging
+            services.AddLogging(builder =>
+            {
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Information);
+            });
+
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
+                .Build();
+
+            services.AddSingleton<IConfiguration>(configuration);
+
+            // Build the service provider
+            var serviceProvider = services.BuildServiceProvider();
+
+            // Resolve dependencies
+            var httpRequestResultService = serviceProvider.GetRequiredService<IHttpRequestResultService>();
 
             // Initialize the client
-            var httpClientService = new HttpClientService();
-            var client = new ArtInstituteClient(httpClientService);
+            var client = new ArtInstituteClient(httpRequestResultService);
 
             // Test cases
-            string[] testArtists = { "Van Gogh", "Picasso", "Monet", "Cezanne", "Renoir" };
-
-            foreach (var artist in testArtists)
+            string[] testArtists = { "Van Gogh", "Picasso", "Monet", "Cezanne", "Renoir" }; foreach (var artist in testArtists)
             {
-                Console.WriteLine($"\nTesting search for artist: {artist}");
-                Console.WriteLine(new string('-', 40));
+                System.Console.WriteLine($"\nTesting search for artist: {artist}");
+                System.Console.WriteLine(new string('-', 40));
 
                 try
                 {
@@ -34,44 +81,44 @@ namespace WebSpark.ArtSpark.Console
 
                     if (response?.Data != null && response.Data.Any())
                     {
-                        Console.WriteLine($"✓ Found {response.Data.Count()} artworks");
-                        Console.WriteLine($"  Total available: {response.Pagination?.Total ?? 0}");
+                        System.Console.WriteLine($"✓ Found {response.Data.Count()} artworks");
+                        System.Console.WriteLine($"  Total available: {response.Pagination?.Total ?? 0}");
 
                         // Show first result
                         var firstArtwork = response.Data.First();
-                        Console.WriteLine($"  First result: {firstArtwork.Title}");
-                        Console.WriteLine($"  Artist: {firstArtwork.ArtistDisplay}");
+                        System.Console.WriteLine($"  First result: {firstArtwork.Title}");
+                        System.Console.WriteLine($"  Artist: {firstArtwork.ArtistDisplay}");
 
                         // Test pagination with artist parameter
                         if (response.Pagination?.Total > 5)
                         {
-                            Console.WriteLine("  Testing pagination...");
+                            System.Console.WriteLine("  Testing pagination...");
                             var page2Response = await client.GetArtworksByArtistAsync(artist, limit: 5, page: 2);
                             if (page2Response?.Data != null && page2Response.Data.Any())
                             {
-                                Console.WriteLine($"  ✓ Page 2 found {page2Response.Data.Count()} artworks");
+                                System.Console.WriteLine($"  ✓ Page 2 found {page2Response.Data.Count()} artworks");
                             }
                             else
                             {
-                                Console.WriteLine("  ✗ Page 2 failed");
+                                System.Console.WriteLine("  ✗ Page 2 failed");
                             }
                         }
                     }
                     else
                     {
-                        Console.WriteLine($"✗ No artworks found for {artist}");
+                        System.Console.WriteLine($"✗ No artworks found for {artist}");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"✗ Error searching for {artist}: {ex.Message}");
+                    System.Console.WriteLine($"✗ Error searching for {artist}: {ex.Message}");
                 }
 
                 await Task.Delay(500); // Rate limiting
             }
 
-            Console.WriteLine("\n==================================");
-            Console.WriteLine("Artist search tests completed!");
+            System.Console.WriteLine("\n==================================");
+            System.Console.WriteLine("Artist search tests completed!");
         }
     }
 }

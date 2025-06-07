@@ -42,19 +42,22 @@ public interface IPublicCollectionService
     /// <summary>
     /// Gets the most recent public collections
     /// </summary>
-    Task<IEnumerable<PublicCollectionViewModel>> GetRecentPublicCollectionsAsync(int limit = 10);
+    Task<IEnumerable<PublicCollectionViewModel>> GetRecentPublicCollectionsAsync(int limit = 10);    /// <summary>
+                                                                                                     /// Gets the most viewed public collections
+                                                                                                     /// </summary>
+    Task<IEnumerable<PublicCollectionViewModel>> GetPopularPublicCollectionsAsync(int limit = 10);
 
     /// <summary>
-    /// Gets the most viewed public collections
+    /// Gets a random public collection with full details for showcase
     /// </summary>
-    Task<IEnumerable<PublicCollectionViewModel>> GetPopularPublicCollectionsAsync(int limit = 10);
+    Task<PublicCollectionDetailsViewModel?> GetRandomPublicCollectionAsync();
 
     /// <summary>
     /// Increments the view count for a collection and returns success status
     /// </summary>
-    Task<bool> IncrementViewCountAsync(string slug);    /// <summary>
-                                                        /// Gets all unique tags from public collections
-                                                        /// </summary>
+    Task<bool> IncrementViewCountAsync(string slug);/// <summary>
+                                                    /// Gets all unique tags from public collections
+                                                    /// </summary>
     Task<IEnumerable<string>> GetPublicCollectionTagsAsync();
 
     /// <summary>
@@ -190,7 +193,6 @@ public class PublicCollectionService : IPublicCollectionService
 
         return await EnrichCollectionsAsync(collections);
     }
-
     public async Task<IEnumerable<PublicCollectionViewModel>> GetPopularPublicCollectionsAsync(int limit = 10)
     {
         var collections = await _context.Collections
@@ -203,6 +205,38 @@ public class PublicCollectionService : IPublicCollectionService
             .ToListAsync();
 
         return await EnrichCollectionsAsync(collections);
+    }
+
+    public async Task<PublicCollectionDetailsViewModel?> GetRandomPublicCollectionAsync()
+    {
+        // Get count of public collections
+        var totalCount = await _context.Collections
+            .Where(c => c.IsPublic)
+            .CountAsync();
+
+        if (totalCount == 0)
+        {
+            return null;
+        }
+
+        // Generate random skip value
+        var random = new Random();
+        var skip = random.Next(0, totalCount);        // Get a random collection with full details
+        var collection = await _context.Collections
+            .Include(c => c.User)
+            .Include(c => c.Artworks.OrderBy(a => a.DisplayOrder))
+            .Where(c => c.IsPublic)
+            .OrderBy(c => c.Id) // Add deterministic ordering
+            .Skip(skip)
+            .FirstOrDefaultAsync();
+
+        if (collection == null)
+        {
+            return null;
+        }
+
+        // Enrich the collection with full details
+        return await EnrichCollectionDetailsAsync(collection);
     }
 
     public async Task<bool> IncrementViewCountAsync(string slug)

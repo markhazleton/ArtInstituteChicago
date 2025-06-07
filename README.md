@@ -55,10 +55,12 @@ This solution provides a complete .NET ecosystem for interacting with the Art In
 
 - 👤 **User Authentication**: ASP.NET Core Identity with SQLite database
 - 📚 **User Collections**: Personal artwork organization and favorites
+- 🎲 **Random Collection Showcase**: Dynamic home page featuring random public collections
 - 🎨 **Responsive Design**: Mobile-first Bootstrap 5 implementation  
 - 🎭 **Theme Switching**: Dynamic Bootswatch theme selection
 - 📊 **Build Information**: Version tracking and deployment details
 - 🔍 **Enhanced Filtering**: Artwork filtering by style, medium, and classification
+- 🔄 **Interactive Discovery**: "New Collection" button for instant content refresh
 
 ## Quick Start
 

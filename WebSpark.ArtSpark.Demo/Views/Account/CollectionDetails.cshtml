@@ -365,17 +365,40 @@
                                     </div>
                                 </div>
                                 
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="card-body">                                    <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div>
                                             <h6 class="card-title mb-1">
                                                 @if (!string.IsNullOrEmpty(artwork.CustomTitle))
                                                 {
-                                                    @artwork.CustomTitle
+                                                    @if (!string.IsNullOrEmpty(artwork.Slug))
+                                                    {
+                                                        <a asp-action="CollectionItemDetails" 
+                                                           asp-route-collectionSlug="@Model.Collection.Slug" 
+                                                           asp-route-itemSlug="@artwork.Slug"
+                                                           class="text-decoration-none text-dark">
+                                                            @artwork.CustomTitle
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        @artwork.CustomTitle
+                                                    }
                                                 }
                                                 else
                                                 {
-                                                    <span class="artwork-title" data-artwork-id="@artwork.ArtworkId">Artwork #@artwork.ArtworkId</span>
+                                                    @if (!string.IsNullOrEmpty(artwork.Slug))
+                                                    {
+                                                        <a asp-action="CollectionItemDetails" 
+                                                           asp-route-collectionSlug="@Model.Collection.Slug" 
+                                                           asp-route-itemSlug="@artwork.Slug"
+                                                           class="text-decoration-none text-dark">
+                                                            <span class="artwork-title" data-artwork-id="@artwork.ArtworkId">Artwork #@artwork.ArtworkId</span>
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="artwork-title" data-artwork-id="@artwork.ArtworkId">Artwork #@artwork.ArtworkId</span>
+                                                    }
                                                 }
                                             </h6>
                                             @if (artwork.IsHighlighted)
@@ -517,8 +540,18 @@
                             </div>
                         </div>
                     `;
-                }
-            });
+                }            });
         });
     </script>
+    
+    <style>
+        .card-title a {
+            transition: color 0.2s ease-in-out;
+        }
+        
+        .card-title a:hover {
+            color: var(--bs-primary) !important;
+            text-decoration: underline !important;
+        }
+    </style>
 }

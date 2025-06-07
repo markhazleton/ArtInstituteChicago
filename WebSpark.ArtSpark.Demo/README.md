@@ -36,6 +36,7 @@ WebSpark.ArtSpark is a modern, open-source ASP.NET Core application that beautif
 ## ✨ Features
 
 * 🎨 Explore public domain artworks from AIC
+* 🎲 **Random Collection Showcase** - Dynamic home page featuring random public collections
 * 🎭 **AI Chat with Personas** - Revolutionary chat system with 4 AI personas (Artwork, Artist, Curator, Historian)
 * 👁️ **Visual Analysis** - AI-powered image analysis with OpenAI Vision
 * 🧠 **Conversation Memory** - Persistent chat history and contextual conversations
@@ -45,6 +46,7 @@ WebSpark.ArtSpark is a modern, open-source ASP.NET Core application that beautif
 * 🖼️ Curated and themed collections
 * 🔍 Deep metadata and IIIF support
 * 🎯 **Cultural Sensitivity** - Respectful handling of cultural artifacts
+* 🔄 **Interactive Discovery** - "New Collection" button for instant content refresh
 
 ---
 
@@ -66,28 +68,32 @@ Experience artworks like never before with our groundbreaking AI chat system! Ea
 
 #### 🖼️ Artwork Persona
 
-- Chat directly with the artwork itself
+* Chat directly with the artwork itself
+
 * First-person narratives from the art's perspective  
 * Personal stories from creation to museum display
 * AI vision-powered self-descriptions
 
 #### 🎨 Artist Persona  
 
-- Converse with the artist who created the work
+* Converse with the artist who created the work
+
 * Learn about creative process and inspiration
 * Understand techniques and cultural context
 * Discover personal motivations behind the art
 
 #### 🏛️ Curator Persona
 
-- Professional museum insights and analysis
+* Professional museum insights and analysis
+
 * Art historical context and interpretation
 * Comparative studies with other works
 * Academic research perspectives
 
 #### 📚 Historian Persona
 
-- Deep historical and cultural context
+* Deep historical and cultural context
+
 * Social and political background of the era
 * Cross-cultural influences and connections
 * Impact of historical events on artistic expression

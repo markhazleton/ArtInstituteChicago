@@ -13,12 +13,14 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly IArtInstituteClient _artInstituteClient;
     private readonly ICollectionService _collectionService;
+    private readonly IPublicCollectionService _publicCollectionService;
 
-    public HomeController(ILogger<HomeController> logger, IArtInstituteClient artInstituteClient, ICollectionService collectionService)
+    public HomeController(ILogger<HomeController> logger, IArtInstituteClient artInstituteClient, ICollectionService collectionService, IPublicCollectionService publicCollectionService)
     {
         _logger = logger;
         _artInstituteClient = artInstituteClient;
         _collectionService = collectionService;
+        _publicCollectionService = publicCollectionService;
     }
     public async Task<IActionResult> Index()
     {
@@ -26,24 +28,56 @@ public class HomeController : Controller
 
         try
         {
-            // Get featured artworks for the home page
-            var query = new ApiQuery
+            // Get a random public collection to showcase on the home page
+            var randomCollection = await _publicCollectionService.GetRandomPublicCollectionAsync();
+
+            if (randomCollection != null)
             {
-                Page = 1,
-                Limit = 6,
-                Fields = "id,title,artist_display,date_display,image_id,thumbnail"
-            };
+                // Increment view count for the showcased collection
+                await _publicCollectionService.IncrementViewCountAsync(randomCollection.Collection.Slug);
 
-            var response = await _artInstituteClient.GetArtworksAsync(query);
+                return View(randomCollection);
+            }
+            else
+            {
+                // Fallback to featured artworks if no collections are available
+                var query = new ApiQuery
+                {
+                    Page = 1,
+                    Limit = 6,
+                    Fields = "id,title,artist_display,date_display,image_id,thumbnail"
+                };
 
-            var featuredArtworks = response?.Data?.Where(a => !string.IsNullOrEmpty(a.ImageId)).Take(6).ToList() ?? new List<ArtWork>();
+                var response = await _artInstituteClient.GetArtworksAsync(query);
+                var featuredArtworks = response?.Data?.Where(a => !string.IsNullOrEmpty(a.ImageId)).Take(6).ToList() ?? new List<ArtWork>();
 
-            return View(featuredArtworks);
+                return View("IndexFallback", featuredArtworks);
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error fetching featured artworks for home page");
-            return View(new List<ArtWork>());
+            _logger.LogError(ex, "Error fetching random collection for home page");
+
+            // Fallback to featured artworks in case of error
+            try
+            {
+                var query = new ApiQuery
+                {
+                    Page = 1,
+                    Limit = 6,
+                    Fields = "id,title,artist_display,date_display,image_id,thumbnail"
+                };
+
+                var response = await _artInstituteClient.GetArtworksAsync(query);
+                var featuredArtworks = response?.Data?.Where(a => !string.IsNullOrEmpty(a.ImageId)).Take(6).ToList() ?? new List<ArtWork>();
+
+                return View("IndexFallback", featuredArtworks);
+            }
+            catch (Exception fallbackEx)
+            {
+                _logger.LogError(fallbackEx, "Error fetching fallback artworks for home page");
+                return View("IndexFallback", new List<ArtWork>());
+            }
         }
     }
     public IActionResult Privacy()
