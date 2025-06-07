@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSpark Theme Persistence Test</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f8f9fa;
+      }
+      .test-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .status {
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+      }
+      .status.pass {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .status.fail {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      .status.info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      .cookie-display {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 10px;
+        font-family: monospace;
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🍪 WebSpark Theme Persistence Test</h1>
+
+    <div class="test-card">
+      <h2>Cookie Management Test</h2>
+      <div id="cookieTest"></div>
+
+      <button onclick="testCookies()">Test Cookie Functions</button>
+      <button onclick="clearTestCookies()">Clear Test Cookies</button>
+    </div>
+
+    <div class="test-card">
+      <h2>Theme Persistence Test</h2>
+      <div id="themeTest"></div>
+
+      <button onclick="testThemePersistence()">Test Theme Persistence</button>
+      <button onclick="simulateThemeChange('materia')">
+        Set Materia Theme
+      </button>
+      <button onclick="simulateThemeChange('bootstrap')">
+        Set Bootstrap Theme
+      </button>
+      <button onclick="simulateThemeChange('cerulean')">
+        Set Cerulean Theme
+      </button>
+    </div>
+
+    <div class="test-card">
+      <h2>Color Mode Test</h2>
+      <div id="colorModeTest"></div>
+
+      <button onclick="testColorMode()">Test Color Mode</button>
+      <button onclick="simulateColorModeChange('light')">Set Light Mode</button>
+      <button onclick="simulateColorModeChange('dark')">Set Dark Mode</button>
+    </div>
+
+    <div class="test-card">
+      <h2>Current Cookies</h2>
+      <div id="currentCookies" class="cookie-display"></div>
+      <button onclick="displayCurrentCookies()">Refresh Cookie Display</button>
+    </div>
+
+    <script>
+      // Copy the CookieManager from our implementation
+      const CookieManager = {
+        set: function (name, value, days = 365) {
+          const expires = new Date();
+          expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+          document.cookie = `${name}=${encodeURIComponent(
+            value
+          )};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
+        },
+
+        get: function (name) {
+          const nameEQ = name + "=";
+          const ca = document.cookie.split(";");
+          for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == " ") c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0)
+              return decodeURIComponent(c.substring(nameEQ.length, c.length));
+          }
+          return null;
+        },
+
+        delete: function (name) {
+          document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+        },
+      };
+
+      function testCookies() {
+        const testName = "webspark-test";
+        const testValue = "test-value-123";
+
+        let results = "<h3>Cookie Function Tests</h3>";
+
+        // Test 1: Set cookie
+        CookieManager.set(testName, testValue);
+        const retrieved = CookieManager.get(testName);
+
+        if (retrieved === testValue) {
+          results +=
+            '<div class="status pass">✅ Cookie set and retrieved successfully</div>';
+        } else {
+          results += '<div class="status fail">❌ Cookie set/get failed</div>';
+        }
+
+        // Test 2: Handle special characters
+        const specialValue = "theme with spaces & symbols!";
+        CookieManager.set("webspark-special", specialValue);
+        const specialRetrieved = CookieManager.get("webspark-special");
+
+        if (specialRetrieved === specialValue) {
+          results +=
+            '<div class="status pass">✅ Special character encoding works</div>';
+        } else {
+          results +=
+            '<div class="status fail">❌ Special character encoding failed</div>';
+        }
+
+        // Test 3: Non-existent cookie
+        const nonExistent = CookieManager.get("webspark-nonexistent");
+        if (nonExistent === null) {
+          results +=
+            '<div class="status pass">✅ Non-existent cookie returns null</div>';
+        } else {
+          results +=
+            '<div class="status fail">❌ Non-existent cookie should return null</div>';
+        }
+
+        document.getElementById("cookieTest").innerHTML = results;
+      }
+
+      function testThemePersistence() {
+        let results = "<h3>Theme Persistence Tests</h3>";
+
+        // Test theme storage
+        const themes = ["materia", "bootstrap", "cerulean", "flatly"];
+        let allPassed = true;
+
+        themes.forEach((theme) => {
+          CookieManager.set("webspark-theme", theme);
+          const retrieved = CookieManager.get("webspark-theme");
+
+          if (retrieved === theme) {
+            results += `<div class="status pass">✅ Theme "${theme}" stored and retrieved</div>`;
+          } else {
+            results += `<div class="status fail">❌ Theme "${theme}" storage failed</div>`;
+            allPassed = false;
+          }
+        });
+
+        if (allPassed) {
+          results +=
+            '<div class="status pass">🎉 All theme persistence tests passed!</div>';
+        }
+
+        document.getElementById("themeTest").innerHTML = results;
+      }
+
+      function testColorMode() {
+        let results = "<h3>Color Mode Tests</h3>";
+
+        // Test color mode storage
+        const modes = ["light", "dark"];
+        let allPassed = true;
+
+        modes.forEach((mode) => {
+          CookieManager.set("webspark-color-mode", mode);
+          const retrieved = CookieManager.get("webspark-color-mode");
+
+          if (retrieved === mode) {
+            results += `<div class="status pass">✅ Color mode "${mode}" stored and retrieved</div>`;
+          } else {
+            results += `<div class="status fail">❌ Color mode "${mode}" storage failed</div>`;
+            allPassed = false;
+          }
+        });
+
+        if (allPassed) {
+          results +=
+            '<div class="status pass">🌙 All color mode tests passed!</div>';
+        }
+
+        document.getElementById("colorModeTest").innerHTML = results;
+      }
+
+      function simulateThemeChange(theme) {
+        CookieManager.set("webspark-theme", theme);
+        displayCurrentCookies();
+        document.getElementById(
+          "themeTest"
+        ).innerHTML += `<div class="status info">ℹ️ Theme set to: ${theme}</div>`;
+      }
+
+      function simulateColorModeChange(mode) {
+        CookieManager.set("webspark-color-mode", mode);
+        displayCurrentCookies();
+        document.getElementById(
+          "colorModeTest"
+        ).innerHTML += `<div class="status info">ℹ️ Color mode set to: ${mode}</div>`;
+      }
+
+      function clearTestCookies() {
+        CookieManager.delete("webspark-test");
+        CookieManager.delete("webspark-special");
+        CookieManager.delete("webspark-theme");
+        CookieManager.delete("webspark-color-mode");
+        displayCurrentCookies();
+
+        document.getElementById("cookieTest").innerHTML =
+          '<div class="status info">ℹ️ Test cookies cleared</div>';
+      }
+
+      function displayCurrentCookies() {
+        const cookies = document.cookie
+          .split(";")
+          .map((c) => c.trim())
+          .filter((c) => c.length > 0);
+        const websparkCookies = cookies.filter((c) =>
+          c.startsWith("webspark-")
+        );
+
+        if (websparkCookies.length === 0) {
+          document.getElementById("currentCookies").innerHTML =
+            "No WebSpark cookies found";
+        } else {
+          const cookieList = websparkCookies
+            .map((cookie) => {
+              const [name, value] = cookie.split("=");
+              return `${name}: ${decodeURIComponent(value)}`;
+            })
+            .join("\n");
+
+          document.getElementById("currentCookies").innerHTML = cookieList;
+        }
+      }
+
+      // Run initial tests on page load
+      window.onload = function () {
+        displayCurrentCookies();
+
+        // Show current WebSpark theme and mode from actual cookies
+        const currentTheme = CookieManager.get("webspark-theme");
+        const currentMode = CookieManager.get("webspark-color-mode");
+
+        if (currentTheme || currentMode) {
+          let status =
+            '<div class="status info">Current WebSpark Settings:<br>';
+          if (currentTheme) status += `Theme: ${currentTheme}<br>`;
+          if (currentMode) status += `Color Mode: ${currentMode}`;
+          status += "</div>";
+
+          document.body.insertAdjacentHTML(
+            "afterbegin",
+            `<div class="test-card">${status}</div>`
+          );
+        }
+      };
+    </script>
+  </body>
+</html>

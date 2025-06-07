@@ -36,12 +36,12 @@ namespace WebSpark.ArtSpark.Console
                     {
                         Console.WriteLine($"✓ Found {response.Data.Count()} artworks");
                         Console.WriteLine($"  Total available: {response.Pagination?.Total ?? 0}");
-                        
+
                         // Show first result
                         var firstArtwork = response.Data.First();
                         Console.WriteLine($"  First result: {firstArtwork.Title}");
                         Console.WriteLine($"  Artist: {firstArtwork.ArtistDisplay}");
-                        
+
                         // Test pagination with artist parameter
                         if (response.Pagination?.Total > 5)
                         {
