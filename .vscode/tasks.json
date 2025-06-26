@@ -1,0 +1,117 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build-demo",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/WebSpark.ArtSpark.Demo/WebSpark.ArtSpark.Demo.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "build-console",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/WebSpark.ArtSpark.Console/WebSpark.ArtSpark.Console.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    },
+    {
+      "label": "build-solution",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/WebSpark.ArtSpark.sln",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    },
+    {
+      "label": "clean-demo",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "clean",
+        "${workspaceFolder}/WebSpark.ArtSpark.Demo/WebSpark.ArtSpark.Demo.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    },
+    {
+      "label": "restore-demo",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "restore",
+        "${workspaceFolder}/WebSpark.ArtSpark.Demo/WebSpark.ArtSpark.Demo.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    },
+    {
+      "label": "restore-solution",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["restore", "${workspaceFolder}/WebSpark.ArtSpark.sln"],
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    },
+    {
+      "label": "watch-demo",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "watch",
+        "run",
+        "--project",
+        "${workspaceFolder}/WebSpark.ArtSpark.Demo/WebSpark.ArtSpark.Demo.csproj"
+      ],
+      "isBackground": true,
+      "problemMatcher": [
+        {
+          "pattern": [
+            {
+              "regexp": "\\G(.*)",
+              "file": 1,
+              "location": 2,
+              "message": 3
+            }
+          ],
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "^dotnet watch : ",
+            "endsPattern": "^\\s*Application started\\."
+          }
+        }
+      ],
+      "group": "build"
+    },
+    {
+      "label": "run-tests",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["test", "${workspaceFolder}/WebSpark.ArtSpark.Tests"],
+      "problemMatcher": "$msCompile",
+      "group": "test"
+    }
+  ]
+}

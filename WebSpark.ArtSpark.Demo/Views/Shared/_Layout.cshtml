@@ -17,8 +17,8 @@
         @await RenderSectionAsync("MetaTags", required: false)
 
         <script type="importmap"></script> @{
-        // Set default theme to Materia Light if no theme is set
-        var themeName = BootswatchThemeHelper.GetCurrentThemeName(Context) ?? "materia";
+        // Set default theme to Yeti if no theme is set
+        var themeName = BootswatchThemeHelper.GetCurrentThemeName(Context) ?? "yeti";
     var themeUrl = BootswatchThemeHelper.GetThemeUrl(StyleCache, themeName);
         }
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
@@ -51,10 +51,10 @@
             const savedTheme = CookieManager.get('webspark-theme') ||
                 localStorage.getItem('bootswatch-theme');
 
-            // If no saved theme, set default to materia in localStorage for WebSpark.Bootswatch to pick up
+            // If no saved theme, set default to yeti in localStorage for WebSpark.Bootswatch to pick up
             if (!savedTheme)
             {
-                localStorage.setItem('bootswatch-theme', 'materia');
+                localStorage.setItem('bootswatch-theme', 'yeti');
             }
         })();
     </script>
@@ -333,7 +333,7 @@
                 // Check cookie first, then localStorage as fallback
                 return CookieManager.get('webspark-theme') ||
                     localStorage.getItem('bootswatch-theme') ||
-                    'materia'; // Default to Materia theme
+                    'yeti'; // Default to Yeti theme
             }
 
             // Get saved color mode preference  
@@ -578,7 +578,7 @@
                 if (window.location.hostname === 'localhost')
                 {
                     console.log('WebSpark Theme System Initialized');
-                    console.log('Default Theme: materia');
+                    console.log('Default Theme: yeti');
                     console.log('Current Color Mode:', currentMode);
                     console.log('Saved Theme:', getSavedTheme());
                     console.log('Saved Color Mode:', savedColorMode);

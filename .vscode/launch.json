@@ -1,0 +1,69 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch WebSpark.ArtSpark.Demo (HTTP)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-demo",
+      "program": "${workspaceFolder}/WebSpark.ArtSpark.Demo/bin/Debug/net9.0/WebSpark.ArtSpark.Demo.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/WebSpark.ArtSpark.Demo",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5139"
+      },
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(http://localhost:[0-9]+)",
+        "uriFormat": "%s"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/WebSpark.ArtSpark.Demo/Views"
+      }
+    },
+    {
+      "name": "Launch WebSpark.ArtSpark.Demo (HTTPS)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-demo",
+      "program": "${workspaceFolder}/WebSpark.ArtSpark.Demo/bin/Debug/net9.0/WebSpark.ArtSpark.Demo.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/WebSpark.ArtSpark.Demo",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "https://localhost:7282;http://localhost:5139"
+      },
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https://localhost:[0-9]+)",
+        "uriFormat": "%s"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/WebSpark.ArtSpark.Demo/Views"
+      }
+    },
+    {
+      "name": "Attach to WebSpark.ArtSpark.Demo",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickProcess}"
+    },
+    {
+      "name": "Launch WebSpark.ArtSpark.Console",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-console",
+      "program": "${workspaceFolder}/WebSpark.ArtSpark.Console/bin/Debug/net9.0/WebSpark.ArtSpark.Console.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/WebSpark.ArtSpark.Console",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  ]
+}
