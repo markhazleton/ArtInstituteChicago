@@ -5,7 +5,7 @@ namespace WebSpark.ArtSpark.Demo.HttpClientUtility.MemoryCache;
 /// <summary>
 /// Implementation of HTTP client memory cache that uses IMemoryCache
 /// </summary>
-public class HttpClientMemoryCache : IHttpClientMemoryCache
+public class HttpClientMemoryCache : IDisposable, IHttpClientMemoryCache
 {
     private readonly IMemoryCache _cache;
     private readonly SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
@@ -13,6 +13,23 @@ public class HttpClientMemoryCache : IHttpClientMemoryCache
     public HttpClientMemoryCache(IMemoryCache cache)
     {
         _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+    }
+
+    private bool _disposed;
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed && disposing)
+        {
+            _lock?.Dispose();
+            _disposed = true;
+        }
     }
 
     /// <summary>

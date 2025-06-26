@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebSpark.ArtSpark.Client.Interfaces;
 using WebSpark.ArtSpark.Client.Models.Collections;
@@ -17,19 +18,17 @@ public class ArtworkFilterController : Controller
     {
         _artInstituteClient = artInstituteClient ?? throw new ArgumentNullException(nameof(artInstituteClient));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
-    /// <summary>
-    /// Display the filter options page
-    /// </summary>
+    }    /// <summary>
+         /// Display the filter options page
+         /// </summary>
+    [Authorize]
     public IActionResult Index()
     {
         return View();
-    }
-
-    /// <summary>
-    /// Filter artworks by style
-    /// </summary>
+    }    /// <summary>
+         /// Filter artworks by style
+         /// </summary>
+    [Authorize]
     public async Task<IActionResult> ByStyle(ArtStyle? style, int page = 1, int limit = 12)
     {
         try
@@ -64,11 +63,10 @@ public class ArtworkFilterController : Controller
             ViewBag.ErrorMessage = "An error occurred while filtering artworks.";
             return View("Error");
         }
-    }
-
-    /// <summary>
-    /// Filter artworks by medium
-    /// </summary>
+    }    /// <summary>
+         /// Filter artworks by medium
+         /// </summary>
+    [Authorize]
     public async Task<IActionResult> ByMedium(ArtMedium? medium, int page = 1, int limit = 12)
     {
         try
@@ -103,11 +101,10 @@ public class ArtworkFilterController : Controller
             ViewBag.ErrorMessage = "An error occurred while filtering artworks.";
             return View("Error");
         }
-    }
-
-    /// <summary>
-    /// Filter artworks by classification
-    /// </summary>
+    }    /// <summary>
+         /// Filter artworks by classification
+         /// </summary>
+    [Authorize]
     public async Task<IActionResult> ByClassification(ArtworkClassification? classification, int page = 1, int limit = 12)
     {
         try

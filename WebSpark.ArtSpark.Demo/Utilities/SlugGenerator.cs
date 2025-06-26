@@ -18,7 +18,7 @@ public static class SlugGenerator
         slug = RemoveDiacritics(slug);
 
         // Replace spaces and special characters with hyphens
-        slug = Regex.Replace(slug, @"[^a-z0-9\s-]", "");
+        slug = Regex.Replace(slug, @"[^a-z0-9\s-]", string.Empty);
         slug = Regex.Replace(slug, @"\s+", "-");
         slug = Regex.Replace(slug, @"-+", "-");
 
@@ -70,13 +70,13 @@ public static class SlugGenerator
     public static string GenerateMetaDescription(string? description, string? longDescription, int maxLength = 160)
     {
         var content = !string.IsNullOrWhiteSpace(description) ? description :
-                     !string.IsNullOrWhiteSpace(longDescription) ? longDescription : "";
+                     !string.IsNullOrWhiteSpace(longDescription) ? longDescription : string.Empty;
 
         if (string.IsNullOrWhiteSpace(content))
-            return "";
+            return string.Empty;
 
         // Remove HTML tags if any
-        content = Regex.Replace(content, "<.*?>", "");
+        content = Regex.Replace(content, "<.*?>", string.Empty);
 
         // Truncate and add ellipsis if needed
         if (content.Length > maxLength)

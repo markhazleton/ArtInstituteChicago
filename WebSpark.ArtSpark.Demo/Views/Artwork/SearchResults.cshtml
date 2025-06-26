@@ -110,24 +110,22 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
-
-    @if (Model.Pagination != null && Model.Pagination.Total > Model.Pagination.Size)
+            </div>        }
+    </div>    @if (Model.Pagination != null && Model.Pagination.Total > Model.Pagination.Size)
     {
-        if (Model.Pagination.From < 1 || Model.Pagination.Size <= 0)
+        // Ensure pagination values are valid (From is 0-based for Elasticsearch-style pagination)
+        if (Model.Pagination.From < 0 || Model.Pagination.Size <= 0)
         {
-            Model.Pagination.From = 1;
+            Model.Pagination.From = 0;
             Model.Pagination.Size = 10;
         }
-
         var currentPage = (Model.Pagination.From / Model.Pagination.Size) + 1;
         var totalPages = (int)Math.Ceiling((double)Model.Pagination.Total / Model.Pagination.Size);
         var startPage = Math.Max(1, currentPage - 2);
         var endPage = Math.Min(totalPages, currentPage + 2);
 
         <div class="d-flex justify-content-center mt-5">
+            <!-- Debug info: From=@Model.Pagination.From, Size=@Model.Pagination.Size, CurrentPage=@currentPage, StartPage=@startPage, EndPage=@endPage -->
             <nav aria-label="Search results pagination">
                 <ul class="pagination pagination-lg">
                     @if (currentPage > 1)

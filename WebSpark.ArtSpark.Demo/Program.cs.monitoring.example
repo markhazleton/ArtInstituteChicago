@@ -1,0 +1,81 @@
+// Performance monitoring and health check configuration
+// Add to Program.cs
+
+// Health Checks
+builder.Services.AddHealthChecks()
+    .AddSqlite(builder.Configuration.GetConnectionString("DefaultConnection"), name: "database")
+    .AddUrlGroup(new Uri("https://api.artic.edu/api/v1/artworks"), name: "art_institute_api")
+    .AddCheck("memory", () =>
+    {
+        var allocated = GC.GetTotalMemory(forceFullCollection: false);
+        var data = new Dictionary<string, object>()
+        {
+            { "AllocatedBytes", allocated },
+            { "Gen0Collections", GC.CollectionCount(0) },
+            { "Gen1Collections", GC.CollectionCount(1) },
+            { "Gen2Collections", GC.CollectionCount(2) }
+        };
+        return allocated < 1024L * 1024L * 1024L ? // 1GB limit
+            HealthCheckResult.Healthy("Memory usage is acceptable", data) :
+            HealthCheckResult.Degraded("High memory usage detected", data);
+    });
+
+// Response Compression
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+
+// Response Caching
+builder.Services.AddResponseCaching(options =>
+{
+    options.MaximumBodySize = 1024 * 1024; // 1MB
+    options.UseCaseSensitivePaths = false;
+});
+
+// Memory Cache
+builder.Services.AddMemoryCache(options =>
+{
+    options.SizeLimit = 100; // Limit number of entries
+});
+
+// Rate Limiting (if needed)
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("api", configure =>
+    {
+        configure.PermitLimit = 100;
+        configure.Window = TimeSpan.FromMinutes(1);
+        configure.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        configure.QueueLimit = 10;
+    });
+});
+
+// Exception handling
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+// Add to Configure section:
+app.UseResponseCompression();
+app.UseResponseCaching();
+
+// Health check endpoints
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready")
+});
+
+app.MapHealthChecks("/health/live", new HealthCheckOptions
+{
+    Predicate = _ => false
+});
+
+// Rate limiting
+app.UseRateLimiter();

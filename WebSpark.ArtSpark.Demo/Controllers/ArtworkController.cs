@@ -6,7 +6,6 @@ using WebSpark.ArtSpark.Agent.Models;
 using WebSpark.ArtSpark.Agent.Personas;
 using WebSpark.ArtSpark.Client.Interfaces;
 using WebSpark.ArtSpark.Client.Models.Common;
-using WebSpark.ArtSpark.Demo.Data;
 using WebSpark.ArtSpark.Demo.Services;
 
 namespace WebSpark.ArtSpark.Demo.Controllers;
@@ -37,11 +36,10 @@ public class ArtworkController : Controller
         _reviewService = reviewService ?? throw new ArgumentNullException(nameof(reviewService));
         _favoriteService = favoriteService ?? throw new ArgumentNullException(nameof(favoriteService));
         _collectionService = collectionService ?? throw new ArgumentNullException(nameof(collectionService));
-    }
-
-    /// <summary>
-    /// Display a paginated list of artworks
-    /// </summary>
+    }    /// <summary>
+         /// Display a paginated list of artworks
+         /// </summary>
+    [Authorize]
     public async Task<IActionResult> Index(int page = 1, int limit = 12)
     {
         try
@@ -71,6 +69,7 @@ public class ArtworkController : Controller
     }    /// <summary>
          /// Display details for a specific artwork
          /// </summary>
+    [Authorize]
     public async Task<IActionResult> Details(int id, string? returnUrl = null)
     {
         try
@@ -93,11 +92,10 @@ public class ArtworkController : Controller
             _logger.LogError(ex, "Error fetching artwork details for ID {ArtworkId}", id);
             return View("Error");
         }
-    }
-
-    /// <summary>
-    /// Search for artworks
-    /// </summary>
+    }    /// <summary>
+         /// Search for artworks
+         /// </summary>
+    [Authorize]
     public async Task<IActionResult> Search(string q, int page = 1, int limit = 12)
     {
         try
@@ -115,6 +113,9 @@ public class ArtworkController : Controller
                 Fields = "id,title,artist_display,date_display,medium_display,image_id"
             };
 
+            _logger.LogInformation("Search request: Query='{Query}', Page={Page}, Limit={Limit}, From={From}, Size={Size}",
+                q, page, limit, searchQuery.From, searchQuery.Size);
+
             var response = await _artInstituteClient.SearchArtworksAsync(searchQuery);
 
             if (response?.Data == null)
@@ -124,6 +125,9 @@ public class ArtworkController : Controller
                 return View("SearchResults", response);
             }
 
+            _logger.LogInformation("Search response: Found {TotalResults} total results, returned {ResultCount} items",
+                response.Pagination?.Total ?? 0, response.Data?.Count ?? 0);
+
             ViewBag.SearchQuery = q;
             return View("SearchResults", response);
         }
@@ -132,11 +136,10 @@ public class ArtworkController : Controller
             _logger.LogError(ex, "Error searching artworks for query: {SearchQuery}", q);
             return View("Error");
         }
-    }
-
-    /// <summary>
-    /// Display featured/highlighted artworks
-    /// </summary>
+    }    /// <summary>
+         /// Display featured/highlighted artworks
+         /// </summary>
+    [Authorize]
     public async Task<IActionResult> Featured()
     {
         try
@@ -374,9 +377,9 @@ public class ArtworkController : Controller
                 CulturalContext = artwork.StyleTitle ?? "Unknown style",
                 Classification = artwork.ClassificationTitle ?? "Unknown classification",
                 ImageUrl = !string.IsNullOrEmpty(artwork.ImageId) ?
-                    $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/843,/0/default.jpg" : "",
+                    $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/843,/0/default.jpg" : string.Empty,
                 ThumbnailUrl = !string.IsNullOrEmpty(artwork.ImageId) ?
-                    $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/200,/0/default.jpg" : ""
+                    $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/200,/0/default.jpg" : string.Empty
             };
 
             // Get the persona

@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using WebSpark.ArtSpark.Demo.Data;
-using WebSpark.ArtSpark.Demo.Models;
-using WebSpark.ArtSpark.Demo.Services;
 using WebSpark.ArtSpark.Demo.Utilities;
 
 namespace WebSpark.ArtSpark.Demo.Tests;
@@ -70,7 +68,7 @@ public class CollectionRoutingTest
             "Collection with Special Characters!@#$%",
             "   Spaces   and   More   Spaces   ",
             "Émile's Accented Collection",
-            ""
+            string.Empty
         };
 
         foreach (var testCase in testCases)

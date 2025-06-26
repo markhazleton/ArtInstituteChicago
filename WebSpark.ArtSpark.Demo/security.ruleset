@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Security Focused Rules" Description="Security and quality rules for production applications" ToolsVersion="16.0">
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
+    <!-- Security Rules -->
+    <Rule Id="CA2100" Action="Error" />   <!-- SQL injection -->
+    <Rule Id="CA2109" Action="Error" />   <!-- Review visible event handlers -->
+    <Rule Id="CA2119" Action="Error" />   <!-- Seal methods that satisfy private interfaces -->
+    <Rule Id="CA2153" Action="Error" />   <!-- Do not catch corrupted state exceptions -->
+    <Rule Id="CA2300" Action="Error" />   <!-- Do not use insecure deserializer BinaryFormatter -->
+    <Rule Id="CA2301" Action="Error" />   <!-- Do not call BinaryFormatter.Deserialize without first setting BinaryFormatter.Binder -->
+    <Rule Id="CA2302" Action="Error" />   <!-- Ensure BinaryFormatter.Binder is set before calling BinaryFormatter.Deserialize -->
+    <Rule Id="CA2305" Action="Error" />   <!-- Do not use insecure deserializer LosFormatter -->
+    <Rule Id="CA2310" Action="Error" />   <!-- Do not use insecure deserializer NetDataContractSerializer -->
+    <Rule Id="CA2311" Action="Error" />   <!-- Do not deserialize without first setting NetDataContractSerializer.Binder -->
+    <Rule Id="CA2312" Action="Error" />   <!-- Ensure NetDataContractSerializer.Binder is set before deserializing -->
+    <Rule Id="CA2315" Action="Error" />   <!-- Do not use insecure deserializer ObjectStateFormatter -->
+    <Rule Id="CA2321" Action="Error" />   <!-- Do not deserialize with JavaScriptSerializer using a SimpleTypeResolver -->
+    <Rule Id="CA2322" Action="Error" />   <!-- Ensure JavaScriptSerializer is not initialized with SimpleTypeResolver before deserializing -->
+    <Rule Id="CA3001" Action="Warning" /> <!-- Review code for SQL injection vulnerabilities -->
+    <Rule Id="CA3002" Action="Warning" /> <!-- Review code for XSS vulnerabilities -->
+    <Rule Id="CA3003" Action="Warning" /> <!-- Review code for file path injection vulnerabilities -->
+    <Rule Id="CA3004" Action="Warning" /> <!-- Review code for information disclosure vulnerabilities -->
+    <Rule Id="CA3005" Action="Warning" /> <!-- Review code for LDAP injection vulnerabilities -->
+    <Rule Id="CA3006" Action="Warning" /> <!-- Review code for process command injection vulnerabilities -->
+    <Rule Id="CA3007" Action="Warning" /> <!-- Review code for open redirect vulnerabilities -->
+    <Rule Id="CA3008" Action="Warning" /> <!-- Review code for XPath injection vulnerabilities -->
+    <Rule Id="CA3009" Action="Warning" /> <!-- Review code for XML injection vulnerabilities -->
+    <Rule Id="CA3010" Action="Warning" /> <!-- Review code for XAML injection vulnerabilities -->
+    <Rule Id="CA3011" Action="Warning" /> <!-- Review code for DLL injection vulnerabilities -->
+    <Rule Id="CA3012" Action="Warning" /> <!-- Review code for regex injection vulnerabilities -->
+    <Rule Id="CA5350" Action="Warning" /> <!-- Do not use weak cryptographic algorithms -->
+    <Rule Id="CA5351" Action="Warning" /> <!-- Do not use broken cryptographic algorithms -->
+    <Rule Id="CA5358" Action="Warning" /> <!-- Review cipher mode usage with cryptography experts -->
+    <Rule Id="CA5359" Action="Error" />   <!-- Do not disable certificate validation -->
+    <Rule Id="CA5360" Action="Error" />   <!-- Do not call dangerous methods in deserialization -->
+    <Rule Id="CA5361" Action="Warning" /> <!-- Do not disable SChannel use of strong crypto -->
+    <Rule Id="CA5362" Action="Warning" /> <!-- Potential reference cycle in deserialized object graph -->
+    <Rule Id="CA5363" Action="Error" />   <!-- Do not disable request validation -->
+    <Rule Id="CA5364" Action="Error" />   <!-- Do not use deprecated security protocols -->
+    <Rule Id="CA5365" Action="Error" />   <!-- Do not disable HTTP header checking -->
+    <Rule Id="CA5366" Action="Error" />   <!-- Use XmlReader for DataSet read XML -->
+    <Rule Id="CA5367" Action="Warning" /> <!-- Do not serialize types with pointer fields -->
+    <Rule Id="CA5368" Action="Error" />   <!-- Set ViewStateUserKey for classes derived from Page -->
+    <Rule Id="CA5369" Action="Error" />   <!-- Use XmlReader for deserialize -->
+    <Rule Id="CA5370" Action="Error" />   <!-- Use XmlReader for validating reader -->
+    <Rule Id="CA5371" Action="Error" />   <!-- Use XmlReader for schema read -->
+    <Rule Id="CA5372" Action="Error" />   <!-- Use XmlReader for XPathDocument -->
+    <Rule Id="CA5373" Action="Error" />   <!-- Do not use obsolete key derivation function -->
+    <Rule Id="CA5374" Action="Error" />   <!-- Do not use XslTransform -->
+    <Rule Id="CA5375" Action="Warning" /> <!-- Do not use account shared access signature -->
+    <Rule Id="CA5376" Action="Warning" /> <!-- Use SharedAccessProtocol HttpsOnly -->
+    <Rule Id="CA5377" Action="Warning" /> <!-- Use container level access policy -->
+    <Rule Id="CA5378" Action="Warning" /> <!-- Do not disable ServicePointManagerSecurityProtocols -->
+    <Rule Id="CA5379" Action="Error" />   <!-- Ensure key derivation function algorithm is sufficiently strong -->
+    <Rule Id="CA5380" Action="Warning" /> <!-- Do not add certificates to root store -->
+    <Rule Id="CA5381" Action="Warning" /> <!-- Ensure certificates are not added to root store -->
+    <Rule Id="CA5382" Action="Warning" /> <!-- Use secure cookies in ASP.NET Core -->
+    <Rule Id="CA5383" Action="Warning" /> <!-- Ensure use secure cookies in ASP.NET Core -->
+    <Rule Id="CA5384" Action="Error" />   <!-- Do not use digital signature algorithm (DSA) -->
+    <Rule Id="CA5385" Action="Error" />   <!-- Use Rivest-Shamir-Adleman (RSA) algorithm with sufficient key size -->
+    <Rule Id="CA5386" Action="Warning" /> <!-- Avoid hardcoding SecurityProtocolType value -->
+    <Rule Id="CA5387" Action="Warning" /> <!-- Do not use weak key derivation function with insufficient iteration count -->
+    <Rule Id="CA5388" Action="Warning" /> <!-- Ensure sufficient iteration count when using weak key derivation function -->
+    <Rule Id="CA5389" Action="Warning" /> <!-- Do not add archive item's path to the target file system path -->
+    <Rule Id="CA5390" Action="Warning" /> <!-- Do not hard-code encryption key -->
+    <Rule Id="CA5391" Action="Warning" /> <!-- Use antiforgery tokens in ASP.NET Core MVC controllers -->
+    <Rule Id="CA5392" Action="Warning" /> <!-- Use DefaultDllImportSearchPaths attribute for P/Invokes -->
+    <Rule Id="CA5393" Action="Warning" /> <!-- Do not use unsafe DllImportSearchPath value -->
+    <Rule Id="CA5394" Action="Warning" /> <!-- Do not use insecure randomness -->
+    <Rule Id="CA5395" Action="Warning" /> <!-- Miss HttpVerb attribute for action methods -->
+    <Rule Id="CA5396" Action="Warning" /> <!-- Set HttpOnly to true for HttpCookies -->
+    <Rule Id="CA5397" Action="Error" />   <!-- Do not use deprecated SslProtocols values -->
+    <Rule Id="CA5398" Action="Warning" /> <!-- Avoid hardcoded SslProtocols values -->
+    <Rule Id="CA5399" Action="Error" />   <!-- HttpClients should enable certificate revocation list checks -->
+    <Rule Id="CA5400" Action="Warning" /> <!-- Ensure HttpClient certificate revocation list check is not disabled -->
+    <Rule Id="CA5401" Action="Warning" /> <!-- Do not use CreateEncryptor with non-default IV -->
+    <Rule Id="CA5402" Action="Warning" /> <!-- Use CreateEncryptor with the default IV -->
+    <Rule Id="CA5403" Action="Warning" /> <!-- Do not hard-code certificate -->
+  </Rules>
+  
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.NetAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.NetAnalyzers">
+    <!-- Performance Rules -->
+    <Rule Id="CA1802" Action="Warning" /> <!-- Use literals where appropriate -->
+    <Rule Id="CA1805" Action="Warning" /> <!-- Do not initialize unnecessarily -->
+    <Rule Id="CA1806" Action="Warning" /> <!-- Do not ignore method results -->
+    <Rule Id="CA1810" Action="Warning" /> <!-- Initialize reference type static fields inline -->
+    <Rule Id="CA1812" Action="Warning" /> <!-- Avoid uninstantiated internal classes -->
+    <Rule Id="CA1813" Action="Warning" /> <!-- Avoid unsealed attributes -->
+    <Rule Id="CA1814" Action="Warning" /> <!-- Prefer jagged arrays over multidimensional -->
+    <Rule Id="CA1815" Action="Warning" /> <!-- Override equals and operator equals on value types -->
+    <Rule Id="CA1819" Action="Warning" /> <!-- Properties should not return arrays -->
+    <Rule Id="CA1820" Action="Warning" /> <!-- Test for empty strings using string length -->
+    <Rule Id="CA1821" Action="Warning" /> <!-- Remove empty finalizers -->
+    <Rule Id="CA1822" Action="Warning" /> <!-- Mark members as static -->
+    <Rule Id="CA1823" Action="Warning" /> <!-- Avoid unused private fields -->
+    <Rule Id="CA1824" Action="Warning" /> <!-- Mark assemblies with NeutralResourcesLanguageAttribute -->
+    <Rule Id="CA1825" Action="Warning" /> <!-- Avoid zero-length array allocations -->
+    <Rule Id="CA1826" Action="Warning" /> <!-- Do not use Count/LongCount when Any can be used -->
+    <Rule Id="CA1827" Action="Warning" /> <!-- Do not use Count/LongCount when Any can be used -->
+    <Rule Id="CA1828" Action="Warning" /> <!-- Do not use CountAsync/LongCountAsync when AnyAsync can be used -->
+    <Rule Id="CA1829" Action="Warning" /> <!-- Use Length/Count property instead of Enumerable.Count method -->
+    <Rule Id="CA1830" Action="Warning" /> <!-- Prefer strongly-typed Append and Insert method overloads on StringBuilder -->
+    <Rule Id="CA1831" Action="Warning" /> <!-- Use AsSpan instead of Range-based indexers for string when appropriate -->
+    <Rule Id="CA1832" Action="Warning" /> <!-- Use AsSpan or AsMemory instead of Range-based indexers for getting ReadOnlySpan or ReadOnlyMemory portion of an array -->
+    <Rule Id="CA1833" Action="Warning" /> <!-- Use AsSpan or AsMemory instead of Range-based indexers for getting Span or Memory portion of an array -->
+    <Rule Id="CA1834" Action="Warning" /> <!-- Use StringBuilder.Append(char) for single character strings -->
+    <Rule Id="CA1835" Action="Warning" /> <!-- Prefer the memory-based overloads of ReadAsync/WriteAsync methods in stream-based classes -->
+    <Rule Id="CA1836" Action="Warning" /> <!-- Prefer IsEmpty over Count when available -->
+    <Rule Id="CA1837" Action="Warning" /> <!-- Use Environment.ProcessId instead of Process.GetCurrentProcess().Id -->
+    <Rule Id="CA1838" Action="Warning" /> <!-- Avoid StringBuilder parameters for P/Invokes -->
+    <Rule Id="CA1839" Action="Warning" /> <!-- Use Environment.ProcessPath instead of Process.GetCurrentProcess().MainModule.FileName -->
+    <Rule Id="CA1840" Action="Warning" /> <!-- Use Environment.CurrentManagedThreadId instead of Thread.CurrentThread.ManagedThreadId -->
+    <Rule Id="CA1841" Action="Warning" /> <!-- Prefer Dictionary Contains methods -->
+    <Rule Id="CA1842" Action="Warning" /> <!-- Do not use 'WhenAll' with a single task -->
+    <Rule Id="CA1843" Action="Warning" /> <!-- Do not use 'WaitAll' with a single task -->
+    <Rule Id="CA1844" Action="Warning" /> <!-- Provide memory-based overrides of async methods when subclassing 'Stream' -->
+    <Rule Id="CA1845" Action="Warning" /> <!-- Use span-based 'string.Concat' -->
+    <Rule Id="CA1846" Action="Warning" /> <!-- Prefer AsSpan over Substring -->
+    <Rule Id="CA1847" Action="Warning" /> <!-- Use String.Contains(char) instead of String.Contains(string) with single characters -->
+    <Rule Id="CA1848" Action="Warning" /> <!-- Use the LoggerMessage delegates -->
+    <Rule Id="CA1849" Action="Warning" /> <!-- Call async methods when in an async method -->
+    <Rule Id="CA1850" Action="Warning" /> <!-- Prefer static HashData method over ComputeHash -->
+  </Rules>
+</RuleSet>

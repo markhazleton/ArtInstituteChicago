@@ -1,0 +1,99 @@
+name: ArtSpark CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: "9.0.x"
+  PROJECT_PATH: "./WebSpark.ArtSpark.Demo"
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: Build
+        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test ${{ env.PROJECT_PATH }} --configuration Release --no-build --verbosity normal --logger trx --results-directory TestResults
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: TestResults
+
+      - name: Security vulnerability scan
+        run: dotnet list ${{ env.PROJECT_PATH }} package --vulnerable --include-transitive
+
+      - name: Check for outdated packages
+        run: dotnet list ${{ env.PROJECT_PATH }} package --outdated
+
+  build-for-deployment:
+    runs-on: windows-latest
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: Publish application
+        run: |
+          dotnet publish ${{ env.PROJECT_PATH }} `
+            --configuration Release `
+            --output ./publish `
+            --self-contained false `
+            --runtime win-x64
+
+      - name: Create deployment package
+        run: |
+          $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+          $packageName = "ArtSpark_$timestamp.zip"
+          Compress-Archive -Path "./publish/*" -DestinationPath $packageName
+          echo "PACKAGE_NAME=$packageName" >> $env:GITHUB_ENV
+
+      - name: Upload deployment package
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-package
+          path: ${{ env.PACKAGE_NAME }}
+          retention-days: 30
+
+      - name: Generate deployment summary
+        run: |
+          echo "## Deployment Package Created 📦" >> $env:GITHUB_STEP_SUMMARY
+          echo "**Package:** ${{ env.PACKAGE_NAME }}" >> $env:GITHUB_STEP_SUMMARY
+          echo "**Build Date:** $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" >> $env:GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $env:GITHUB_STEP_SUMMARY
+          echo "" >> $env:GITHUB_STEP_SUMMARY
+          echo "### Deployment Instructions" >> $env:GITHUB_STEP_SUMMARY
+          echo "1. Download the deployment package" >> $env:GITHUB_STEP_SUMMARY
+          echo "2. Stop IIS Application Pool" >> $env:GITHUB_STEP_SUMMARY
+          echo "3. Extract package to IIS directory" >> $env:GITHUB_STEP_SUMMARY
+          echo "4. Start IIS Application Pool" >> $env:GITHUB_STEP_SUMMARY

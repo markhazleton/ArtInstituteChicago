@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -16,7 +16,7 @@ namespace WebSpark.ArtSpark.Demo.Migrations
                 table: "CollectionMedia",
                 type: "TEXT",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: string.Empty);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "UpdatedAt",

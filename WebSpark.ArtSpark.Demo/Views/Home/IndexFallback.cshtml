@@ -3,6 +3,57 @@
     ViewData["Title"] = "WebSpark.ArtSpark";
 }
 
+<style type="text/css">
+    .card-title a:hover {
+        color: var(--bs-primary) !important;
+        transition: color 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        transition: transform 0.3s ease;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Clickable image styling */
+    .card a img,
+    .card a .card-img-top {
+        transition: all 0.3s ease;
+    }
+
+    .card a:hover img {
+        transform: scale(1.05);
+    }
+
+    .card a:hover .card-img-top {
+        background-color: var(--bs-primary-bg-subtle) !important;
+    }
+
+    /* Mobile responsive improvements for artwork cards */
+    @("@")
+    media (max-width: 576px) {
+
+        .card-img-top,
+        .card-img-top div {
+            aspect-ratio: 1/1 !important;
+        }
+
+        .col-6 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+    }
+
+    @("@")
+    media (min-width: 577px) and (max-width: 768px) {
+
+        .card-img-top,
+        .card-img-top div {
+            aspect-ratio: 3/2 !important;
+        }
+    }
+</style>
+
 <div class="hero-section text-center py-3 mb-4">
     <div class="container">
         <div class="row justify-content-center">
@@ -47,21 +98,27 @@
                         <div class="card border-0 shadow-sm card-hover h-100">
                             @if (!string.IsNullOrEmpty(artwork.ImageId))
                             {
-                                <div class="position-relative overflow-hidden">
-                                    <img src="https://www.artic.edu/iiif/2/@artwork.ImageId/full/400,/0/default.jpg"
-                                        class="card-img-top object-fit-cover" style="height: 250px;"
-                                        alt="@artwork.Title - @(string.IsNullOrEmpty(artwork.ArtistDisplay) ? "Artist unknown" : $"by {artwork.ArtistDisplay}")">
-                                </div>
+                                <a href="@Url.Action("Details", "Artwork", new { id = artwork.Id, returnUrl = Context.Request.Path + Context.Request.QueryString })"
+                                    class="text-decoration-none">
+                                    <div class="position-relative overflow-hidden" style="aspect-ratio: 4/3;">
+                                        <img src="https://www.artic.edu/iiif/2/@artwork.ImageId/full/400,/0/default.jpg"
+                                            class="card-img-top object-fit-cover w-100 h-100"
+                                            alt="@artwork.Title - @(string.IsNullOrEmpty(artwork.ArtistDisplay) ? "Artist unknown" : $"by {artwork.ArtistDisplay}")">
+                                    </div>
+                                </a>
                             }
                             else
                             {
-                                <div class="card-img-top bg-body-secondary d-flex align-items-center justify-content-center text-body-tertiary"
-                                    style="height: 250px;">
-                                    <div class="text-center">
-                                        <i class="bi bi-image display-4 mb-2"></i>
-                                        <p class="mb-0 small">@artwork.Title</p>
+                                <a href="@Url.Action("Details", "Artwork", new { id = artwork.Id, returnUrl = Context.Request.Path + Context.Request.QueryString })"
+                                    class="text-decoration-none">
+                                    <div class="card-img-top bg-body-secondary d-flex align-items-center justify-content-center text-body-tertiary"
+                                        style="aspect-ratio: 4/3; min-height: 180px;">
+                                        <div class="text-center">
+                                            <i class="bi bi-image display-4 mb-2"></i>
+                                            <p class="mb-0 small">@artwork.Title</p>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                             }
                             <div class="card-body p-3">
                                 <h6 class="card-title mb-0 text-truncate">

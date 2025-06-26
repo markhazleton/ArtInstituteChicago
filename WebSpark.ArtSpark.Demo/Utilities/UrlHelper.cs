@@ -1,5 +1,5 @@
-using WebSpark.ArtSpark.Demo.Models;
 using Microsoft.AspNetCore.Mvc;
+using WebSpark.ArtSpark.Demo.Models;
 
 namespace WebSpark.ArtSpark.Demo.Utilities;
 

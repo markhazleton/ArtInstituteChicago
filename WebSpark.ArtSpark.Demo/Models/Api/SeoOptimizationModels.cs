@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using WebSpark.ArtSpark.Agent.Models;
-using WebSpark.ArtSpark.Demo.Models;
 
 namespace WebSpark.ArtSpark.Demo.Models.Api;
 

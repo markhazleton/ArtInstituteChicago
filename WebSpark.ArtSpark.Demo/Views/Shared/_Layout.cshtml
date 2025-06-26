@@ -1,6 +1,7 @@
 ﻿@using WebSpark.Bootswatch.Services
 @using WebSpark.Bootswatch.Helpers
-    @inject StyleCache StyleCache
+@inject StyleCache StyleCache
+
     <!DOCTYPE html>
     <html lang="en" data-bs-theme="@(BootswatchThemeHelper.GetCurrentColorMode(Context))">
 
@@ -13,18 +14,25 @@
         <link rel="apple-touch-icon" sizes="180x180" href="~/apple-touch-icon.png">
         <link rel="manifest" href="~/site.webmanifest">
 
+        <!-- Preload critical resources for better PWA performance -->
+        <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" as="style"
+              crossorigin>
+        <link rel="preload" href="~/css/site.css" as="style">
+        <link rel="preload" href="/_content/WebSpark.Bootswatch/js/bootswatch-theme-switcher.js" as="script">
+
         @await RenderSectionAsync("Meta", required: false)
         @await RenderSectionAsync("MetaTags", required: false)
 
-        <script type="importmap"></script> @{
-        // Set default theme to Materia Light if no theme is set
-        var themeName = BootswatchThemeHelper.GetCurrentThemeName(Context) ?? "materia";
-    var themeUrl = BootswatchThemeHelper.GetThemeUrl(StyleCache, themeName);
+        <script type="importmap"></script> 
+        @{
+            // Set default theme to Materia Light if no theme is set
+            var themeName = BootswatchThemeHelper.GetCurrentThemeName(Context) ?? "materia";
+            var themeUrl = BootswatchThemeHelper.GetThemeUrl(StyleCache, themeName);
         }
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
     <link id="bootswatch-theme-stylesheet" rel="stylesheet" href="@themeUrl" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ArtInstituteChicago.Demo.styles.css" asp-append-version="true" />
     <script src="/_content/WebSpark.Bootswatch/js/bootswatch-theme-switcher.js"></script>
     <!-- Pre-load default theme and preferences -->
     <script>
@@ -64,14 +72,15 @@
 <body class="d-flex flex-column min-vh-100">
     <header>
         <nav class="navbar navbar-expand-lg bg-primary navbar-dark border-bottom shadow-sm mb-3">
-            <div class="container-fluid"> <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2"
-                    asp-area="" asp-controller="Home" asp-action="Index">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2"
+                   asp-area="" asp-controller="Home" asp-action="Index">
                     <img src="~/img/WebSparkArtSpark.png" alt="WebSpark.ArtSpark Logo" style="height:2.5rem;width:auto;"
-                        class="me-2" />
+                         class="me-2" />
                     WebSpark.ArtSpark
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse" id="navbarNav">
@@ -81,94 +90,97 @@
                                 <i class="bi bi-house me-1"></i>Home
                             </a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                <i class="bi bi-collection me-1"></i>Artworks
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item" asp-controller="Artwork" asp-action="Index">
-                                        <i class="bi bi-collection me-2"></i>All Artworks
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-controller="Artwork" asp-action="Featured">
-                                        <i class="bi bi-star me-2"></i>Featured
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="/explore/collections">
-                                        <i class="bi bi-grid-3x3-gap me-2"></i>Explore Collections
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <h6 class="dropdown-header">Filters & Search</h6>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="Index">
-                                        <i class="bi bi-sliders me-2"></i>All Filters
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <h6 class="dropdown-header">Browse by Style</h6>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="ByStyle"
-                                        asp-route-style="Impressionism">
-                                        <i class="bi bi-palette me-2"></i>Impressionism
-                                    </a>
-                                </li>
-                                <li>
-                                    <h6 class="dropdown-header">Browse by Medium</h6>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="ByMedium"
-                                        asp-route-medium="OilOnCanvas">
-                                        <i class="bi bi-brush me-2"></i>Oil Paintings
-                                    </a>
-                                </li>
-                                <li>
-                                    <h6 class="dropdown-header">Browse by Type</h6>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-controller="ArtworkFilter"
-                                        asp-action="ByClassification" asp-route-classification="Sculpture">
-                                        <i class="bi bi-box me-2"></i>Sculptures
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <h6 class="dropdown-header">Advanced Tools</h6>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="CompareStyles"
-                                        asp-route-styles="Impressionism,Cubism,AbstractExpressionism">
-                                        <i class="bi bi-bar-chart me-2"></i>Compare Styles
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+                                    <i class="bi bi-collection me-1"></i>Artworks
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Artwork" asp-action="Index">
+                                            <i class="bi bi-collection me-2"></i>All Artworks
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Artwork" asp-action="Featured">
+                                            <i class="bi bi-star me-2"></i>Featured
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="/explore/collections">
+                                            <i class="bi bi-grid-3x3-gap me-2"></i>Explore Collections
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <h6 class="dropdown-header">Filters & Search</h6>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="Index">
+                                            <i class="bi bi-sliders me-2"></i>All Filters
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <h6 class="dropdown-header">Browse by Style</h6>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="ByStyle"
+                                           asp-route-style="Impressionism">
+                                            <i class="bi bi-palette me-2"></i>Impressionism
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <h6 class="dropdown-header">Browse by Medium</h6>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="ByMedium"
+                                           asp-route-medium="OilOnCanvas">
+                                            <i class="bi bi-brush me-2"></i>Oil Paintings
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <h6 class="dropdown-header">Browse by Type</h6>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="ArtworkFilter"
+                                           asp-action="ByClassification" asp-route-classification="Sculpture">
+                                            <i class="bi bi-box me-2"></i>Sculptures
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <h6 class="dropdown-header">Advanced Tools</h6>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="ArtworkFilter" asp-action="CompareStyles"
+                                           asp-route-styles="Impressionism,Cubism,AbstractExpressionism">
+                                            <i class="bi bi-bar-chart me-2"></i>Compare Styles
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
                     </ul><!-- Mobile-first responsive navigation -->
                     <div class="d-flex align-items-center gap-2">
                         <!-- Theme Switcher - Desktop -->
                         <div class="d-none d-lg-block">
                             <bootswatch-theme-switcher dropdown-toggle-text="Theme"
-                                dropdown-toggle-class="btn btn-outline-secondary dropdown-toggle"
-                                dropdown-menu-class="dropdown-menu dropdown-menu-end"
-                                dropdown-item-class="dropdown-item" />
+                                                       dropdown-toggle-class="btn btn-outline-secondary dropdown-toggle"
+                                                       dropdown-menu-class="dropdown-menu dropdown-menu-end"
+                                                       dropdown-item-class="dropdown-item" />
                         </div><!-- Consolidated Navigation Dropdown -->
                         <div class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false" aria-label="Navigation menu">
+                               data-bs-toggle="dropdown" aria-expanded="false" aria-label="Navigation menu">
                                 @if (User.Identity!.IsAuthenticated)
                                 {
                                     <i class="bi bi-person-circle me-1"></i>
@@ -189,14 +201,14 @@
                                 <li class="d-lg-none">
                                     <div class="px-3 py-1">
                                         <bootswatch-theme-switcher dropdown-toggle-text="Choose Theme"
-                                            dropdown-toggle-class="btn btn-sm btn-outline-secondary dropdown-toggle w-100"
-                                            dropdown-menu-class="dropdown-menu dropdown-menu-end"
-                                            dropdown-item-class="dropdown-item" />
+                                                                   dropdown-toggle-class="btn btn-sm btn-outline-secondary dropdown-toggle w-100"
+                                                                   dropdown-menu-class="dropdown-menu dropdown-menu-end"
+                                                                   dropdown-item-class="dropdown-item" />
                                     </div>
                                 </li>
                                 <li class="d-lg-none">
                                     <button class="dropdown-item" type="button" onclick="toggleColorMode()"
-                                        id="color-mode-toggle-mobile">
+                                            id="color-mode-toggle-mobile">
                                         <i class="bi bi-moon me-2" id="color-mode-icon-mobile"></i>
                                         <span id="color-mode-text-mobile">Dark Mode</span>
                                     </button>
@@ -211,20 +223,28 @@
                                     <li>
                                         <h6 class="dropdown-header"><i class="bi bi-person me-2"></i>Account</h6>
                                     </li>
-                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile"><i
-                                                class="bi bi-person me-2"></i>Profile</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Favorites"><i
-                                                class="bi bi-heart me-2"></i>My Favorites</a>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="Profile">
+                                            <i class="bi bi-person me-2"></i>Profile
+                                        </a>
                                     </li>
-                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Collections"><i
-                                                class="bi bi-collection me-2"></i>My
-                                            Collections</a></li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="Favorites">
+                                            <i class="bi bi-heart me-2"></i>My Favorites
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="Collections">
+                                            <i class="bi bi-collection me-2"></i>My
+                                            Collections
+                                        </a>
+                                    </li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
                                     <li>
                                         <form asp-controller="Account" asp-action="Logout" method="post"
-                                            class="d-inline w-100">
+                                              class="d-inline w-100">
                                             <button type="submit" class="dropdown-item text-danger">
                                                 <i class="bi bi-box-arrow-right me-2"></i>Sign Out
                                             </button>
@@ -261,7 +281,7 @@
         </main>
     </div> @await Component.InvokeAsync("Footer")
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/reviews.js" asp-append-version="true"></script>
     <!-- Enhanced Navigation and Color Mode Scripts with Cookie Persistence -->
@@ -320,7 +340,7 @@
             // Enhanced theme persistence with cookies
             function saveThemePreference(themeName)
             {
-                // Save to cookie (primary storage) 
+                // Save to cookie (primary storage)
                 CookieManager.set('webspark-theme', themeName);
 
                 // Also save to localStorage for backwards compatibility
@@ -336,7 +356,7 @@
                     'materia'; // Default to Materia theme
             }
 
-            // Get saved color mode preference  
+            // Get saved color mode preference
             function getSavedColorMode()
             {
                 // Check cookie first, then localStorage as fallback
@@ -610,7 +630,44 @@
             });
         })();
     </script>
+
+    <!-- Service Worker Registration for PWA -->
+    <script>
+        if ('serviceWorker' in navigator)
+        {
+            window.addEventListener('load', function ()
+            {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function (registration)
+                    {
+                        console.log('ServiceWorker registration successful');
+
+                        // Handle updates
+                        registration.addEventListener('updatefound', function ()
+                        {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', function ()
+                            {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller)
+                                {
+                                    // New content is available, prompt user to refresh
+                                    if (confirm('New version available! Refresh to update?'))
+                                    {
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch(function (error)
+                    {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 
-</html>
+</html>  

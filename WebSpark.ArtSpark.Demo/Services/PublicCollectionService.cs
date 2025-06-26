@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using WebSpark.ArtSpark.Client.Interfaces;
-using WebSpark.ArtSpark.Client.Models.Collections;
 using WebSpark.ArtSpark.Demo.Data;
 using WebSpark.ArtSpark.Demo.Models;
 

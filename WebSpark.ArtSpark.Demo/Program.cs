@@ -1,6 +1,11 @@
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Threading.RateLimiting;
 using WebSpark.ArtSpark.Agent.Extensions;
 using WebSpark.ArtSpark.Client.Clients;
 using WebSpark.ArtSpark.Client.Interfaces;
@@ -29,6 +34,92 @@ builder.Services.AddControllersWithViews()
 
 // Add HttpContextAccessor for Tag Helper support
 builder.Services.AddHttpContextAccessor();
+
+// Performance: Response Compression
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+
+// Performance: Response Caching
+builder.Services.AddResponseCaching(options =>
+{
+    options.MaximumBodySize = 1024 * 1024; // 1MB
+    options.UseCaseSensitivePaths = false;
+});
+
+// Performance: Memory Cache with limits
+builder.Services.AddMemoryCache(options =>
+{
+    options.SizeLimit = 1000; // Limit number of entries
+    options.CompactionPercentage = 0.25; // Remove 25% when limit reached
+});
+
+// Security: Rate Limiting
+builder.Services.AddRateLimiter(options =>
+{
+    // API Rate Limiting
+    options.AddFixedWindowLimiter("api", configure =>
+    {
+        configure.PermitLimit = 100;
+        configure.Window = TimeSpan.FromMinutes(1);
+        configure.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        configure.QueueLimit = 10;
+    });
+
+    // General Rate Limiting for web requests
+    options.AddSlidingWindowLimiter("general", configure =>
+    {
+        configure.PermitLimit = 200;
+        configure.Window = TimeSpan.FromMinutes(1);
+        configure.SegmentsPerWindow = 4;
+        configure.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        configure.QueueLimit = 20;
+    });
+});
+
+// Health Checks with comprehensive monitoring
+builder.Services.AddHealthChecks()
+    .AddSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=app.db",
+               name: "database",
+               tags: new[] { "db", "ready" })
+    .AddCheck("art_institute_api", () =>
+    {
+        try
+        {
+            using var client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(5);
+            var response = client.GetAsync("https://api.artic.edu/api/v1/artworks").GetAwaiter().GetResult();
+            return response.IsSuccessStatusCode ?
+                HealthCheckResult.Healthy("Art Institute API is responding") :
+                HealthCheckResult.Degraded($"Art Institute API returned {response.StatusCode}");
+        }
+        catch (Exception ex)
+        {
+            return HealthCheckResult.Unhealthy("Art Institute API is unreachable", ex);
+        }
+    }, tags: new[] { "external", "ready" })
+    .AddCheck("memory", () =>
+    {
+        var allocated = GC.GetTotalMemory(forceFullCollection: false);
+        var description = $"Memory: {allocated / (1024 * 1024)}MB, Gen0: {GC.CollectionCount(0)}, Gen1: {GC.CollectionCount(1)}, Gen2: {GC.CollectionCount(2)}";
+
+        return allocated < 512L * 1024L * 1024L ? // 512MB limit
+            HealthCheckResult.Healthy(description) :
+            HealthCheckResult.Degraded(description);
+    }, tags: new[] { "memory", "ready" })
+    .AddCheck("disk_space", () =>
+    {
+        var drive = new DriveInfo(Environment.CurrentDirectory);
+        var freeSpaceGB = drive.TotalFreeSpace / (1024.0 * 1024.0 * 1024.0);
+        var description = $"Free space: {freeSpaceGB:F2}GB of {drive.TotalSize / (1024.0 * 1024.0 * 1024.0):F2}GB";
+
+        return freeSpaceGB > 1.0 ? // 1GB minimum
+            HealthCheckResult.Healthy(description) :
+            HealthCheckResult.Unhealthy(description);
+    }, tags: new[] { "storage", "ready" });
 
 // Add Database Context
 builder.Services.AddDbContext<ArtSparkDbContext>(options =>
@@ -114,7 +205,14 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// Performance middleware
+app.UseResponseCompression();
+app.UseResponseCaching();
+
+// Security middleware
 app.UseHttpsRedirection();
+app.UseRateLimiter();
+
 app.UseRouting();
 
 // Configure WebSpark.Bootswatch (includes static files and style cache)
@@ -124,6 +222,38 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+// Health check endpoints
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var response = new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(x => new
+            {
+                name = x.Key,
+                status = x.Value.Status.ToString(),
+                description = x.Value.Description,
+                duration = x.Value.Duration.TotalMilliseconds
+            }),
+            totalDuration = report.TotalDuration.TotalMilliseconds
+        };
+        await context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(response));
+    }
+});
+
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready")
+});
+
+app.MapHealthChecks("/health/live", new HealthCheckOptions
+{
+    Predicate = _ => false // Always healthy for liveness
+});
 
 // SEO-friendly collection routes
 app.MapControllerRoute(
