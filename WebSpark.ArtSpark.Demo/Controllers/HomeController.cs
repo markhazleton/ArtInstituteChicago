@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using WebSpark.ArtSpark.Client.Interfaces;
-using WebSpark.ArtSpark.Client.Models.Collections;
-using WebSpark.ArtSpark.Client.Models.Common;
 using WebSpark.ArtSpark.Demo.Models;
 using WebSpark.ArtSpark.Demo.Services;
 
@@ -25,11 +23,12 @@ public class HomeController : Controller
     public async Task<IActionResult> Index()
     {
         _logger.LogInformation("Home page requested at {RequestTime}", DateTime.Now);
+        PublicCollectionDetailsViewModel randomCollection = new();
 
         try
         {
             // Get a random public collection to showcase on the home page
-            var randomCollection = await _publicCollectionService.GetRandomPublicCollectionAsync();
+            randomCollection = await _publicCollectionService.GetRandomPublicCollectionAsync() ?? new();
 
             if (randomCollection != null)
             {
@@ -38,47 +37,30 @@ public class HomeController : Controller
 
                 return View(randomCollection);
             }
-            else
-            {
-                // Fallback to featured artworks if no collections are available
-                var query = new ApiQuery
-                {
-                    Page = 1,
-                    Limit = 6,
-                    Fields = "id,title,artist_display,date_display,image_id,thumbnail"
-                };
-
-                var response = await _artInstituteClient.GetArtworksAsync(query);
-                var featuredArtworks = response?.Data?.Where(a => !string.IsNullOrEmpty(a.ImageId)).Take(6).ToList() ?? new List<ArtWork>();
-
-                return View("IndexFallback", featuredArtworks);
-            }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error fetching random collection for home page");
 
-            // Fallback to featured artworks in case of error
-            try
-            {
-                var query = new ApiQuery
-                {
-                    Page = 1,
-                    Limit = 6,
-                    Fields = "id,title,artist_display,date_display,image_id,thumbnail"
-                };
-
-                var response = await _artInstituteClient.GetArtworksAsync(query);
-                var featuredArtworks = response?.Data?.Where(a => !string.IsNullOrEmpty(a.ImageId)).Take(6).ToList() ?? new List<ArtWork>();
-
-                return View("IndexFallback", featuredArtworks);
-            }
-            catch (Exception fallbackEx)
-            {
-                _logger.LogError(fallbackEx, "Error fetching fallback artworks for home page");
-                return View("IndexFallback", new List<ArtWork>());
-            }
         }
+        randomCollection = new PublicCollectionDetailsViewModel
+        {
+            Collection = new UserCollection
+            {
+                Id = 0,
+                Description = "Currently, there are no featured collections available. Please check back later.",
+                Slug = "no-featured-collection",
+                SocialImageUrl = "/images/no-featured-collection.jpg",
+                MetaTitle = "No Featured Collection",
+                MetaDescription = "There are no featured collections available at this time. Please check back later for updates.",
+                MediaItems = [],
+                Artworks = [],
+                ContentSections = [],
+                Tags = "No Tags",
+            },
+
+        };
+        return View(randomCollection);
     }
     public IActionResult Privacy()
     {

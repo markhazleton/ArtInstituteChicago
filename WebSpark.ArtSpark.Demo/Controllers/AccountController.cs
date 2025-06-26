@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using WebSpark.ArtSpark.Client.Interfaces;
 using WebSpark.ArtSpark.Demo.Models;
 using WebSpark.ArtSpark.Demo.Services;
-using WebSpark.ArtSpark.Client.Interfaces;
 using WebSpark.ArtSpark.Demo.Utilities;
 
 namespace WebSpark.ArtSpark.Demo.Controllers;

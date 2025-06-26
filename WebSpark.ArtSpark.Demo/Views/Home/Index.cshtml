@@ -2,19 +2,20 @@
 @{
     ViewData["Title"] = "WebSpark.ArtSpark - Discover Collections";
 }
+@section Styles {
+    <style>
+        .card-title a:hover {
+            color: var(--bs-primary) !important;
+            transition: color 0.3s ease;
+        }
 
-<style>
-    .card-title a:hover {
-        color: var(--bs-primary) !important;
-        transition: color 0.3s ease;
-    }
-
-    .card:hover {
-        transform: translateY(-2px);
-        transition: transform 0.3s ease;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    }
-</style>
+        .card:hover {
+            transform: translateY(-2px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+    </style>
+}
 
 <div class="hero-section text-center py-3 mb-4">
     <div class="container">
@@ -22,7 +23,7 @@
             <div class="col-lg-10">
                 <h1 class="display-5 fw-bold text-primary mb-2 d-flex align-items-center justify-content-center gap-2">
                     <img src="~/img/WebSparkArtSpark.png" alt="WebSpark.ArtSpark Logo" style="height:2.5rem;width:auto;"
-                        class="me-2" />
+                         class="me-2" />
                     WebSpark.ArtSpark
                 </h1>
                 <p class="text-body-secondary mb-3">
@@ -52,8 +53,10 @@
                         <h2 class="h4 fw-bold text-body-emphasis mb-1">
                             <i class="bi bi-collection text-primary me-2"></i>@Model.Collection.Name
                         </h2>
-                        <p class="text-body-secondary mb-0 small">by @Model.CreatorDisplayName • @Model.ArtworkCount
-                            artworks</p>
+                        <p class="text-body-secondary mb-0 small">
+                            by @Model.CreatorDisplayName • @Model.ArtworkCount
+                            artworks
+                        </p>
                     </div>
                     <a href="javascript:location.reload()" class="btn btn-outline-primary btn-sm">
                         <i class="bi bi-arrow-clockwise me-1"></i>New
@@ -71,15 +74,19 @@
                             @if (!string.IsNullOrEmpty(artwork.ImageId))
                             {
                                 <div class="position-relative overflow-hidden">
-                                    <img src="https://www.artic.edu/iiif/2/@artwork.ImageId/full/400,/0/default.jpg"
-                                        class="card-img-top object-fit-cover" style="height: 250px;"
-                                        alt="@(artwork.CollectionCustomTitle ?? artwork.Title) - @(string.IsNullOrEmpty(artwork.Artist) ? "Artist unknown" : $"by {artwork.Artist}")">
+                                    <a href="/collection/@Model.Collection.Slug/item/@artwork.Slug"
+                                       class="text-decoration-none text-dark"
+                                       title="@(artwork.CollectionCustomTitle ?? artwork.Title)">
+                                        <img src="https://www.artic.edu/iiif/2/@artwork.ImageId/full/400,/0/default.jpg"
+                                             class="card-img-top object-fit-cover" style="height: 250px;"
+                                             alt="@(artwork.CollectionCustomTitle ?? artwork.Title) - @(string.IsNullOrEmpty(artwork.Artist) ? "Artist unknown" : $"by {artwork.Artist}")">
+                                    </a>
                                 </div>
                             }
                             else
                             {
                                 <div class="card-img-top bg-body-secondary d-flex align-items-center justify-content-center text-body-tertiary"
-                                    style="height: 250px;">
+                                     style="height: 250px;">
                                     <div class="text-center">
                                         <i class="bi bi-image display-4 mb-2"></i>
                                         <p class="mb-0 small">@(artwork.CollectionCustomTitle ?? artwork.Title)</p>
@@ -89,8 +96,8 @@
                             <div class="card-body p-3">
                                 <h6 class="card-title mb-0 text-truncate">
                                     <a href="/collection/@Model.Collection.Slug/item/@artwork.Slug"
-                                        class="text-decoration-none text-dark"
-                                        title="@(artwork.CollectionCustomTitle ?? artwork.Title)">
+                                       class="text-decoration-none text-dark"
+                                       title="@(artwork.CollectionCustomTitle ?? artwork.Title)">
                                         @(artwork.CollectionCustomTitle ?? artwork.Title)
                                     </a>
                                 </h6>
@@ -203,8 +210,10 @@
                             including Semantic Kernel, Entity Framework Core, and responsive Bootstrap design.
                         </p>
                         <p class="text-body-secondary mb-4">
-                            Created by <strong><a href="https://markhazleton.com" target="_blank" rel="noopener"
-                                    class="text-decoration-none text-primary">Mark Hazleton</a></strong>,
+                            Created by <strong>
+                                <a href="https://markhazleton.com" target="_blank" rel="noopener"
+                                   class="text-decoration-none text-primary">Mark Hazleton</a>
+                            </strong>,
                             a seasoned software architect and .NET expert, this application showcases best practices in
                             web development,
                             API integration, and AI-powered user experiences.
@@ -214,7 +223,7 @@
                                 <i class="bi bi-book me-1"></i>View Documentation
                             </a>
                             <a href="https://markhazleton.com" target="_blank" rel="noopener"
-                                class="btn btn-outline-secondary btn-sm">
+                               class="btn btn-outline-secondary btn-sm">
                                 <i class="bi bi-person me-1"></i>About the Creator
                             </a>
                         </div>

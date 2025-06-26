@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using WebSpark.ArtSpark.Demo.Services;
 using WebSpark.ArtSpark.Demo.Models;
+using WebSpark.ArtSpark.Demo.Services;
 
 namespace WebSpark.ArtSpark.Demo.Controllers;
 

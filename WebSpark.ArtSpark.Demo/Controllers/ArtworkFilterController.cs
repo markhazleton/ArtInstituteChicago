@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebSpark.ArtSpark.Client.Interfaces;
 using WebSpark.ArtSpark.Client.Models.Collections;
@@ -6,18 +7,13 @@ using WebSpark.ArtSpark.Client.Models.Common;
 namespace WebSpark.ArtSpark.Demo.Controllers;
 
 /// <summary>
-/// Controller for filtering artworks by style, medium, and classification
+/// Controller for filtering artwork by style, medium, and classification
 /// </summary>
-public class ArtworkFilterController : Controller
+[Authorize]
+public class ArtworkFilterController(
+    IArtInstituteClient _artInstituteClient,
+    ILogger<ArtworkFilterController> _logger) : Controller
 {
-    private readonly IArtInstituteClient _artInstituteClient;
-    private readonly ILogger<ArtworkFilterController> _logger;
-
-    public ArtworkFilterController(IArtInstituteClient artInstituteClient, ILogger<ArtworkFilterController> logger)
-    {
-        _artInstituteClient = artInstituteClient ?? throw new ArgumentNullException(nameof(artInstituteClient));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
 
     /// <summary>
     /// Display the filter options page
@@ -28,7 +24,7 @@ public class ArtworkFilterController : Controller
     }
 
     /// <summary>
-    /// Filter artworks by style
+    /// Filter artwork by style
     /// </summary>
     public async Task<IActionResult> ByStyle(ArtStyle? style, int page = 1, int limit = 12)
     {
@@ -67,7 +63,7 @@ public class ArtworkFilterController : Controller
     }
 
     /// <summary>
-    /// Filter artworks by medium
+    /// Filter artwork by medium
     /// </summary>
     public async Task<IActionResult> ByMedium(ArtMedium? medium, int page = 1, int limit = 12)
     {
@@ -86,9 +82,9 @@ public class ArtworkFilterController : Controller
 
             if (response?.Data == null)
             {
-                _logger.LogWarning("No artworks returned for medium: {Medium}", medium.Value);
+                _logger.LogWarning("No artwork returned for medium: {Medium}", medium.Value);
                 ViewBag.Medium = medium.Value;
-                ViewBag.ErrorMessage = "No artworks found for the selected medium.";
+                ViewBag.ErrorMessage = "No artwork found for the selected medium.";
                 return View("FilterResults", response);
             }
 
@@ -99,14 +95,14 @@ public class ArtworkFilterController : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error filtering artworks by medium: {Medium}", medium);
-            ViewBag.ErrorMessage = "An error occurred while filtering artworks.";
+            _logger.LogError(ex, "Error filtering artwork by medium: {Medium}", medium);
+            ViewBag.ErrorMessage = "An error occurred while filtering artwork.";
             return View("Error");
         }
     }
 
     /// <summary>
-    /// Filter artworks by classification
+    /// Filter artwork by classification
     /// </summary>
     public async Task<IActionResult> ByClassification(ArtworkClassification? classification, int page = 1, int limit = 12)
     {
@@ -125,9 +121,9 @@ public class ArtworkFilterController : Controller
 
             if (response?.Data == null)
             {
-                _logger.LogWarning("No artworks returned for classification: {Classification}", classification.Value);
+                _logger.LogWarning("No artwork returned for classification: {Classification}", classification.Value);
                 ViewBag.Classification = classification.Value;
-                ViewBag.ErrorMessage = "No artworks found for the selected classification.";
+                ViewBag.ErrorMessage = "No artwork found for the selected classification.";
                 return View("FilterResults", response);
             }
 
@@ -138,14 +134,14 @@ public class ArtworkFilterController : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error filtering artworks by classification: {Classification}", classification);
-            ViewBag.ErrorMessage = "An error occurred while filtering artworks.";
+            _logger.LogError(ex, "Error filtering artwork by classification: {Classification}", classification);
+            ViewBag.ErrorMessage = "An error occurred while filtering artwork.";
             return View("Error");
         }
     }
 
     /// <summary>
-    /// Filter artworks by both style and medium
+    /// Filter artwork by both style and medium
     /// </summary>
     public async Task<IActionResult> ByStyleAndMedium(ArtStyle? style, ArtMedium? medium, int page = 1, int limit = 12)
     {
@@ -165,10 +161,10 @@ public class ArtworkFilterController : Controller
 
             if (response?.Data == null)
             {
-                _logger.LogWarning("No artworks returned for style: {Style} and medium: {Medium}", style.Value, medium.Value);
+                _logger.LogWarning("No artwork returned for style: {Style} and medium: {Medium}", style.Value, medium.Value);
                 ViewBag.Style = style.Value;
                 ViewBag.Medium = medium.Value;
-                ViewBag.ErrorMessage = "No artworks found for the selected style and medium combination.";
+                ViewBag.ErrorMessage = "No artwork found for the selected style and medium combination.";
                 return View("FilterResults", response);
             }
 
@@ -180,8 +176,8 @@ public class ArtworkFilterController : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error filtering artworks by style: {Style} and medium: {Medium}", style, medium);
-            ViewBag.ErrorMessage = "An error occurred while filtering artworks.";
+            _logger.LogError(ex, "Error filtering artwork by style: {Style} and medium: {Medium}", style, medium);
+            ViewBag.ErrorMessage = "An error occurred while filtering artwork.";
             return View("Error");
         }
     }
@@ -218,7 +214,7 @@ public class ArtworkFilterController : Controller
     }
 
     /// <summary>
-    /// Filter artworks by artist name
+    /// Filter artwork by artist name
     /// </summary>
     public async Task<IActionResult> ByArtist(string artistName, int page = 1, int limit = 12)
     {
@@ -237,9 +233,9 @@ public class ArtworkFilterController : Controller
 
             if (response?.Data == null || !response.Data.Any())
             {
-                _logger.LogWarning("No artworks returned for artist: {ArtistName}", artistName);
+                _logger.LogWarning("No artwork returned for artist: {ArtistName}", artistName);
                 ViewBag.ArtistName = artistName;
-                ViewBag.ErrorMessage = "No artworks found for the specified artist.";
+                ViewBag.ErrorMessage = "No artwork found for the specified artist.";
                 return View("FilterResults", response);
             }
 
@@ -250,8 +246,8 @@ public class ArtworkFilterController : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error filtering artworks by artist: {ArtistName}", artistName);
-            ViewBag.ErrorMessage = "An error occurred while filtering artworks.";
+            _logger.LogError(ex, "Error filtering artwork by artist: {ArtistName}", artistName);
+            ViewBag.ErrorMessage = "An error occurred while filtering artwork.";
             return View("Error");
         }
     }

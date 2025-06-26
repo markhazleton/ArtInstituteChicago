@@ -1,6 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using WebSpark.ArtSpark.Agent.Extensions;
 using WebSpark.ArtSpark.Agent.Models;
 using WebSpark.ArtSpark.Demo.Services;

@@ -6,7 +6,6 @@ using WebSpark.ArtSpark.Agent.Models;
 using WebSpark.ArtSpark.Agent.Personas;
 using WebSpark.ArtSpark.Client.Interfaces;
 using WebSpark.ArtSpark.Client.Models.Common;
-using WebSpark.ArtSpark.Demo.Data;
 using WebSpark.ArtSpark.Demo.Services;
 
 namespace WebSpark.ArtSpark.Demo.Controllers;
@@ -40,7 +39,7 @@ public class ArtworkController : Controller
     }
 
     /// <summary>
-    /// Display a paginated list of artworks
+    /// Display a paginated list of artwork
     /// </summary>
     public async Task<IActionResult> Index(int page = 1, int limit = 12)
     {
@@ -57,7 +56,7 @@ public class ArtworkController : Controller
 
             if (response?.Data == null)
             {
-                _logger.LogWarning("No artworks returned from API");
+                _logger.LogWarning("No artwork returned from API");
                 return View("Error");
             }
 
@@ -65,7 +64,7 @@ public class ArtworkController : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error fetching artworks");
+            _logger.LogError(ex, "Error fetching artwork");
             return View("Error");
         }
     }    /// <summary>
@@ -96,7 +95,7 @@ public class ArtworkController : Controller
     }
 
     /// <summary>
-    /// Search for artworks
+    /// Search for artwork
     /// </summary>
     public async Task<IActionResult> Search(string q, int page = 1, int limit = 12)
     {
@@ -129,19 +128,19 @@ public class ArtworkController : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error searching artworks for query: {SearchQuery}", q);
+            _logger.LogError(ex, "Error searching artwork for query: {SearchQuery}", q);
             return View("Error");
         }
     }
 
     /// <summary>
-    /// Display featured/highlighted artworks
+    /// Display featured/highlighted artwork
     /// </summary>
     public async Task<IActionResult> Featured()
     {
         try
         {
-            // Get a selection of featured artworks with images
+            // Get a selection of featured artwork with images
             var query = new ApiQuery
             {
                 Page = 1,
@@ -153,7 +152,7 @@ public class ArtworkController : Controller
 
             if (response?.Data == null)
             {
-                _logger.LogWarning("No featured artworks returned from API");
+                _logger.LogWarning("No featured artwork returned from API");
                 return View("Error");
             }
 
@@ -164,7 +163,7 @@ public class ArtworkController : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error fetching featured artworks");
+            _logger.LogError(ex, "Error fetching featured artwork");
             return View("Error");
         }
     }    /// <summary>
@@ -374,9 +373,9 @@ public class ArtworkController : Controller
                 CulturalContext = artwork.StyleTitle ?? "Unknown style",
                 Classification = artwork.ClassificationTitle ?? "Unknown classification",
                 ImageUrl = !string.IsNullOrEmpty(artwork.ImageId) ?
-                    $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/843,/0/default.jpg" : "",
+                    $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/843,/0/default.jpg" : string.Empty,
                 ThumbnailUrl = !string.IsNullOrEmpty(artwork.ImageId) ?
-                    $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/200,/0/default.jpg" : ""
+                    $"https://www.artic.edu/iiif/2/{artwork.ImageId}/full/200,/0/default.jpg" : string.Empty
             };
 
             // Get the persona

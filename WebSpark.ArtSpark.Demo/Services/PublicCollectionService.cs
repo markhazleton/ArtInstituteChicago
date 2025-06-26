@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using WebSpark.ArtSpark.Client.Interfaces;
-using WebSpark.ArtSpark.Client.Models.Collections;
 using WebSpark.ArtSpark.Demo.Data;
 using WebSpark.ArtSpark.Demo.Models;
 
@@ -216,7 +215,7 @@ public class PublicCollectionService : IPublicCollectionService
 
         if (totalCount == 0)
         {
-            return null;
+            return new PublicCollectionDetailsViewModel();
         }
 
         // Generate random skip value
@@ -232,7 +231,7 @@ public class PublicCollectionService : IPublicCollectionService
 
         if (collection == null)
         {
-            return null;
+            return new PublicCollectionDetailsViewModel();
         }
 
         // Enrich the collection with full details
