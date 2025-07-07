@@ -2,7 +2,7 @@
 @using WebSpark.Bootswatch.Helpers
     @inject StyleCache StyleCache
     <!DOCTYPE html>
-    <html lang="en" data-bs-theme="@(BootswatchThemeHelper.GetCurrentColorMode(Context))">
+    <html lang="en" data-bs-theme="light">
 
     <head>
         <meta charset="utf-8" />
@@ -17,8 +17,8 @@
         @await RenderSectionAsync("MetaTags", required: false)
 
         <script type="importmap"></script> @{
-        // Set default theme to Yeti if no theme is set
-        var themeName = BootswatchThemeHelper.GetCurrentThemeName(Context) ?? "yeti";
+        // Set default theme to Yeti and color mode to light for all users
+        var themeName = "yeti";
     var themeUrl = BootswatchThemeHelper.GetThemeUrl(StyleCache, themeName);
         }
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
@@ -28,34 +28,15 @@
     <script src="/_content/WebSpark.Bootswatch/js/bootswatch-theme-switcher.js"></script>
     <!-- Pre-load default theme and preferences -->
     <script>
-        // Set default theme before WebSpark.Bootswatch initializes
+        // Set fixed theme and color mode - no user customization
         (function ()
         {
-            // Cookie utility functions
-            const CookieManager = {
-                get: function (name)
-                {
-                    const nameEQ = name + "=";
-                    const ca = document.cookie.split(';');
-                    for (let i = 0; i < ca.length; i++)
-                    {
-                        let c = ca[i];
-                        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-                        if (c.indexOf(nameEQ) == 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
-                    }
-                    return null;
-                }
-            };
+            // Set fixed theme to yeti and color mode to light
+            localStorage.setItem('bootswatch-theme', 'yeti');
 
-            // Check if user has a saved theme preference
-            const savedTheme = CookieManager.get('webspark-theme') ||
-                localStorage.getItem('bootswatch-theme');
-
-            // If no saved theme, set default to yeti in localStorage for WebSpark.Bootswatch to pick up
-            if (!savedTheme)
-            {
-                localStorage.setItem('bootswatch-theme', 'yeti');
-            }
+            // Remove any existing theme cookies to prevent override
+            document.cookie = 'webspark-theme=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            document.cookie = 'webspark-color-mode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         })();
     </script>
     @await RenderSectionAsync("Styles", required: false)
@@ -157,15 +138,9 @@
                                 </li>
                             </ul>
                         </li>
-                    </ul><!-- Mobile-first responsive navigation -->
+                    </ul> <!-- Mobile-first responsive navigation -->
                     <div class="d-flex align-items-center gap-2">
-                        <!-- Theme Switcher - Desktop -->
-                        <div class="d-none d-lg-block">
-                            <bootswatch-theme-switcher dropdown-toggle-text="Theme"
-                                dropdown-toggle-class="btn btn-outline-secondary dropdown-toggle"
-                                dropdown-menu-class="dropdown-menu dropdown-menu-end"
-                                dropdown-item-class="dropdown-item" />
-                        </div><!-- Consolidated Navigation Dropdown -->
+                        <!-- Consolidated Navigation Dropdown -->
                         <div class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false" aria-label="Navigation menu">
@@ -182,29 +157,6 @@
                                 }
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="min-width: 250px;">
-                                <!-- Theme Controls - Mobile only -->
-                                <li class="d-lg-none">
-                                    <h6 class="dropdown-header"><i class="bi bi-palette me-2"></i>Appearance</h6>
-                                </li>
-                                <li class="d-lg-none">
-                                    <div class="px-3 py-1">
-                                        <bootswatch-theme-switcher dropdown-toggle-text="Choose Theme"
-                                            dropdown-toggle-class="btn btn-sm btn-outline-secondary dropdown-toggle w-100"
-                                            dropdown-menu-class="dropdown-menu dropdown-menu-end"
-                                            dropdown-item-class="dropdown-item" />
-                                    </div>
-                                </li>
-                                <li class="d-lg-none">
-                                    <button class="dropdown-item" type="button" onclick="toggleColorMode()"
-                                        id="color-mode-toggle-mobile">
-                                        <i class="bi bi-moon me-2" id="color-mode-icon-mobile"></i>
-                                        <span id="color-mode-text-mobile">Dark Mode</span>
-                                    </button>
-                                </li>
-                                <li class="d-lg-none">
-                                    <hr class="dropdown-divider">
-                                </li>
-
                                 @if (User.Identity!.IsAuthenticated)
                                 {
                                     <!-- Authenticated User Options -->
@@ -264,114 +216,14 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/reviews.js" asp-append-version="true"></script>
-    <!-- Enhanced Navigation and Color Mode Scripts with Cookie Persistence -->
+    <!-- Simplified Navigation Scripts with Fixed Theme -->
     <script>
         (function ()
         {
             'use strict';
 
-            // Cookie utility functions
-            const CookieManager = {
-                set: function (name, value, days = 365)
-                {
-                    const expires = new Date();
-                    expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
-                    document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
-                },
-
-                get: function (name)
-                {
-                    const nameEQ = name + "=";
-                    const ca = document.cookie.split(';');
-                    for (let i = 0; i < ca.length; i++)
-                    {
-                        let c = ca[i];
-                        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-                        if (c.indexOf(nameEQ) == 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
-                    }
-                    return null;
-                }
-            };
-
-            // Get the current color mode from the HTML data attribute
-            function getCurrentColorMode()
-            {
-                return document.documentElement.getAttribute('data-bs-theme') || 'light';
-            }            // Set the color mode with cookie persistence
-            function setColorMode(mode)
-            {
-                document.documentElement.setAttribute('data-bs-theme', mode);
-
-                // Save to cookie (primary storage)
-                CookieManager.set('webspark-color-mode', mode);
-
-                // Also save to localStorage for backwards compatibility
-                localStorage.setItem('color-mode', mode);
-
-                updateColorModeUI(mode);
-                showColorModeChangeNotification(mode);
-
-                // Dispatch custom event for other components to listen to
-                window.dispatchEvent(new CustomEvent('colorModeChanged', {
-                    detail: { mode: mode }
-                }));
-            }
-
-            // Enhanced theme persistence with cookies
-            function saveThemePreference(themeName)
-            {
-                // Save to cookie (primary storage) 
-                CookieManager.set('webspark-theme', themeName);
-
-                // Also save to localStorage for backwards compatibility
-                localStorage.setItem('bootswatch-theme', themeName);
-            }
-
-            // Get saved theme preference
-            function getSavedTheme()
-            {
-                // Check cookie first, then localStorage as fallback
-                return CookieManager.get('webspark-theme') ||
-                    localStorage.getItem('bootswatch-theme') ||
-                    'yeti'; // Default to Yeti theme
-            }
-
-            // Get saved color mode preference  
-            function getSavedColorMode()
-            {
-                // Check cookie first, then localStorage as fallback
-                return CookieManager.get('webspark-color-mode') ||
-                    localStorage.getItem('color-mode') ||
-                    'light'; // Default to light mode
-            }
-
-            // Update the UI elements for mobile only (desktop handled by bootswatch component)
-            function updateColorModeUI(mode)
-            {
-                // Mobile version
-                const mobileIcon = document.getElementById('color-mode-icon-mobile');
-                const mobileText = document.getElementById('color-mode-text-mobile');
-
-                if (mode === 'dark')
-                {
-                    // Update mobile elements
-                    if (mobileIcon) mobileIcon.className = 'bi bi-sun me-2';
-                    if (mobileText) mobileText.textContent = 'Light Mode';
-                } else
-                {
-                    // Update mobile elements
-                    if (mobileIcon) mobileIcon.className = 'bi bi-moon me-2';
-                    if (mobileText) mobileText.textContent = 'Dark Mode';
-                }
-            }
-
-            // Toggle color mode (accessible from both desktop and mobile)
-            window.toggleColorMode = function ()
-            {
-                const currentMode = getCurrentColorMode();
-                const newMode = currentMode === 'dark' ? 'light' : 'dark';
-                setColorMode(newMode);
-            };
+            // Ensure theme and color mode are always fixed
+            document.documentElement.setAttribute('data-bs-theme', 'light');
 
             // Close dropdown on outside click (mobile enhancement)
             function closeDropdownOnOutsideClick()
@@ -415,173 +267,25 @@
                         });
                     }
                 });
-            }            // Listen for theme changes from WebSpark.Bootswatch and save to cookies
-            function listenForThemeChanges()
-            {
-                // Listen for theme switch events
-                document.addEventListener('click', function (event)
-                {
-                    // Check if clicked element is a theme switcher button
-                    if (event.target.matches('[data-bs-theme-value]') ||
-                        event.target.closest('[data-bs-theme-value]'))
-                    {
-
-                        const themeButton = event.target.matches('[data-bs-theme-value]') ?
-                            event.target :
-                            event.target.closest('[data-bs-theme-value]');
-
-                        const themeName = themeButton.getAttribute('data-bs-theme-value');
-                        if (themeName)
-                        {
-                            saveThemePreference(themeName);
-                            showThemeChangeNotification(themeName);
-                        }
-                    }
-                });
-
-                // Also listen for direct link clicks in theme dropdown
-                document.addEventListener('click', function (event)
-                {
-                    if (event.target.matches('.dropdown-item[href*="theme"]'))
-                    {
-                        const href = event.target.getAttribute('href');
-                        const themeMatch = href.match(/theme=([^&]+)/);
-                        if (themeMatch)
-                        {
-                            const themeName = themeMatch[1];
-                            saveThemePreference(themeName);
-                            showThemeChangeNotification(themeName);
-                        }
-                    }
-                });
-
-                // Monitor localStorage changes from WebSpark.Bootswatch for theme updates
-                window.addEventListener('storage', function (e)
-                {
-                    if (e.key === 'bootswatch-theme' && e.newValue)
-                    {
-                        // Sync with cookie when localStorage changes
-                        CookieManager.set('webspark-theme', e.newValue);
-                        showThemeChangeNotification(e.newValue);
-                    }
-                });
-            }
-
-            // Show theme change notification
-            function showThemeChangeNotification(themeName)
-            {
-                // Remove existing notification if any
-                const existingNotification = document.querySelector('.webspark-theme-indicator');
-                if (existingNotification)
-                {
-                    existingNotification.remove();
-                }
-
-                // Create new notification
-                const notification = document.createElement('div');
-                notification.className = 'webspark-theme-indicator';
-                notification.innerHTML = `
-                    <i class="bi bi-palette me-2"></i>
-                    Theme changed to <strong>${capitalizeFirst(themeName)}</strong>
-                `;
-
-                document.body.appendChild(notification);
-
-                // Show notification
-                setTimeout(() => notification.classList.add('show'), 100);
-
-                // Hide notification after 3 seconds
-                setTimeout(() =>
-                {
-                    notification.classList.remove('show');
-                    setTimeout(() => notification.remove(), 300);
-                }, 3000);
-            }
-
-            // Utility function to capitalize first letter
-            function capitalizeFirst(str)
-            {
-                return str.charAt(0).toUpperCase() + str.slice(1);
-            }
-
-            // Show color mode change notification
-            function showColorModeChangeNotification(mode)
-            {
-                // Remove existing notification if any
-                const existingNotification = document.querySelector('.webspark-theme-indicator');
-                if (existingNotification)
-                {
-                    existingNotification.remove();
-                }
-
-                // Create new notification
-                const notification = document.createElement('div');
-                notification.className = 'webspark-theme-indicator';
-                notification.innerHTML = `
-                    <i class="bi bi-${mode === 'dark' ? 'moon' : 'sun'} me-2"></i>
-                    Switched to <strong>${capitalizeFirst(mode)} Mode</strong>
-                `;
-
-                document.body.appendChild(notification);
-
-                // Show notification
-                setTimeout(() => notification.classList.add('show'), 100);
-
-                // Hide notification after 2 seconds
-                setTimeout(() =>
-                {
-                    notification.classList.remove('show');
-                    setTimeout(() => notification.remove(), 300);
-                }, 2000);
             }
 
             // Initialize on page load
             document.addEventListener('DOMContentLoaded', function ()
             {
-                // Get saved preferences
-                const savedColorMode = getSavedColorMode();
-                const currentMode = getCurrentColorMode();
-
-                // Apply saved color mode if different from current
-                if (savedColorMode !== currentMode)
-                {
-                    setColorMode(savedColorMode);
-                } else
-                {
-                    updateColorModeUI(currentMode);
-                }
+                // Ensure fixed theme settings
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+                localStorage.setItem('bootswatch-theme', 'yeti');
 
                 // Initialize mobile enhancements
                 closeDropdownOnOutsideClick();
                 enhanceKeyboardNavigation();
-                listenForThemeChanges();
-
-                // Add loading state to theme switcher when themes change
-                const themeButtons = document.querySelectorAll('[data-bs-theme-value]');
-                themeButtons.forEach(function (button)
-                {
-                    button.addEventListener('click', function ()
-                    {
-                        const switcher = button.closest('.dropdown');
-                        if (switcher)
-                        {
-                            switcher.classList.add('theme-loading');
-                            setTimeout(function ()
-                            {
-                                switcher.classList.remove('theme-loading');
-                            }, 500);
-                        }
-                    });
-                });
 
                 // Debug info in development
                 if (window.location.hostname === 'localhost')
                 {
                     console.log('WebSpark Theme System Initialized');
-                    console.log('Default Theme: yeti');
-                    console.log('Current Color Mode:', currentMode);
-                    console.log('Saved Theme:', getSavedTheme());
-                    console.log('Saved Color Mode:', savedColorMode);
+                    console.log('Fixed Theme: yeti');
+                    console.log('Fixed Color Mode: light');
                 }
             });
 
