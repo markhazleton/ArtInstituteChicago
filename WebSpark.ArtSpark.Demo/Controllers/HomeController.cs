@@ -20,9 +20,15 @@ public class HomeController : Controller
         _collectionService = collectionService;
         _publicCollectionService = publicCollectionService;
     }
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<IActionResult> Index()
     {
         _logger.LogInformation("Home page requested at {RequestTime}", DateTime.Now);
+
+        // Add cache-busting headers
+        Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+        Response.Headers["Pragma"] = "no-cache";
+        Response.Headers["Expires"] = "0";
         PublicCollectionDetailsViewModel randomCollection = new();
 
         try

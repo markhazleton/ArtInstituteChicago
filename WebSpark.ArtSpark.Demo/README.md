@@ -13,7 +13,7 @@ WebSpark.ArtSpark is a modern, open-source ASP.NET Core application that beautif
 
 ## 🚀 Live Demo
 
-> Coming Soon: [https://artspark.markhazleton.com](https://artspark.markhazleton.com)
+Experience WebSpark.ArtSpark live at: **[https://artspark.markhazleton.com](https://artspark.markhazleton.com)**
 
 ---
 
@@ -149,12 +149,14 @@ builder.Services.AddHttpClientWithPolicies("ArtApiClient", client =>
 ### Clone and Run
 
 ```bash
-git clone https://github.com/markhazleton/WebSpark.ArtSpark.git
+git clone https://github.com/MarkHazleton/WebSpark.ArtSpark.git
 cd WebSpark.ArtSpark
-dotnet run
+dotnet run --project WebSpark.ArtSpark.Demo
 ```
 
-Then visit `https://localhost:5001` in your browser.
+Then visit `http://localhost:5139` or `https://localhost:7282` in your browser.
+
+For the live production version, visit: **[https://artspark.markhazleton.com](https://artspark.markhazleton.com)**
 
 ---
 
@@ -187,7 +189,7 @@ Contributions are welcome! Please:
 4. Push to the branch (`git push origin feature/your-feature-name`)
 5. Open a pull request
 
-Issues and suggestions are also welcome via the [GitHub Issues page](https://github.com/markhazleton/WebSpark.ArtSpark/issues).
+Issues and suggestions are also welcome via the [GitHub Issues page](https://github.com/MarkHazleton/WebSpark.ArtSpark/issues).
 
 ---
 

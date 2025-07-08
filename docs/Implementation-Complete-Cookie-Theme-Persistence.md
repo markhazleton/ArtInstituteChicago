@@ -153,7 +153,7 @@ const CookieManager = {
 ✅ Build Time: 2.6 seconds
 ✅ WebSpark.Bootswatch API: 26 themes loaded
 ✅ StyleCache: 28 styles initialized  
-✅ Server Ready: http://localhost:5139
+✅ Server Ready: https://artspark.markhazleton.com
 ```
 
 ### Runtime Performance
@@ -224,7 +224,7 @@ The cookie-based theme persistence implementation has been successfully complete
 ### Final Verification Steps
 
 1. ✅ Application builds without errors
-2. ✅ Application runs successfully on localhost:5139
+2. ✅ Application runs successfully on artspark.markhazleton.com
 3. ✅ Materia theme loads as default for new users
 4. ✅ Theme changes persist in cookies
 5. ✅ Color mode changes persist in cookies

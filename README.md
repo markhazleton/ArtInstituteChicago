@@ -5,6 +5,8 @@
 [![.NET](https://img.shields.io/badge/.NET-9.0-purple.svg)](https://dotnet.microsoft.com/download)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+🚀 **[Live Demo: https://artspark.markhazleton.com](https://artspark.markhazleton.com)**
+
 ## Table of Contents
 
 - [Overview](#overview)
@@ -42,7 +44,7 @@ This solution provides a complete .NET ecosystem for interacting with the Art In
 - ✅ **IIIF Support**: Built-in IIIF URL construction for high-quality images
 - ✅ **Flexible Querying**: Pagination, field selection, and resource inclusion
 - ✅ **Error Handling**: Graceful error handling and HTTP status management
-- ✅ **No External Dependencies**: Uses only .NET 9.0 built-in libraries
+- ✅ **Modern .NET**: Uses .NET 9.0 with minimal external dependencies
 
 ### 🎭 Revolutionary AI Features
 
@@ -50,6 +52,7 @@ This solution provides a complete .NET ecosystem for interacting with the Art In
 - 👁️ **Visual Analysis**: AI-powered image analysis with artwork descriptions using OpenAI Vision
 - 🧠 **Conversation Memory**: Persistent chat history and contextual conversations
 - 🎯 **Cultural Sensitivity**: Respectful handling of cultural artifacts and educational contexts
+- 🛡️ **Guard Rails**: Input validation and content filtering for appropriate conversations
 
 ### 🚀 Demo Application Features
 
@@ -57,14 +60,20 @@ This solution provides a complete .NET ecosystem for interacting with the Art In
 - 📚 **User Collections**: Personal artwork organization and favorites
 - 🎲 **Random Collection Showcase**: Dynamic home page featuring random public collections
 - 🎨 **Responsive Design**: Mobile-first Bootstrap 5 implementation  
-- 🎭 **Theme Switching**: Dynamic Bootswatch theme selection
+- 🎭 **Theme Switching**: Dynamic Bootswatch theme selection with 26+ themes
 - 📊 **Build Information**: Version tracking and deployment details
 - 🔍 **Enhanced Filtering**: Artwork filtering by style, medium, and classification
 - 🔄 **Interactive Discovery**: "New Collection" button for instant content refresh
+- 🌐 **SEO-Enhanced Routing**: Clean URLs with slug-based collection routing
+- 📱 **Mobile-First Navigation**: Consolidated dropdown navigation for optimal UX
 
 ## Quick Start
 
-### Installation
+### Try the Live Demo
+
+🌐 **[Experience WebSpark.ArtSpark live at artspark.markhazleton.com](https://artspark.markhazleton.com)**
+
+### Local Installation
 
 1. Clone the repository:
 
@@ -99,14 +108,14 @@ To enable AI chat features, add your OpenAI API key to the demo application:
 
 ```bash
 cd WebSpark.ArtSpark.Demo
-dotnet user-secrets set "Agent:OpenAI:ApiKey" "your-openai-api-key-here"
+dotnet user-secrets set "ArtSparkAgent:OpenAI:ApiKey" "your-openai-api-key-here"
 ```
 
 1. Configure settings in `appsettings.json`:
 
 ```json
 {
-  "Agent": {
+  "ArtSparkAgent": {
     "OpenAI": {
       "ModelId": "gpt-4o",
       "VisionModelId": "gpt-4o",
@@ -410,7 +419,7 @@ public class ArtworkController : ControllerBase
 
 ### Demo Experience
 
-Try the interactive chat feature in our [demo application](WebSpark.ArtSpark.Demo) where you can:
+Experience the interactive chat feature in our [live demo application](https://artspark.markhazleton.com) where you can:
 
 - Switch between different personas seamlessly
 - View suggested conversation starters for each persona
@@ -461,12 +470,14 @@ Try the interactive chat feature in our [demo application](WebSpark.ArtSpark.Dem
 - **Batch operations** for efficient data retrieval
 - **IIIF image support** for high-quality artwork display
 
-#### 📊 Developer Experience
+#### 🧪 Developer Experience
 
-- **Comprehensive logging** with Serilog implementation
-- **Build information display** with version tracking
-- **Dependency injection** patterns throughout
-- **Comprehensive documentation** and implementation guides
+- **Comprehensive Logging** with Serilog implementation
+- **Build Information Display** with version tracking
+- **Dependency Injection** patterns throughout
+- **Comprehensive Documentation** and implementation guides
+- **Live Testing** validated across desktop, tablet, and mobile devices
+- **Production Ready** with 26+ Bootswatch themes and robust error handling
 
 ---
 
@@ -594,7 +605,7 @@ For applications using the AI chat features:
 
 ```json
 {
-  "Agent": {
+  "ArtSparkAgent": {
     "OpenAI": {
       "ApiKey": "your-openai-api-key",
       "ModelId": "gpt-4o",
@@ -616,6 +627,12 @@ For applications using the AI chat features:
 ```
 
 ## 🚀 Deployment & Production
+
+### Live Application
+
+The WebSpark.ArtSpark application is currently running live at:
+
+**🌐 [https://artspark.markhazleton.com](https://artspark.markhazleton.com)**
 
 ### Environment Setup
 
@@ -701,5 +718,11 @@ If you encounter any issues or have questions:
 This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details.
 
 ## Final Note
+
+🎨 **Ready to explore art and technology together?**
+
+👉 **Experience the live application**: [artspark.markhazleton.com](https://artspark.markhazleton.com)  
+👨‍💻 **Start building with the API**: Clone this repository and run the examples  
+🎭 **Chat with artworks**: Set up your OpenAI API key and experience AI personas  
 
 Happy coding with the Art Institute of Chicago API! 🎨

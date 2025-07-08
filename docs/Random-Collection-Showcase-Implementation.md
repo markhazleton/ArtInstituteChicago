@@ -5,7 +5,7 @@
 **Feature**: Random Collection Showcase on Home Page  
 **Date**: June 6, 2025  
 **Status**: ✅ **COMPLETE** - Fully operational and tested  
-**Application URL**: <http://localhost:5139>
+**Application URL**: <https://artspark.markhazleton.com>
 
 ---
 
@@ -271,7 +271,7 @@ public class HomeController : Controller
 
 ### **Environment Status**
 
-- ✅ **Development**: Fully operational at `http://localhost:5139`
+- ✅ **Development**: Fully operational at `https://artspark.markhazleton.com`
 - ✅ **Build Process**: Zero compilation errors
 - ✅ **Runtime**: No exceptions or warnings (EF warnings resolved)
 - ✅ **Testing**: Manual testing completed successfully
